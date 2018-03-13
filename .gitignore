@@ -29,3 +29,7 @@ local.properties
 
 # MacOS stuff
 *.DS_Store
+
+# IntelliJ stuff
+.idea
+*.iml
