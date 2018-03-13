@@ -5,3 +5,12 @@ jdk:
 script: mvn test -B
 after_success:
   - mvn clean test jacoco:report coveralls:report
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+  slack:
+    rooms:
+      secure: BPqf1rE/88+zWAj8ZRvfEEa+wI/dr9iszkCHzGs262KXbCdQd9nt5e4ucmv3ATUIVeiSkNNflxakFeUhwEGkVfUt5MCT929uajcJCudB6X6fBklfEYghX0QqgIHWpdCknsQIh7AYlxMrPfgzVQ7J57pCiOJKplmKWgeazEu+ArpMpKm1foyuqf4raqZXdtdRxtZQJ254x8rTyUx0OkuOkkq+Jf8q1g4xBKpHJA2cm9L/fMcUKDvzH4A8FDvesQSAUMjHmgNPLkAWeVEcjwjME/I+pyxeSWqI28jBwzxtZBN0WImtsji4t6rev4z4H6VOFNVuJyuNXawEb2G8QK7B5XbbcPJa4Y1qMC5fiBvcqYBdbD/0AxHCYdil7BDRAI7lNUljBSPAf0HlV3oiJqMjdCiDAJfMMPO97MBsgRtIVqaH2+5T8VRXJX9wah2XRv/B+dCAKuc2xhlmo/MH1SEFHt/fVaHfCf4bX19dsy+bKu+ioDapSdo1cXHq1Bn1jHVLyLOjmCHOAfxVwUMY4ZMdgisFe1fvdMzdEGvwaRS3wKHLuXbiuPrxkY2m5Gb9iTYH2fPgORj7+i49ClPmDEzehsach/6Ymq+cVxqo0GjKIjy9++rmBd50vGDBrHmiPbZ2fZxs+uiIEp1kFQXe9CtCf4In/2HuYCFwxwtzETJWrx0=
+    on_success: change
+    on_failure: always
