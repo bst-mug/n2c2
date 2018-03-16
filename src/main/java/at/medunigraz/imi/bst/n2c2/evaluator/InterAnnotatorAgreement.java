@@ -15,6 +15,8 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    static final String IAA_SCRIPT = "target/lib/iaa.py";
+
     /**
      * python iaa.py -t # folder1/ folder2/
      * # is the track number (1 - cohort selection or 2 - ADE)
@@ -25,7 +27,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     static {
         COMMAND.add("python");
-        COMMAND.add("target/lib/iaa.py");
+        COMMAND.add(IAA_SCRIPT);
         COMMAND.add("-t");
         COMMAND.add("1");
     }

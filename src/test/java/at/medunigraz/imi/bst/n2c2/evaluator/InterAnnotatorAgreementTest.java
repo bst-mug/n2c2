@@ -1,5 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.evaluator;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,8 +13,10 @@ public class InterAnnotatorAgreementTest {
     private static final String GOLD = "/gold-standard/";
     private static final String RESULTS = "/results/";
 
-    // TODO skip if iaa.py not present
-    // TODO skip if samples not present
+    @Before
+    public void SetUp() {
+        Assume.assumeTrue(new File(InterAnnotatorAgreement.IAA_SCRIPT).isFile());
+    }
 
     @Test
     public void evaluate() {
