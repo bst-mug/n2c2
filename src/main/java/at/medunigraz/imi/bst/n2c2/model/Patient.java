@@ -51,8 +51,12 @@ public class Patient {
         return this;
     }
 
-    public Patient withTag(Tag tag) {
-        criteria.put(tag.getCriterion(), tag.getEligibility());
+    private Patient withTag(Tag tag) {
+        return withCriterion(tag.getCriterion(), tag.getEligibility());
+    }
+
+    public Patient withCriterion(Criterion criterion, Eligibility eligibility) {
+        criteria.put(criterion, eligibility);
         return this;
     }
 
