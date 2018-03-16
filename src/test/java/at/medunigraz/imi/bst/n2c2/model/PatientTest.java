@@ -4,7 +4,9 @@ import org.junit.Test;
 
 import java.io.File;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class PatientTest {
 
@@ -12,6 +14,9 @@ public class PatientTest {
     public void fromXML() {
         File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
         Patient patient = Patient.fromXML(sample);
+
+        assertThat(patient.getText(), containsString("FISHKILL"));
+        assertThat(patient.getText(), containsString("aspirin"));
 
         assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.ABDOMINAL));
         assertEquals(Eligibility.MET, patient.getEligibility(Criterion.ADVANCE_CAD));

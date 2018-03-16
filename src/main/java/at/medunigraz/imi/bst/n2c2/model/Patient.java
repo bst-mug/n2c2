@@ -60,6 +60,10 @@ public class Patient {
         return this;
     }
 
+    public String getText() {
+        return text;
+    }
+
     public Eligibility getEligibility(Criterion criterion) {
         return criteria.get(criterion);
     }
