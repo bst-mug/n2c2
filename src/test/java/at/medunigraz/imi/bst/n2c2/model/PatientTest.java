@@ -13,7 +13,7 @@ public class PatientTest {
         File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
         Patient patient = Patient.fromXML(sample);
 
-        assertEquals(Criterion.NOT_MET, patient.getCriterion("ABDOMINAL"));
-        assertEquals(Criterion.MET, patient.getCriterion("ADVANCED-CAD"));
+        assertEquals(Eligibility.NOT_MET, patient.getEligibility("ABDOMINAL"));
+        assertEquals(Eligibility.MET, patient.getEligibility("ADVANCED-CAD"));
     }
 }

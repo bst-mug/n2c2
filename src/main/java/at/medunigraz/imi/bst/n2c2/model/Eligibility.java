@@ -1,5 +1,5 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
-public enum Criterion {
+public enum Eligibility {
     MET, NOT_MET
 }
