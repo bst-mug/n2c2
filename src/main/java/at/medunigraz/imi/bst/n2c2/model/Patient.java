@@ -39,8 +39,8 @@ public class Patient {
         NodeList tags = tagsElement.getElementsByTagName("*");
         for (int i = 0; i < tags.getLength(); i++) {
             Element element = (Element) tags.item(i);
-            Tag t = Tag.fromElement(element);
-            patient.withTag(t);
+            XMLTag t = XMLTag.fromElement(element);
+            patient.withXMLTag(t);
         }
 
         return patient;
@@ -51,7 +51,7 @@ public class Patient {
         return this;
     }
 
-    private Patient withTag(Tag tag) {
+    private Patient withXMLTag(XMLTag tag) {
         return withCriterion(tag.getCriterion(), tag.getEligibility());
     }
 

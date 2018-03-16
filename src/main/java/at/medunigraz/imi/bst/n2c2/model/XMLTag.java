@@ -2,16 +2,16 @@ package at.medunigraz.imi.bst.n2c2.model;
 
 import org.w3c.dom.Element;
 
-public class Tag {
+public class XMLTag {
 
     private Criterion criterion;
     private Eligibility eligibility;
 
-    private Tag() {
+    private XMLTag() {
     }
 
-    public static Tag fromElement(Element element) {
-        Tag c = new Tag();
+    public static XMLTag fromElement(Element element) {
+        XMLTag c = new XMLTag();
 
         String name = element.getTagName();
         c.withCriterion(Criterion.get(name));
@@ -22,12 +22,12 @@ public class Tag {
         return c;
     }
 
-    private Tag withCriterion(Criterion criterion) {
+    private XMLTag withCriterion(Criterion criterion) {
         this.criterion = criterion;
         return this;
     }
 
-    private Tag withEligibility(Eligibility eligibility) {
+    private XMLTag withEligibility(Eligibility eligibility) {
         this.eligibility = eligibility;
         return this;
     }
