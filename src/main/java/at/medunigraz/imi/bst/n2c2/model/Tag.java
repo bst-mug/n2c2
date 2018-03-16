@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 
 public class Tag {
 
-    private String name;
+    private Criterion criterion;
     private Eligibility eligibility;
 
     private Tag() {
@@ -14,7 +14,7 @@ public class Tag {
         Tag c = new Tag();
 
         String name = element.getTagName();
-        c.withName(name);
+        c.withCriterion(Criterion.get(name));
 
         String met = element.getAttribute("met");
         if (met.equals("met")) {
@@ -26,8 +26,8 @@ public class Tag {
         return c;
     }
 
-    private Tag withName(String name) {
-        this.name = name;
+    private Tag withCriterion(Criterion criterion) {
+        this.criterion = criterion;
         return this;
     }
 
@@ -36,8 +36,8 @@ public class Tag {
         return this;
     }
 
-    public String getName() {
-        return name;
+    public Criterion getCriterion() {
+        return criterion;
     }
 
     public Eligibility getEligibility() {

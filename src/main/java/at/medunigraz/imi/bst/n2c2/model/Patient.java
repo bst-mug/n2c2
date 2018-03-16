@@ -13,7 +13,7 @@ import java.util.Map;
 public class Patient {
 
     private String text;
-    private Map<String, Eligibility> criteria = new HashMap<>();
+    private Map<Criterion, Eligibility> criteria = new HashMap<>();
 
     private Patient() {
 
@@ -52,11 +52,11 @@ public class Patient {
     }
 
     public Patient withTag(Tag tag) {
-        criteria.put(tag.getName(), tag.getEligibility());
+        criteria.put(tag.getCriterion(), tag.getEligibility());
         return this;
     }
 
-    public Eligibility getEligibility(String name) {
-        return criteria.get(name);
+    public Eligibility getEligibility(Criterion criterion) {
+        return criteria.get(criterion);
     }
 }
