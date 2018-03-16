@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 
@@ -27,6 +29,8 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         COMMAND.add("-t");
         COMMAND.add("1");
     }
+
+    private Map<String, Float> accuracyPerCriterion = new TreeMap<>();
 
     public InterAnnotatorAgreement(File goldStandard, File results) {
         COMMAND.add(goldStandard.getAbsolutePath());
@@ -62,7 +66,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
             return;
         }
 
-        //parseOutput(output);
+        parseOutput(output);
     }
 
     private String[] collectStream(InputStream is) {
@@ -83,9 +87,31 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         return list.toArray(ret);
     }
 
+    private void parseOutput(String[] output) {
+        for (String s : output) {
+            String[] fields = s.trim().split("\\s+");
+
+            if (fields.length != 2) {
+                continue;
+            }
+
+            String criterion = fields[0];
+            Float accuracy = Float.parseFloat(fields[1]);
+
+            accuracyPerCriterion.put(criterion, accuracy);
+        }
+    }
+
+    private float getAccuracyByCriterion(String criterion) {
+        return accuracyPerCriterion.getOrDefault(criterion, 0f);
+    }
+
+    public float getOverallAccuracy() {
+        return getAccuracyByCriterion("Overall");
+    }
+
     @Override
     public double getF1() {
-        // FIXME
-        return 0;
+        return getOverallAccuracy();
     }
 }
