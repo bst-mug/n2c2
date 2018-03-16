@@ -17,6 +17,31 @@
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<configuration>
+							<target>
+								<get src="https://n2c2.dbmi.hms.harvard.edu/files/n2c2_sample_file_annotations.zip"
+									 dest="${project.build.directory}/n2c2_sample_file_annotations.zip"
+									 verbose="false" usetimestamp="true"/>
+								<unzip src="${project.build.directory}/n2c2_sample_file_annotations.zip"
+									   dest="${project.build.directory}"/>
+								<copy file="${project.build.directory}/n2c2_sample_file_annotations/sample.xml"
+									  tofile="${basedir}/src/test/resources/gold-standard/sample.xml"/>
+								<copy file="${project.build.directory}/n2c2_sample_file_annotations/sample.xml"
+									  tofile="${basedir}/src/test/resources/results/sample.xml"/>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>

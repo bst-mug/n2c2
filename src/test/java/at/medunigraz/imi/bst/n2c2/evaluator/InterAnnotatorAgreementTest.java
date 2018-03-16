@@ -3,9 +3,8 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class InterAnnotatorAgreementTest {
 
@@ -16,11 +15,11 @@ public class InterAnnotatorAgreementTest {
     // TODO skip if samples not present
 
     @Test
-    public void evaluate() throws URISyntaxException {
+    public void evaluate() {
         File goldStandard = new File(getClass().getResource(GOLD).getFile());
         File results = new File(getClass().getResource(RESULTS).getFile());
 
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandard, results);
-        assertEquals(0, iaa.getF1(), 0.00001);
+        assertEquals(1, iaa.getF1(), 0.00001);
     }
 }
