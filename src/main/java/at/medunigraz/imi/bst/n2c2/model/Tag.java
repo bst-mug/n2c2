@@ -17,11 +17,7 @@ public class Tag {
         c.withCriterion(Criterion.get(name));
 
         String met = element.getAttribute("met");
-        if (met.equals("met")) {
-            c.withEligibility(Eligibility.MET);
-        } else if (met.equals("not met")) {
-            c.withEligibility(Eligibility.NOT_MET);
-        }
+        c.withEligibility(Eligibility.get(met));
 
         return c;
     }
