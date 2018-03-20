@@ -57,7 +57,12 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
             e.printStackTrace();
         }
 
-        String output[] = collectStream(proc.getInputStream());
+        String output[] = {};
+        try {
+            output = collectStream(proc.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         int exit = proc.exitValue();
         if (exit != 0) {
@@ -71,18 +76,14 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         parseOutput(output);
     }
 
-    private String[] collectStream(InputStream is) {
+    private String[] collectStream(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
         List<String> list = new ArrayList<>();
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                LOG.trace(line);
-                list.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            LOG.trace(line);
+            list.add(line);
         }
 
         String[] ret = new String[list.size()];
