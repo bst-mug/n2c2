@@ -19,7 +19,7 @@ public class PatientTest {
         assertThat(patient.getText(), containsString("aspirin"));
 
         assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.ABDOMINAL));
-        assertEquals(Eligibility.MET, patient.getEligibility(Criterion.ADVANCE_CAD));
+        assertEquals(Eligibility.MET, patient.getEligibility(Criterion.ADVANCED_CAD));
         assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.ALCOHOL_ABUSE));
         assertEquals(Eligibility.MET, patient.getEligibility(Criterion.ASP_FOR_MI));
         assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.CREATININE));
