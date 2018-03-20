@@ -1,8 +1,10 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -11,7 +13,7 @@ import static org.junit.Assert.assertThat;
 public class PatientTest {
 
     @Test
-    public void fromXML() {
+    public void fromXML() throws IOException, SAXException {
         File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
         Patient patient = Patient.fromXML(sample);
 

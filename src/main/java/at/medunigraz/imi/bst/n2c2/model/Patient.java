@@ -3,10 +3,15 @@ package at.medunigraz.imi.bst.n2c2.model;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,17 +24,21 @@ public class Patient {
 
     }
 
-    public static Patient fromXML(File xmlFile) {
+    public static Patient fromXML(File xmlFile) throws IOException, SAXException {
+        return fromXML(new FileInputStream(xmlFile));
+    }
+
+    public static Patient fromXML(InputStream xml) throws IOException, SAXException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-        Document doc = null;
+        DocumentBuilder documentBuilder = null;
         try {
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            doc = documentBuilder.parse(xmlFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
         }
+
+        Document doc = documentBuilder.parse(xml);
 
         String text = doc.getElementsByTagName("TEXT").item(0).getTextContent();
         Patient patient = new Patient().withText(text);
