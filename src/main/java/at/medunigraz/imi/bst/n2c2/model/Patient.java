@@ -20,10 +20,6 @@ public class Patient {
     private String text;
     private Map<Criterion, Eligibility> criteria = new HashMap<>();
 
-    private Patient() {
-
-    }
-
     public static Patient fromXML(File xmlFile) throws IOException, SAXException {
         return fromXML(new FileInputStream(xmlFile));
     }
