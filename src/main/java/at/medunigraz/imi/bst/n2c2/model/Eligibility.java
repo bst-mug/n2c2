@@ -8,4 +8,8 @@ public enum Eligibility {
         return Eligibility.valueOf(value.replace(' ', '_').toUpperCase());
     }
 
+    @Override
+    public String toString() {
+        return name().replace('_', ' ').toLowerCase();
+    }
 }

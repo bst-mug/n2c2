@@ -15,7 +15,7 @@ public class InterAnnotatorAgreementTest {
 
     @Before
     public void SetUp() {
-        Assume.assumeTrue(new File(InterAnnotatorAgreement.IAA_SCRIPT).isFile());
+        Assume.assumeTrue(InterAnnotatorAgreement.scriptExists());
     }
 
     @Test
