@@ -29,6 +29,8 @@ public class DAOEvaluatorIntegrationTest {
     private final File goldStandardFolder = new File(getClass().getResource(GOLD).getFile());
     private final File sampleFile = new File(goldStandardFolder, "sample.xml");
 
+    private static final PatientDAO PATIENT_DAO = new PatientDAO();
+
     @Before
     public void SetUp() {
         Assume.assumeTrue(InterAnnotatorAgreement.scriptExists());
@@ -40,8 +42,9 @@ public class DAOEvaluatorIntegrationTest {
         final File regeneratedSampleFile = new File(equalResultsFolder, "sample.xml");
 
         // <ABDOMINAL met="not met" />
-        Patient patient = PatientDAO.fromXML(sampleFile);
-        PatientDAO.toXML(patient, regeneratedSampleFile);
+
+        Patient patient = PATIENT_DAO.fromXML(sampleFile);
+        PATIENT_DAO.toXML(patient, regeneratedSampleFile);
 
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandardFolder, equalResultsFolder);
         assertEquals(1, iaa.getF1(), 0.00001);
@@ -52,9 +55,9 @@ public class DAOEvaluatorIntegrationTest {
         final File differentResultsFolder = testFolder.newFolder();
         final File differentSampleFile = new File(differentResultsFolder, "sample.xml");
 
-        Patient patient = PatientDAO.fromXML(sampleFile);
+        Patient patient = PATIENT_DAO.fromXML(sampleFile);
         patient.withCriterion(Criterion.ABDOMINAL, Eligibility.MET);
-        PatientDAO.toXML(patient, differentSampleFile);
+        PATIENT_DAO.toXML(patient, differentSampleFile);
 
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandardFolder, differentResultsFolder);
         assertEquals(0, iaa.getF1(), 0.00001);

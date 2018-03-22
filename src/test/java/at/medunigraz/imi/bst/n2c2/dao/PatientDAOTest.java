@@ -27,7 +27,7 @@ public class PatientDAOTest {
     @Test
     public void fromXML() throws IOException, SAXException {
         File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
-        Patient patient = PatientDAO.fromXML(sample);
+        Patient patient = new PatientDAO().fromXML(sample);
 
         assertThat(patient.getText(), containsString("FISHKILL"));
         assertThat(patient.getText(), containsString("aspirin"));
@@ -54,7 +54,7 @@ public class PatientDAOTest {
 
         Patient patient = new Patient().withText("abc").withCriterion(Criterion.ABDOMINAL, Eligibility.MET);
 
-        PatientDAO.toXML(patient, actualFile);
+        new PatientDAO().toXML(patient, actualFile);
 
         String expected = FileUtils.readFileToString(expectedFile, "UTF-8");
         String actual = FileUtils.readFileToString(actualFile, "UTF-8");
@@ -67,7 +67,8 @@ public class PatientDAOTest {
         final File actualFile = testFolder.newFile("patient-test.xml");
         final File sampleFile = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
 
-        PatientDAO.toXML(PatientDAO.fromXML(sampleFile), actualFile);
+        PatientDAO dao = new PatientDAO();
+        dao.toXML(dao.fromXML(sampleFile), actualFile);
 
         String expected = FileUtils.readFileToString(sampleFile, "UTF-8");
         String actual = FileUtils.readFileToString(actualFile, "UTF-8");

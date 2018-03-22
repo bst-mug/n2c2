@@ -22,20 +22,21 @@ public class PatientDAO {
     private static final String TEXT_NAME = "TEXT";
     private static final String TAGS_NAME = "TAGS";
 
-    public static Patient fromXML(File xmlFile) throws IOException, SAXException {
-        return fromXML(new FileInputStream(xmlFile));
-    }
+    private static DocumentBuilder documentBuilder = null;
 
-    public static Patient fromXML(InputStream xml) throws IOException, SAXException {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        DocumentBuilder documentBuilder = null;
+    public PatientDAO() {
         try {
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public Patient fromXML(File xmlFile) throws IOException, SAXException {
+        return fromXML(new FileInputStream(xmlFile));
+    }
+
+    public Patient fromXML(InputStream xml) throws IOException, SAXException {
         Document doc = documentBuilder.parse(xml);
 
         String text = doc.getElementsByTagName(TEXT_NAME).item(0).getTextContent();
@@ -53,20 +54,11 @@ public class PatientDAO {
         return patient;
     }
 
-    public static void toXML(Patient patient, File outputFile) throws IOException {
+    public void toXML(Patient patient, File outputFile) throws IOException {
         toXML(patient, new FileOutputStream(outputFile));
     }
 
-    public static void toXML(Patient patient, OutputStream outputStream) throws IOException {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        DocumentBuilder documentBuilder = null;
-        try {
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+    public void toXML(Patient patient, OutputStream outputStream) throws IOException {
         Document doc = documentBuilder.newDocument();
 
         Element rootElement = doc.createElement(ROOT_NAME);
