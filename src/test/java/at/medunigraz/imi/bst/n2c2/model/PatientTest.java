@@ -1,5 +1,6 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
+import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -15,7 +16,7 @@ public class PatientTest {
     @Test
     public void fromXML() throws IOException, SAXException {
         File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
-        Patient patient = Patient.fromXML(sample);
+        Patient patient = PatientDAO.fromXML(sample);
 
         assertThat(patient.getText(), containsString("FISHKILL"));
         assertThat(patient.getText(), containsString("aspirin"));
