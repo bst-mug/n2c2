@@ -20,7 +20,6 @@ public class XMLStatsWriterTest {
         final File actualFile = testFolder.newFile("test.xml");
         final File expectedFile = new File(getClass().getResource("/stats/expected.xml").getFile());
 
-        System.out.println(actualFile.getAbsolutePath());
         StatsWriter writer = new XMLStatsWriter(actualFile);
 
         writer.write(Criterion.ABDOMINAL, 0.5f);
