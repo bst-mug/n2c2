@@ -32,11 +32,13 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         COMMAND.add("1");
     }
 
+    private File goldStandard, results;
+
     private Map<String, Float> accuracyPerCriterion = new TreeMap<>();
 
     public InterAnnotatorAgreement(File goldStandard, File results) {
-        COMMAND.add(goldStandard.getAbsolutePath());
-        COMMAND.add(results.getAbsolutePath());
+        this.goldStandard = goldStandard;
+        this.results = results;
         evaluate();
     }
 
@@ -44,9 +46,16 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         return new File(IAA_SCRIPT).isFile();
     }
 
+    private List<String> getFullCommand() {
+        List<String> fullCommand = new ArrayList<>(COMMAND);
+        fullCommand.add(goldStandard.getAbsolutePath());
+        fullCommand.add(results.getAbsolutePath());
+        return fullCommand;
+    }
+
     @Override
     public void evaluate() {
-        ProcessBuilder pb = new ProcessBuilder(COMMAND);
+        ProcessBuilder pb = new ProcessBuilder(getFullCommand());
         LOG.debug(String.join(" ", pb.command()));
 
         pb.redirectErrorStream(true);
