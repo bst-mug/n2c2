@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -32,6 +33,10 @@ public class XMLStatsWriter extends AbstractStatsWriter {
         doc = documentBuilder.newDocument();
 
         writeHeader();
+    }
+
+    public XMLStatsWriter(File outputFile) throws IOException {
+        super(outputFile);
     }
 
     protected void writeHeader() {
