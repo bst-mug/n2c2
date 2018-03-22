@@ -3,10 +3,7 @@ package at.medunigraz.imi.bst.n2c2.stats;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import com.opencsv.CSVWriter;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 public class CSVStatsWriter extends AbstractStatsWriter {
     private CSVWriter writer;
@@ -18,7 +15,7 @@ public class CSVStatsWriter extends AbstractStatsWriter {
     }
 
     public CSVStatsWriter(File outputFile) throws IOException {
-        super(outputFile);
+        this(new FileOutputStream(outputFile));
     }
 
     protected void writeHeader() {
