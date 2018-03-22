@@ -23,11 +23,19 @@ public class PatientDAO {
     private static final String TAGS_NAME = "TAGS";
 
     private static DocumentBuilder documentBuilder = null;
+    private static Transformer transformer = null;
 
     public PatientDAO() {
         try {
             documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+
+        // TODO Lazy load, singleton
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -83,14 +91,6 @@ public class PatientDAO {
             tagsElement.appendChild(criterionElement);
         }
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-
-        Transformer transformer = null;
-        try {
-            transformer = transformerFactory.newTransformer();
-        } catch (TransformerConfigurationException e) {
-            throw new RuntimeException(e);
-        }
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
         StreamResult result = new StreamResult(outputStream);
