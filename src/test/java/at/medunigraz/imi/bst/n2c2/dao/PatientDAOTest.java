@@ -1,6 +1,9 @@
-package at.medunigraz.imi.bst.n2c2.model;
+package at.medunigraz.imi.bst.n2c2.dao;
 
-import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.Eligibility;
+import at.medunigraz.imi.bst.n2c2.model.Patient;
+import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -11,7 +14,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public class PatientTest {
+public class PatientDAOTest {
 
     @Test
     public void fromXML() throws IOException, SAXException {
@@ -21,7 +24,7 @@ public class PatientTest {
         assertThat(patient.getText(), containsString("FISHKILL"));
         assertThat(patient.getText(), containsString("aspirin"));
 
-        assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.ABDOMINAL));
+        Assert.assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.ABDOMINAL));
         assertEquals(Eligibility.MET, patient.getEligibility(Criterion.ADVANCED_CAD));
         assertEquals(Eligibility.NOT_MET, patient.getEligibility(Criterion.ALCOHOL_ABUSE));
         assertEquals(Eligibility.MET, patient.getEligibility(Criterion.ASP_FOR_MI));
