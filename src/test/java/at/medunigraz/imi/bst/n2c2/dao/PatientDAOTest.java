@@ -48,7 +48,7 @@ public class PatientDAOTest {
     }
 
     @Test
-    public void toXML() throws IOException {
+    public void toXML() throws IOException, SAXException {
         final File actualFile = testFolder.newFile("patient-test.xml");
         final File expectedFile = new File(getClass().getResource("/results/expected.xml").getFile());
 
@@ -59,7 +59,7 @@ public class PatientDAOTest {
         String expected = FileUtils.readFileToString(expectedFile, "UTF-8");
         String actual = FileUtils.readFileToString(actualFile, "UTF-8");
 
-        assertEquals(expected, actual);
+        assertXMLEqual(expected, actual);
     }
 
     @Test
