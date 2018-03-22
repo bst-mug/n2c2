@@ -57,7 +57,7 @@ public class PatientDAO {
         toXML(patient, new FileOutputStream(outputFile));
     }
 
-    public static OutputStream toXML(Patient patient, OutputStream outputStream) throws IOException {
+    public static void toXML(Patient patient, OutputStream outputStream) throws IOException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         DocumentBuilder documentBuilder = null;
@@ -119,7 +119,5 @@ public class PatientDAO {
         } catch (TransformerException e) {
             throw new IOException(e);
         }
-
-        return null;
     }
 }
