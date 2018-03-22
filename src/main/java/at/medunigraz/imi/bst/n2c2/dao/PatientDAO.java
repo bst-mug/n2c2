@@ -95,20 +95,27 @@ public class PatientDAO {
 
         StreamResult result = new StreamResult(outputStream);
 
+        writeHeader(result);
+        writeDoc(doc, result);
+    }
+
+    private void writeHeader(StreamResult streamResult) throws IOException {
         // Forces a newline after the header to make the output more similar to the sample file
         // See https://stackoverflow.com/a/44323508
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         Document header = documentBuilder.newDocument();
         header.setXmlStandalone(true); // removes standalone="no" XML key
         try {
-            transformer.transform(new DOMSource(header), result);
+            transformer.transform(new DOMSource(header), streamResult);
         } catch (TransformerException e) {
             throw new IOException(e);
         }
+    }
 
+    private void writeDoc(Document doc, StreamResult streamResult) throws IOException {
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         try {
-            transformer.transform(new DOMSource(doc), result);
+            transformer.transform(new DOMSource(doc), streamResult);
         } catch (TransformerException e) {
             throw new IOException(e);
         }
