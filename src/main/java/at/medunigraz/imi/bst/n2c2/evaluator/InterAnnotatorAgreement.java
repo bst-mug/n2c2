@@ -15,7 +15,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    static final String IAA_SCRIPT = "target/lib/iaa.py";
+    private static final String IAA_SCRIPT = "target/lib/iaa.py";
 
     /**
      * python iaa.py -t # folder1/ folder2/
@@ -40,6 +40,9 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         evaluate();
     }
 
+    public static boolean scriptExists() {
+        return new File(IAA_SCRIPT).isFile();
+    }
 
     @Override
     public void evaluate() {
