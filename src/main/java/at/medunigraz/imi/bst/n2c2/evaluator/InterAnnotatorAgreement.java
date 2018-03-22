@@ -103,6 +103,27 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
     }
 
     private void parseOutput(String[] output) {
+        /* Example output:
+            ********* CRITERIA *********
+                                  Acc.
+                       Abdominal  0.0000
+                    Advanced-cad  1.0000
+                   Alcohol-abuse  1.0000
+                      Asp-for-mi  1.0000
+                      Creatinine  1.0000
+                   Dietsupp-2mos  1.0000
+                      Drug-abuse  1.0000
+                         English  1.0000
+                           Hba1c  1.0000
+                        Keto-1yr  1.0000
+                  Major-diabetes  1.0000
+                 Makes-decisions  1.0000
+                         Mi-6mos  1.0000
+                                  ------
+                         Overall  0.0000
+            ()
+                   1 files found
+         */
         for (String s : output) {
             String[] fields = s.trim().split("\\s+");
 
