@@ -18,6 +18,10 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 
 public class PatientDAO {
+    private static final String ROOT_NAME = "PatientMatching";
+    private static final String TEXT_NAME = "TEXT";
+    private static final String TAGS_NAME = "TAGS";
+
     public static Patient fromXML(File xmlFile) throws IOException, SAXException {
         return fromXML(new FileInputStream(xmlFile));
     }
@@ -34,10 +38,10 @@ public class PatientDAO {
 
         Document doc = documentBuilder.parse(xml);
 
-        String text = doc.getElementsByTagName("TEXT").item(0).getTextContent();
+        String text = doc.getElementsByTagName(TEXT_NAME).item(0).getTextContent();
         Patient patient = new Patient().withText(text);
 
-        Element tagsElement = (Element) doc.getElementsByTagName("TAGS").item(0);
+        Element tagsElement = (Element) doc.getElementsByTagName(TAGS_NAME).item(0);
 
         NodeList tags = tagsElement.getElementsByTagName("*");
         for (int i = 0; i < tags.getLength(); i++) {
@@ -65,14 +69,14 @@ public class PatientDAO {
 
         Document doc = documentBuilder.newDocument();
 
-        Element rootElement = doc.createElement("PatientMatching");
+        Element rootElement = doc.createElement(ROOT_NAME);
         doc.appendChild(rootElement);
 
-        Element textElement = doc.createElement("TEXT");
+        Element textElement = doc.createElement(TEXT_NAME);
         textElement.appendChild(doc.createCDATASection(patient.getText()));
         rootElement.appendChild(textElement);
 
-        Element tagsElement = doc.createElement("TAGS");
+        Element tagsElement = doc.createElement(TAGS_NAME);
         rootElement.appendChild(tagsElement);
 
         for (Criterion c : Criterion.values()) {
