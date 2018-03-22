@@ -81,12 +81,13 @@ public class PatientDAO {
 
         for (Criterion c : Criterion.values()) {
             Eligibility e = patient.getEligibility(c);
+
+            // Patient has no eligibility criterion set, should be found only during testing
             if (e == null) {
                 continue;
             }
 
-            Element criterionElement = doc.createElement(c.toString());
-            criterionElement.setAttribute("met", e.toString());
+            Element criterionElement = new XMLTag().withCriterion(c).withEligibility(e).toElement(doc);
             tagsElement.appendChild(criterionElement);
         }
 
