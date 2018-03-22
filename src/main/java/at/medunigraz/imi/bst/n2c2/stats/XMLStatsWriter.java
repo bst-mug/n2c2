@@ -15,12 +15,10 @@ import java.io.OutputStream;
 public class XMLStatsWriter extends AbstractStatsWriter {
 
     private Document doc;
-    private OutputStream output;
     private Element rootElement;
 
     public XMLStatsWriter(OutputStream output) {
         super(output);
-        this.output = output;
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
@@ -44,11 +42,11 @@ public class XMLStatsWriter extends AbstractStatsWriter {
 
     @Override
     public void write(Criterion c, Float accuracy) {
-        Element topicElement = doc.createElement("criterion");
+        Element topicElement = doc.createElement(GROUPED_BY.toLowerCase());
         topicElement.setAttribute("name", c.name());
         rootElement.appendChild(topicElement);
 
-        Element metricElement = doc.createElement("Accuracy");
+        Element metricElement = doc.createElement(METRIC_NAME.toLowerCase());
         metricElement.appendChild(doc.createTextNode(String.valueOf(accuracy)));
 
         topicElement.appendChild(metricElement);
