@@ -15,7 +15,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    static final String IAA_SCRIPT = "target/lib/iaa.py";
+    private static final String IAA_SCRIPT = "target/lib/iaa.py";
 
     /**
      * python iaa.py -t # folder1/ folder2/
@@ -32,18 +32,30 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         COMMAND.add("1");
     }
 
+    private File goldStandard, results;
+
     private Map<String, Float> accuracyPerCriterion = new TreeMap<>();
 
     public InterAnnotatorAgreement(File goldStandard, File results) {
-        COMMAND.add(goldStandard.getAbsolutePath());
-        COMMAND.add(results.getAbsolutePath());
+        this.goldStandard = goldStandard;
+        this.results = results;
         evaluate();
     }
 
+    public static boolean scriptExists() {
+        return new File(IAA_SCRIPT).isFile();
+    }
+
+    private List<String> getFullCommand() {
+        List<String> fullCommand = new ArrayList<>(COMMAND);
+        fullCommand.add(goldStandard.getAbsolutePath());
+        fullCommand.add(results.getAbsolutePath());
+        return fullCommand;
+    }
 
     @Override
     public void evaluate() {
-        ProcessBuilder pb = new ProcessBuilder(COMMAND);
+        ProcessBuilder pb = new ProcessBuilder(getFullCommand());
         LOG.debug(String.join(" ", pb.command()));
 
         pb.redirectErrorStream(true);
@@ -91,6 +103,27 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
     }
 
     private void parseOutput(String[] output) {
+        /* Example output:
+            ********* CRITERIA *********
+                                  Acc.
+                       Abdominal  0.0000
+                    Advanced-cad  1.0000
+                   Alcohol-abuse  1.0000
+                      Asp-for-mi  1.0000
+                      Creatinine  1.0000
+                   Dietsupp-2mos  1.0000
+                      Drug-abuse  1.0000
+                         English  1.0000
+                           Hba1c  1.0000
+                        Keto-1yr  1.0000
+                  Major-diabetes  1.0000
+                 Makes-decisions  1.0000
+                         Mi-6mos  1.0000
+                                  ------
+                         Overall  0.0000
+            ()
+                   1 files found
+         */
         for (String s : output) {
             String[] fields = s.trim().split("\\s+");
 

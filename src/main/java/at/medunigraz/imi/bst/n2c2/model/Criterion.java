@@ -21,4 +21,9 @@ public enum Criterion {
     public static Criterion get(String value) {
         return Criterion.valueOf(value.replace('-', '_'));
     }
+
+    @Override
+    public String toString() {
+        return name().replace('_', '-');
+    }
 }
