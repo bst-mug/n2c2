@@ -1,5 +1,6 @@
 package at.medunigraz.imi.bst.n2c2.evaluator;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +35,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private File goldStandard, results;
 
-    private Map<String, Float> accuracyPerCriterion = new TreeMap<>();
+    private Map<Criterion, Float> accuracyPerCriterion = new TreeMap<>();
 
     public InterAnnotatorAgreement(File goldStandard, File results) {
         this.goldStandard = goldStandard;
@@ -131,19 +132,19 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
                 continue;
             }
 
-            String criterion = fields[0];
+            Criterion criterion = Criterion.get(fields[0]);
             Float accuracy = Float.parseFloat(fields[1]);
 
             accuracyPerCriterion.put(criterion, accuracy);
         }
     }
 
-    private float getAccuracyByCriterion(String criterion) {
+    private float getAccuracyByCriterion(Criterion criterion) {
         return accuracyPerCriterion.getOrDefault(criterion, 0f);
     }
 
     public float getOverallAccuracy() {
-        return getAccuracyByCriterion("Overall");
+        return getAccuracyByCriterion(Criterion.OVERALL);
     }
 
     @Override

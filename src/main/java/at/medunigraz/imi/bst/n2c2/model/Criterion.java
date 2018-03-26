@@ -16,10 +16,11 @@ public enum Criterion {
     KETO_1YR,
     MAJOR_DIABETES,
     MAKES_DECISIONS,
-    MI_6MOS;
+    MI_6MOS,
+    OVERALL;
 
     public static Criterion get(String value) {
-        return Criterion.valueOf(value.replace('-', '_'));
+        return Criterion.valueOf(value.replace('-', '_').toUpperCase());
     }
 
     @Override
