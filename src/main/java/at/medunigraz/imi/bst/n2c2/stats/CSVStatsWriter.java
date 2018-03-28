@@ -4,13 +4,14 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import com.opencsv.CSVWriter;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 public class CSVStatsWriter extends AbstractStatsWriter {
     private CSVWriter writer;
 
     public CSVStatsWriter(OutputStream output) {
         super(output);
-        writer = new CSVWriter(new OutputStreamWriter(output));
+        writer = new CSVWriter(new OutputStreamWriter(output, Charset.forName("UTF-8")));
         writeHeader();
     }
 
