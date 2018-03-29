@@ -152,6 +152,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
                    1 files found
          */
         for (String s : output) {
+            LOG.debug(s);
             String[] fields = s.trim().split("\\s+");
 
             if (fields.length != 2) {
