@@ -14,16 +14,30 @@ public class MajorityClassifierTest {
 
     @Test
     public void trainPredict() {
-        List<Patient> examples = new ArrayList<>();
+        List<Patient> train = new ArrayList<>();
 
         // 2/3 not met is the expected output
-        examples.add(new Patient().withCriterion(Criterion.ABDOMINAL, Eligibility.MET));
-        examples.add(new Patient().withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-        examples.add(new Patient().withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        train.add(new Patient().withCriterion(Criterion.ABDOMINAL, Eligibility.MET));
+        train.add(new Patient().withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        train.add(new Patient().withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
 
         MajorityClassifier mc = new MajorityClassifier(Criterion.ABDOMINAL);
-        mc.train(examples);
+        mc.train(train);
 
         assertEquals(Eligibility.NOT_MET, mc.predict(new Patient()));
+
+
+        List<Patient> test = new ArrayList<>();
+        Patient a = new Patient().withText("Patient A");
+        Patient b = new Patient().withText("Patient B");
+        test.add(a);
+        test.add(b);
+
+        List<Patient> expected = new ArrayList<>();
+        expected.add(a.withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        expected.add(b.withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+
+        List<Patient> actual = mc.predict(test);
+        assertEquals(expected, actual);
     }
 }
