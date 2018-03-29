@@ -53,20 +53,19 @@ public class CrossValidator {
     }
 
     private Map<Criterion, Double> evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
-        Map<Criterion, Double> ret = new HashMap<>();
-
         for (Criterion c : Criterion.values()) {
             Classifier classifier = classifierFactory.getClassifier(c);
 
             classifier.train(train);
-            List<Patient> predicted = classifier.predict(test);
-
-            // TODO evaluate can be out of the loop if we use the same predicted list
-            evaluator.evaluate(gold, predicted);
-
-            ret.put(c, evaluator.getF1ByCriterion(c));
+            test = classifier.predict(test);
         }
 
+        evaluator.evaluate(gold, test);
+
+        Map<Criterion, Double> ret = new HashMap<>();
+        for (Criterion c : Criterion.values()) {
+            ret.put(c, evaluator.getF1ByCriterion(c));
+        }
         return ret;
     }
 }
