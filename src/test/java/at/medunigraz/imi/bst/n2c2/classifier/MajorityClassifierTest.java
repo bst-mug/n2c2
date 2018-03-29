@@ -6,9 +6,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,12 +33,11 @@ public class MajorityClassifierTest {
         test.add(a);
         test.add(b);
 
-        Map<Patient, Eligibility> expected = new HashMap<>();
-        expected.put(a, Eligibility.NOT_MET);
-        expected.put(b, Eligibility.NOT_MET);
+        List<Patient> expected = new ArrayList<>();
+        expected.add(a.withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        expected.add(b.withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
 
-        Map<Patient, Eligibility> actual = mc.predict(test);
+        List<Patient> actual = mc.predict(test);
         assertEquals(expected, actual);
-
     }
 }

@@ -8,14 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MajorityClassifier implements Classifier {
+public class MajorityClassifier extends CriterionBasedClassifier {
 
     private Map<Eligibility, Integer> countPerEligibility = new HashMap<>();
 
-    private Criterion criterion;
-
     public MajorityClassifier(Criterion c) {
-        this.criterion = c;
+        super(c);
 
         for (Eligibility e : Eligibility.values()) {
             countPerEligibility.put(e, 0);

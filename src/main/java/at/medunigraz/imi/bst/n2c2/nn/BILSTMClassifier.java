@@ -1,10 +1,11 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
-import java.util.List;
-
 import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+
+import java.util.List;
 
 public class BILSTMClassifier implements Classifier {
 
@@ -33,6 +34,16 @@ public class BILSTMClassifier implements Classifier {
 
 	@Override
 	public Eligibility predict(Patient p) {
+		return null;
+	}
+
+	@Override
+	public Eligibility predict(Patient p, Criterion c) {
+		return null;
+	}
+
+	@Override
+	public List<Patient> predict(List<Patient> patientList) {
 		return null;
 	}
 }

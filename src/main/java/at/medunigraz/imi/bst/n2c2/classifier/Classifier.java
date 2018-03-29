@@ -1,19 +1,19 @@
 package at.medunigraz.imi.bst.n2c2.classifier;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public interface Classifier {
 
     void train(List<Patient> examples);
 
+    @Deprecated
     Eligibility predict(Patient p);
 
-    default Map<Patient, Eligibility> predict(List<Patient> patientList) {
-        return patientList.stream().collect(Collectors.toMap(p -> p, p -> predict(p)));
-    }
+    Eligibility predict(Patient p, Criterion c);
+
+    List<Patient> predict(List<Patient> patientList);
 }
