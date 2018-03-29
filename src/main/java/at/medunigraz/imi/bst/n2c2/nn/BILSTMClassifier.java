@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
+import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
 import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
@@ -43,9 +45,16 @@ public class BILSTMClassifier implements Classifier {
 	public static final String WORD_VECTORS_PATH = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
 
 	public BILSTMClassifier(List<Patient> examples) {
+		
 		this.patientExamples = examples;
 
+		initializeTokenizer();
 		initializeNetwork();
+	}
+
+	private void initializeTokenizer() {
+		tokenizerFactory = new DefaultTokenizerFactory();
+		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 	}
 
 	private void initializeNetwork() {
