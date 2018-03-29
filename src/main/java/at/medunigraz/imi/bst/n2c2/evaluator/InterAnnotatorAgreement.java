@@ -1,10 +1,13 @@
 package at.medunigraz.imi.bst.n2c2.evaluator;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,11 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private Map<Criterion, Float> accuracyPerCriterion = new TreeMap<>();
 
+    public InterAnnotatorAgreement() {
+
+    }
+
+    @Deprecated
     public InterAnnotatorAgreement(File goldStandard, File results) {
         this.goldStandard = goldStandard;
         this.results = results;
@@ -89,6 +97,24 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         parseOutput(output);
     }
 
+    @Override
+    public void evaluate(List<Patient> gold, List<Patient> results) {
+        try {
+            this.goldStandard = createDirAndSave(gold, "gold");
+            this.results = createDirAndSave(results, "results");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        evaluate();
+    }
+
+    private File createDirAndSave(List<Patient> patients, String prefix) throws IOException {
+        File ret = Files.createTempDirectory(prefix).toFile();
+        DatasetUtil.saveToFolder(patients, ret);
+        return ret;
+    }
+
     private String[] collectStream(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
@@ -126,6 +152,7 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
                    1 files found
          */
         for (String s : output) {
+            LOG.debug(s);
             String[] fields = s.trim().split("\\s+");
 
             if (fields.length != 2) {
@@ -150,5 +177,10 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
     @Override
     public double getF1() {
         return getOverallAccuracy();
+    }
+
+    @Override
+    public double getF1ByCriterion(Criterion c) {
+        return getAccuracyByCriterion(c);
     }
 }
