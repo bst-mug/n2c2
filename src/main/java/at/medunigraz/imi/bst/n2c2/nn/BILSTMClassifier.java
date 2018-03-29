@@ -3,6 +3,7 @@ package at.medunigraz.imi.bst.n2c2.nn;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
@@ -82,6 +83,16 @@ public class BILSTMClassifier implements Classifier {
 
 	@Override
 	public Eligibility predict(Patient p) {
+		return null;
+	}
+
+	@Override
+	public Eligibility predict(Patient p, Criterion c) {
+		return null;
+	}
+
+	@Override
+	public List<Patient> predict(List<Patient> patientList) {
 		return null;
 	}
 }
