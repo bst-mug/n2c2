@@ -22,7 +22,7 @@ public class DatasetUtilTest {
         final String filename = "test.xml";
 
         List<Patient> patientList = new ArrayList<>();
-        patientList.add(new Patient().withID(filename));
+        patientList.add(new Patient().withID(filename).withText("abc"));
 
         File output = testFolder.newFolder();
 
