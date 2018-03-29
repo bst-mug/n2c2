@@ -25,7 +25,6 @@ public class BILSTMClassifier implements Classifier {
 	private int miniBatchSize = 32;
 
 	// length for truncated backpropagation through time
-	
 	private int tbpttLength = 3;
 
 	// total number of training epochs
