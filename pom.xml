@@ -12,6 +12,56 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- BEGIN added for deeplearning4j -->
+		<!-- .............................. -->
+		<!-- Generic properties -->
+		<java.version>1.8</java.version>
+		<!-- <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+
+		<!-- Change the nd4j.backend property to nd4j-cuda-7.5-platform or nd4j-cuda-8.0-platform 
+			to use CUDA GPUs -->
+		<nd4j.backend>nd4j-native-platform</nd4j.backend>
+		<!-- <nd4j.backend>nd4j-cuda-8.0-platform</nd4j.backend> -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<shadedClassifier>bin</shadedClassifier>
+
+		<nd4j.version>0.8.0</nd4j.version>
+		<dl4j.version>0.8.0</dl4j.version>
+		<datavec.version>0.8.0</datavec.version>
+		<arbiter.version>0.8.0</arbiter.version>
+		<rl4j.version>0.8.0</rl4j.version>
+
+		<!-- For Spark examples: change the _1 to _2 to switch between Spark 1 
+			and Spark 2 -->
+		<dl4j.spark.version>0.8.0_spark_1</dl4j.spark.version>
+		<datavec.spark.version>0.8.0_spark_1</datavec.spark.version>
+
+		<!-- Scala binary version: DL4J's Spark and UI functionality are released 
+			with both Scala 2.10 and 2.11 support -->
+		<scala.binary.version>2.11</scala.binary.version>
+
+		<guava.version>19.0</guava.version>
+		<logback.version>1.1.7</logback.version>
+		<jfreechart.version>1.0.13</jfreechart.version>
+		<jcommon.version>1.0.23</jcommon.version>
+		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
+		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+		<exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
+		<maven.minimum.version>3.3.1</maven.minimum.version>
+		<javafx.version>2.2.3</javafx.version>
+		<javafx.runtime.lib.jar>${env.JAVAFX_HOME}/jfxrt.jar</javafx.runtime.lib.jar>
+		<aws.sdk.version>1.11.109</aws.sdk.version>
+		<jackson.version>2.6.6</jackson.version>
+		<scala.plugin.version>3.2.2</scala.plugin.version>
+
+		<!-- END added for deeplearning4j -->
+		<!-- ............................ -->
+
 	</properties>
 
 	<build>
@@ -24,15 +74,19 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<target>
-								<get src="https://n2c2.dbmi.hms.harvard.edu/files/n2c2_sample_file_annotations.zip"
-									 dest="${project.build.directory}/n2c2_sample_file_annotations.zip"
-									 verbose="false" usetimestamp="true"/>
-								<unzip src="${project.build.directory}/n2c2_sample_file_annotations.zip"
-									   dest="${project.build.directory}"/>
-								<copy file="${project.build.directory}/n2c2_sample_file_annotations/sample.xml"
-									  tofile="${basedir}/src/test/resources/gold-standard/sample.xml"/>
-								<copy file="${project.build.directory}/n2c2_sample_file_annotations/sample.xml"
-									  tofile="${basedir}/src/test/resources/results/sample.xml"/>
+								<get
+									src="https://n2c2.dbmi.hms.harvard.edu/files/n2c2_sample_file_annotations.zip"
+									dest="${project.build.directory}/n2c2_sample_file_annotations.zip"
+									verbose="false" usetimestamp="true" />
+								<unzip
+									src="${project.build.directory}/n2c2_sample_file_annotations.zip"
+									dest="${project.build.directory}" />
+								<copy
+									file="${project.build.directory}/n2c2_sample_file_annotations/sample.xml"
+									tofile="${basedir}/src/test/resources/gold-standard/sample.xml" />
+								<copy
+									file="${project.build.directory}/n2c2_sample_file_annotations/sample.xml"
+									tofile="${basedir}/src/test/resources/results/sample.xml" />
 							</target>
 						</configuration>
 						<goals>
@@ -68,10 +122,190 @@
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>4.3.0</version>
 			</plugin>
+
+
+			<!-- BEGIN added for deeplearning4j -->
+			<!-- .............................. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven-shade-plugin.version}</version>
+				<configuration>
+					<shadedArtifactAttached>true</shadedArtifactAttached>
+					<shadedClassifierName>${shadedClassifier}</shadedClassifierName>
+					<createDependencyReducedPom>true</createDependencyReducedPom>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>org/datanucleus/**</exclude>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>reference.conf</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-compiler-plugin</artifactId> -->
+			<!-- <version>3.5.1</version> -->
+			<!-- <configuration> -->
+			<!-- <source>${java.version}</source> -->
+			<!-- <target>${java.version}</target> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
+
+			<!-- END added for deeplearning4j -->
+			<!-- ............................ -->
 		</plugins>
 	</build>
 
+	<!-- BEGIN added for deeplearning4j -->
+	<!-- .............................. -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.nd4j</groupId>
+				<artifactId>nd4j-native-platform</artifactId>
+				<version>${nd4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nd4j</groupId>
+				<artifactId>nd4j-cuda-7.5-platform</artifactId>
+				<version>${nd4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nd4j</groupId>
+				<artifactId>nd4j-cuda-8.0-platform</artifactId>
+				<version>${nd4j.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<!-- END added for deeplearning4j -->
+	<!-- ............................ -->
+
 	<dependencies>
+		<!-- BEGIN added for deeplearning4j -->
+		<!-- .............................. -->
+
+		<!-- ND4J backend. You need one in every DL4J project. Normally define 
+			artifactId as either "nd4j-native-platform" or "nd4j-cuda-7.5-platform" -->
+		<dependency>
+			<groupId>org.nd4j</groupId>
+			<artifactId>${nd4j.backend}</artifactId>
+		</dependency>
+
+		<!-- Core DL4J functionality -->
+		<dependency>
+			<groupId>org.deeplearning4j</groupId>
+			<artifactId>deeplearning4j-core</artifactId>
+			<version>${dl4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.deeplearning4j</groupId>
+			<artifactId>deeplearning4j-nlp</artifactId>
+			<version>${dl4j.version}</version>
+		</dependency>
+
+		<!-- deeplearning4j-ui is used for HistogramIterationListener + visualization: 
+			see http://deeplearning4j.org/visualization -->
+		<dependency>
+			<groupId>org.deeplearning4j</groupId>
+			<artifactId>deeplearning4j-ui_${scala.binary.version}</artifactId>
+			<version>${dl4j.version}</version>
+		</dependency>
+
+		<!-- Force guava versions for using UI/HistogramIterationListener -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+
+		<!-- datavec-data-codec: used only in video example for loading video data -->
+		<dependency>
+			<artifactId>datavec-data-codec</artifactId>
+			<groupId>org.datavec</groupId>
+			<version>${datavec.version}</version>
+		</dependency>
+
+		<!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions 
+			example -->
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>${jfreechart.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jcommon</artifactId>
+			<version>${jcommon.version}</version>
+		</dependency>
+
+		<!-- Used for downloading data in some of the examples -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.5</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>6.6.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>6.6.0</version>
+		</dependency>
+
+		<!-- END added for deeplearning4j -->
+		<!-- ............................ -->
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
