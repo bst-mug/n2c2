@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class DatasetUtilTest {
 
@@ -24,9 +24,11 @@ public class DatasetUtilTest {
         List<Patient> patientList = new ArrayList<>();
         patientList.add(new Patient().withID(filename));
 
-        DatasetUtil.saveToFolder(patientList, testFolder.getRoot());
+        File output = testFolder.newFolder();
 
-        File expected = new File(testFolder.getRoot(), filename);
+        DatasetUtil.saveToFolder(patientList, output);
+
+        File expected = new File(output, filename);
         assertTrue(expected.exists());
     }
 }
