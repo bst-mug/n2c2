@@ -90,7 +90,7 @@ public class N2c2PatientIterator implements DataSetIterator {
 	 * Next data set implementation.
 	 * 
 	 * @param num
-	 *            Mini batch size
+	 *            Mini batch size.
 	 * @return DataSet Patients data set.
 	 * @throws IOException
 	 */

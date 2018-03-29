@@ -39,28 +39,31 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 public class BILSTMClassifier implements Classifier {
 
 	// size of mini-batch for training
-	private int miniBatchSize = 32;
+	private int miniBatchSize = 10;
 
 	// length for truncated backpropagation through time
-	private int tbpttLength = 3;
+	private int tbpttLength = 10;
 
 	// total number of training epochs
-	private int nEpochs = 1;
+	private int nEpochs = 1000;
 
-	// degine time series length
+	// define initial time series length
 	private int truncateLength = 64;
 
-	// word vector size
+	// Google word vector size
 	int vectorSize = 300;
-
-	// training data
-	private List<Patient> patientExamples;
 
 	// accessing Google word vectors
 	private WordVectors wordVectors;
 
+	// training data
+	private List<Patient> patientExamples;
+
 	// tokenizer logic
 	private TokenizerFactory tokenizerFactory;
+
+	// multi layer network
+	private MultiLayerNetwork net;
 
 	// location of precalculated vectors
 	public static final String WORD_VECTORS_PATH = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
@@ -70,6 +73,7 @@ public class BILSTMClassifier implements Classifier {
 		this.patientExamples = examples;
 
 		initializeTokenizer();
+		initializeTruncateLength();
 		initializeNetwork();
 	}
 
@@ -79,7 +83,23 @@ public class BILSTMClassifier implements Classifier {
 	}
 
 	private void initializeNetwork() {
-		initializeTruncateLength();
+
+		// initialize network
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
+				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
+				.layer(0,
+						new GravesLSTM.Builder().nIn(vectorSize).nOut(truncateLength).activation(Activation.TANH)
+								.build())
+				.layer(1,
+						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
+								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
+				.pretrain(false).backprop(true).build();
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
 	}
 
 	/**
@@ -108,21 +128,6 @@ public class BILSTMClassifier implements Classifier {
 	@Override
 	public void train(List<Patient> examples) {
 
-		// initialize network
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
-				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
-				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
-				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.TANH).build())
-				.layer(1,
-						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
-								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(256).nOut(2).build())
-				.pretrain(false).backprop(true).build();
-
-		MultiLayerNetwork net = new MultiLayerNetwork(conf);
-		net.init();
-		net.setListeners(new ScoreIterationListener(1));
-
 		// start training
 		try {
 			WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
@@ -134,7 +139,7 @@ public class BILSTMClassifier implements Classifier {
 				train.reset();
 				System.out.println("Epoch " + i + " complete. Starting evaluation:");
 
-				// run evaluation on training set
+				// run evaluation on training set (should be test set)
 				Evaluation evaluation = new Evaluation();
 				while (train.hasNext()) {
 					DataSet t = train.next();
