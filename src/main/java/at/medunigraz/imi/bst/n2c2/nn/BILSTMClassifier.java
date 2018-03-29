@@ -1,12 +1,29 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deeplearning4j.eval.Evaluation;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.nn.conf.GradientNormalization;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.Updater;
+import org.deeplearning4j.nn.conf.layers.GravesLSTM;
+import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
+import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
@@ -14,7 +31,7 @@ import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 /**
- * BI-LSTM classifier for n2c2 task 2018.
+ * BI-LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
  * 
  * @author Markus
  *
@@ -28,10 +45,13 @@ public class BILSTMClassifier implements Classifier {
 	private int tbpttLength = 3;
 
 	// total number of training epochs
-	private int numEpochs = 1;
+	private int nEpochs = 1;
 
 	// degine time series length
 	private int truncateLength = 64;
+
+	// word vector size
+	int vectorSize = 300;
 
 	// training data
 	private List<Patient> patientExamples;
@@ -46,7 +66,7 @@ public class BILSTMClassifier implements Classifier {
 	public static final String WORD_VECTORS_PATH = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
 
 	public BILSTMClassifier(List<Patient> examples) {
-		
+
 		this.patientExamples = examples;
 
 		initializeTokenizer();
@@ -88,6 +108,50 @@ public class BILSTMClassifier implements Classifier {
 	@Override
 	public void train(List<Patient> examples) {
 
+		// initialize network
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
+				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
+				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.TANH).build())
+				.layer(1,
+						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
+								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(256).nOut(2).build())
+				.pretrain(false).backprop(true).build();
+
+		MultiLayerNetwork net = new MultiLayerNetwork(conf);
+		net.init();
+		net.setListeners(new ScoreIterationListener(1));
+
+		// start training
+		try {
+			WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
+			N2c2PatientIterator train = new N2c2PatientIterator(examples, wordVectors, miniBatchSize, truncateLength);
+
+			System.out.println("Starting training");
+			for (int i = 0; i < nEpochs; i++) {
+				net.fit(train);
+				train.reset();
+				System.out.println("Epoch " + i + " complete. Starting evaluation:");
+
+				// run evaluation on training set
+				Evaluation evaluation = new Evaluation();
+				while (train.hasNext()) {
+					DataSet t = train.next();
+					INDArray features = t.getFeatureMatrix();
+					INDArray lables = t.getLabels();
+					INDArray inMask = t.getFeaturesMaskArray();
+					INDArray outMask = t.getLabelsMaskArray();
+					INDArray predicted = net.output(features, false, inMask, outMask);
+
+					evaluation.evalTimeSeries(lables, predicted, outMask);
+				}
+				train.reset();
+				System.out.println(evaluation.stats());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
