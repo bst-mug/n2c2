@@ -7,6 +7,8 @@ import at.medunigraz.imi.bst.n2c2.evaluator.InterAnnotatorAgreement;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -16,6 +18,11 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class CrossValidatorTest {
+
+    @Before
+    public void SetUp() {
+        Assume.assumeTrue(InterAnnotatorAgreement.scriptExists());
+    }
 
     @Test
     public void evaluate() {
