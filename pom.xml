@@ -262,7 +262,7 @@
 			<version>${guava.version}</version>
 		</dependency>
 
-		<!-- datavec-data-codec: used only in video example for loading video data -->
+        <!-- datavec-data-codec: used only in video example for loading video util -->
 		<dependency>
 			<artifactId>datavec-data-codec</artifactId>
 			<groupId>org.datavec</groupId>
