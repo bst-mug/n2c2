@@ -41,14 +41,14 @@ public class PatientDAO {
     }
 
     public Patient fromXML(File xmlFile) throws IOException, SAXException {
-        return fromXML(new FileInputStream(xmlFile));
+        return fromXML(new FileInputStream(xmlFile), xmlFile.getName());
     }
 
-    public Patient fromXML(InputStream xml) throws IOException, SAXException {
+    public Patient fromXML(InputStream xml, String id) throws IOException, SAXException {
         Document doc = documentBuilder.parse(xml);
 
         String text = doc.getElementsByTagName(TEXT_NAME).item(0).getTextContent();
-        Patient patient = new Patient().withText(text);
+        Patient patient = new Patient().withID(id).withText(text);
 
         Element tagsElement = (Element) doc.getElementsByTagName(TAGS_NAME).item(0);
 

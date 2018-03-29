@@ -29,6 +29,8 @@ public class PatientDAOTest {
         File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
         Patient patient = new PatientDAO().fromXML(sample);
 
+        assertEquals("sample.xml", patient.getID());
+
         assertThat(patient.getText(), containsString("FISHKILL"));
         assertThat(patient.getText(), containsString("aspirin"));
 
