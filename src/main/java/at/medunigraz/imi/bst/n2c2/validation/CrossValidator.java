@@ -23,7 +23,7 @@ public class CrossValidator {
     private ClassifierFactory classifierFactory;
     private Evaluator evaluator;
 
-    CrossValidator(List<Patient> patients, ClassifierFactory classifierFactory, Evaluator evaluator) {
+    public CrossValidator(List<Patient> patients, ClassifierFactory classifierFactory, Evaluator evaluator) {
         this.patients = patients;
         this.classifierFactory = classifierFactory;
         this.evaluator = evaluator;
