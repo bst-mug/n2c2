@@ -14,7 +14,10 @@ public class MajorityClassifier extends CriterionBasedClassifier {
 
     public MajorityClassifier(Criterion c) {
         super(c);
+        reset();
+    }
 
+    private void reset() {
         for (Eligibility e : Eligibility.values()) {
             countPerEligibility.put(e, 0);
         }
@@ -22,11 +25,15 @@ public class MajorityClassifier extends CriterionBasedClassifier {
 
     @Override
     public void train(List<Patient> examples) {
+        reset();
+
         for (Patient p : examples) {
             Eligibility e = p.getEligibility(criterion);
-            countPerEligibility.compute(e, (key, value) -> value += 1);
+            // e may be null during test
+            if (e != null) {
+                countPerEligibility.compute(e, (key, value) -> value += 1);
+            }
         }
-
     }
 
     @Override
