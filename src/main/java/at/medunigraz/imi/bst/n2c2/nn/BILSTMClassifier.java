@@ -12,7 +12,7 @@ import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
-import org.deeplearning4j.nn.conf.layers.GravesLSTM;
+import org.deeplearning4j.nn.conf.layers.GravesBidirectionalLSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
@@ -90,8 +90,8 @@ public class BILSTMClassifier implements Classifier {
 				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
 				.layer(0,
-						new GravesLSTM.Builder().nIn(vectorSize).nOut(truncateLength).activation(Activation.TANH)
-								.build())
+						new GravesBidirectionalLSTM.Builder().nIn(vectorSize).nOut(truncateLength)
+								.activation(Activation.TANH).build())
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
 								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
