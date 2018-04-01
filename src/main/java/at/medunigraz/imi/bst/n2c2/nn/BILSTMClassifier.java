@@ -71,6 +71,7 @@ public class BILSTMClassifier implements Classifier {
 	public BILSTMClassifier(List<Patient> examples) {
 
 		this.patientExamples = examples;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
 
 		initializeTokenizer();
 		initializeTruncateLength();
@@ -157,7 +158,6 @@ public class BILSTMClassifier implements Classifier {
 
 		// start training
 		try {
-			WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
 			N2c2PatientIterator train = new N2c2PatientIterator(examples, wordVectors, miniBatchSize, truncateLength);
 
 			System.out.println("Starting training");
