@@ -42,6 +42,8 @@ public abstract class DatasetUtil {
     public static List<Patient> loadFromFolder(File folder) {
         List<File> files = (List<File>) FileUtils.listFiles(folder, new String[]{"xml"}, false);
 
+        LOG.info("Loading {} files from {} ...", files.size(), folder.getAbsolutePath());
+
         PatientDAO dao = new PatientDAO();
 
         List<Patient> patients = new ArrayList<>();
