@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class InterAnnotatorAgreementTest {
         assertEquals(1, iaa.getF1(), 0.00001);
     }
 
-    public void evaluateWithParameters() {
+    public void evaluateWithParameters() throws FileNotFoundException {
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement();
 
         List<Patient> gold = new ArrayList<>();

@@ -40,8 +40,10 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private Map<Criterion, Float> accuracyPerCriterion = new TreeMap<>();
 
-    public InterAnnotatorAgreement() {
-
+    public InterAnnotatorAgreement() throws FileNotFoundException {
+        if (!scriptExists()) {
+            throw new FileNotFoundException(IAA_SCRIPT);
+        }
     }
 
     @Deprecated

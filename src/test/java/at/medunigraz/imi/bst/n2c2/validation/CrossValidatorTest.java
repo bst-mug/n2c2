@@ -11,6 +11,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class CrossValidatorTest {
     }
 
     @Test
-    public void evaluate() {
+    public void evaluate() throws FileNotFoundException {
         ClassifierFactory factory = new BaselineClassifierFactory();
         Evaluator evaluator = new InterAnnotatorAgreement();
 
