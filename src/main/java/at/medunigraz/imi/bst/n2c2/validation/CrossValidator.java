@@ -47,8 +47,6 @@ public class CrossValidator {
             metrics.add(evaluateFold(train, test, gold));
         }
 
-        LOG.debug(metrics);
-
         return metrics.stream().flatMap(e -> e.entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.averagingDouble(Map.Entry::getValue)));
     }
 

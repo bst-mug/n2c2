@@ -30,7 +30,7 @@ public class CSVStatsWriter extends AbstractStatsWriter {
 
 
     @Override
-    public void write(Criterion c, Float accuracy) {
+    public void write(Criterion c, Double accuracy) {
         String[] entries = new String[]{c.name(), String.valueOf(accuracy)};
         writer.writeNext(entries);
     }

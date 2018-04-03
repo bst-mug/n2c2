@@ -8,9 +8,9 @@ import java.util.Map;
 
 public interface StatsWriter extends Closeable, Flushable {
 
-    void write(Criterion c, Float accuracy);
+    void write(Criterion c, Double accuracy);
 
-    default void write(Map<Criterion, Float> accuracyByCriterion) {
+    default void write(Map<Criterion, Double> accuracyByCriterion) {
         accuracyByCriterion.forEach((key, value) -> write(key, value));
     }
 }
