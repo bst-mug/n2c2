@@ -21,7 +21,7 @@ public class CSVStatsWriterTest {
         final File expectedFile = new File(getClass().getResource("/stats/expected.csv").getFile());
 
         StatsWriter writer = new CSVStatsWriter(actualFile);
-        writer.write(Criterion.ABDOMINAL, 0.5f);
+        writer.write(Criterion.ABDOMINAL, 0.5d);
         writer.close();
 
         String expected = FileUtils.readFileToString(expectedFile, "UTF-8").replaceAll("[\r\n]+", "");

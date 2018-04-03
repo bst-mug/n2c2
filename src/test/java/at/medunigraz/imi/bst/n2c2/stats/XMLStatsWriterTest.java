@@ -22,7 +22,7 @@ public class XMLStatsWriterTest {
 
         StatsWriter writer = new XMLStatsWriter(actualFile);
 
-        writer.write(Criterion.ABDOMINAL, 0.5f);
+        writer.write(Criterion.ABDOMINAL, 0.5d);
         writer.close();
 
         String expected = FileUtils.readFileToString(expectedFile, "UTF-8");
