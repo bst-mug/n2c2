@@ -33,3 +33,6 @@ local.properties
 # IntelliJ stuff
 .idea
 *.iml
+
+# n2c2 stuff
+*.xml
