@@ -32,11 +32,11 @@ public class CrossValidatorTest {
 
         // 3/5 not met is the expected output
         List<Patient> patients = new ArrayList<>();
-        patients.add(new Patient().withID("1.xml").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-        patients.add(new Patient().withID("2.xml").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-        patients.add(new Patient().withID("3.xml").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-        patients.add(new Patient().withID("4.xml").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-        patients.add(new Patient().withID("5.xml").withCriterion(Criterion.ABDOMINAL, Eligibility.MET));
+        patients.add(new Patient().withID("1.xml").withText("abc").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        patients.add(new Patient().withID("2.xml").withText("abc").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        patients.add(new Patient().withID("3.xml").withText("abc").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        patients.add(new Patient().withID("4.xml").withText("abc").withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
+        patients.add(new Patient().withID("5.xml").withText("abc").withCriterion(Criterion.ABDOMINAL, Eligibility.MET));
 
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
