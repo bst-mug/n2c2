@@ -71,6 +71,7 @@ public class BILSTMClassifier implements Classifier {
 	public BILSTMClassifier(List<Patient> examples) {
 
 		this.patientExamples = examples;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
 
 		initializeTokenizer();
 		initializeTruncateLength();
@@ -82,6 +83,9 @@ public class BILSTMClassifier implements Classifier {
 		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 	}
 
+	/**
+	 * SOFTMAX activation and MCXENT loss function for binary classification.
+	 */
 	private void initializeNetwork() {
 
 		// initialize network
@@ -95,6 +99,30 @@ public class BILSTMClassifier implements Classifier {
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
 								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
+				.pretrain(false).backprop(true).build();
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+	}
+
+	/**
+	 * SIGMOID activation and XENT loss function for binary multi-label
+	 * classification.
+	 */
+	private void initializeNetworkBinaryMultiLabel() {
+
+		// initialize network
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
+				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
+				.layer(0,
+						new GravesBidirectionalLSTM.Builder().nIn(vectorSize).nOut(truncateLength)
+								.activation(Activation.TANH).build())
+				.layer(1,
+						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(truncateLength).nOut(13).build())
 				.pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
@@ -130,7 +158,6 @@ public class BILSTMClassifier implements Classifier {
 
 		// start training
 		try {
-			WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
 			N2c2PatientIterator train = new N2c2PatientIterator(examples, wordVectors, miniBatchSize, truncateLength);
 
 			System.out.println("Starting training");
