@@ -18,20 +18,27 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 public class BILSTMClassifierTest {
 
 	@Ignore
-	public void train() throws IOException, SAXException {
+	public void train() {
 
 		// read in patients
-		File sampleDirectory = new File("Z:/n2c2/data/samples/");
+		File sampleDirectory = new File("C:/DataN2c2/samplesTraining");
 		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
 				TrueFileFilter.INSTANCE);
 
-		List<Patient> patients = new ArrayList<Patient>();
-		for (File patientSample : sampleFiles) {
-			patients.add(new PatientDAO().fromXML(patientSample));
-		}
+		List<Patient> patients;
+		try {
+			patients = new ArrayList<Patient>();
+			for (File patientSample : sampleFiles) {
+				patients.add(new PatientDAO().fromXML(patientSample));
 
-		BILSTMClassifier classifier = new BILSTMClassifier(patients);
-		classifier.train(patients);
+				BILSTMClassifier classifier = new BILSTMClassifier(patients);
+				classifier.train(patients);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
 
 		assertEquals(true, true);
 	}

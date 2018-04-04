@@ -66,7 +66,7 @@ public class BILSTMClassifier implements Classifier {
 	private MultiLayerNetwork net;
 
 	// location of precalculated vectors
-	public static final String WORD_VECTORS_PATH = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
+	public static final String WORD_VECTORS_PATH = "C:/DataN2c2/google/GoogleNews-vectors-negative300.bin.gz";
 
 	public BILSTMClassifier(List<Patient> examples) {
 
