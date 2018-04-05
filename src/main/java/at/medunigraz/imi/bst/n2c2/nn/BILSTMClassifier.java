@@ -61,7 +61,7 @@ public class BILSTMClassifier implements Classifier {
 	// Google word vector size
 	int vectorSize = 300;
 
-	// accessing Google word vectors
+	// accessing Google word vectors 
 	private WordVectors wordVectors;
 
 	// training data
