@@ -11,6 +11,7 @@ import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -84,9 +85,9 @@ public class BILSTMClassifier implements Classifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetwork();
+		initializeNetworkTbptt();
 		initializeMonitoring();
-		
+
 		LOG.info("Minibatchsize:\t" + miniBatchSize);
 		LOG.info("tbptt length:\t" + tbpttLength);
 		LOG.info("Epochs:\t" + nEpochs);
@@ -133,6 +134,31 @@ public class BILSTMClassifier implements Classifier {
 						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
 								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
 				.pretrain(false).backprop(true).build();
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+	}
+
+	/**
+	 * SOFTMAX activation and MCXENT loss function for binary classification,
+	 * with truncated back propagation through time.
+	 */
+	private void initializeNetworkTbptt() {
+
+		// initialize network
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
+				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
+				.layer(0,
+						new GravesBidirectionalLSTM.Builder().nIn(vectorSize).nOut(truncateLength)
+								.activation(Activation.TANH).build())
+				.layer(1,
+						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
+								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
+				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
