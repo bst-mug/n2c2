@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
@@ -20,6 +23,9 @@ import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
+import org.deeplearning4j.ui.api.UIServer;
+import org.deeplearning4j.ui.stats.StatsListener;
+import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -66,16 +72,43 @@ public class BILSTMClassifier implements Classifier {
 	private MultiLayerNetwork net;
 
 	// location of precalculated vectors
-	public static final String WORD_VECTORS_PATH = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
+	private String wordVectorsPath = "C:/DataN2c2/google/GoogleNews-vectors-negative300.bin.gz";
 
-	public BILSTMClassifier(List<Patient> examples) {
+	private static final Logger LOG = LogManager.getLogger();
+
+	public BILSTMClassifier(List<Patient> examples, String pathToWordVectors) {
 
 		this.patientExamples = examples;
-		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
+		this.wordVectorsPath = pathToWordVectors;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
 
 		initializeTokenizer();
 		initializeTruncateLength();
 		initializeNetwork();
+		initializeMonitoring();
+		
+		LOG.debug("Minibatchsize:\t" + miniBatchSize);
+		LOG.debug("tbptt length:\t" + tbpttLength);
+		LOG.debug("Epochs:\t" + nEpochs);
+		LOG.debug("Truncate lenght:\t" + truncateLength);
+		LOG.debug("Vector size:\t" + vectorSize);
+	}
+
+	public BILSTMClassifier(List<Patient> examples) {
+
+		this.patientExamples = examples;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
+
+		initializeTokenizer();
+		initializeTruncateLength();
+		initializeNetwork();
+		initializeMonitoring();
+
+		LOG.debug("Minibatchsize:\t" + miniBatchSize);
+		LOG.debug("tbptt length:\t" + tbpttLength);
+		LOG.debug("Epochs:\t" + nEpochs);
+		LOG.debug("Truncate lenght:\t" + truncateLength);
+		LOG.debug("Vector size:\t" + vectorSize);
 	}
 
 	private void initializeTokenizer() {
@@ -104,6 +137,28 @@ public class BILSTMClassifier implements Classifier {
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
 		this.net.setListeners(new ScoreIterationListener(1));
+	}
+
+	/**
+	 * Initialize monitoring.
+	 * 
+	 */
+	private void initializeMonitoring() {
+		// setting monitor
+		UIServer uiServer = UIServer.getInstance();
+
+		// Configure where the network information (gradients, score vs. time
+		// etc) is to be stored. Here: store in memory.
+		// Alternative: new FileStatsStorage(File), for saving and loading later
+		StatsStorage statsStorage = new InMemoryStatsStorage();
+
+		// Attach the StatsStorage instance to the UI: this allows the contents
+		// of the StatsStorage to be visualized
+		uiServer.attach(statsStorage);
+
+		// Then add the StatsListener to collect this information from the
+		// network, as it trains
+		net.setListeners(new StatsListener(statsStorage));
 	}
 
 	/**
@@ -144,8 +199,11 @@ public class BILSTMClassifier implements Classifier {
 			List<String> tokens = tokenizerFactory.create(narrative).getTokens();
 			List<String> tokensFiltered = new ArrayList<>();
 			for (String token : tokens) {
-				if (wordVectors.hasWord(token))
+				if (wordVectors.hasWord(token)) {
 					tokensFiltered.add(token);
+				} else {
+					LOG.info("Word2vec representation missing:\t" + token);
+				}
 			}
 			allTokens.add(tokensFiltered);
 			maxLength = Math.max(maxLength, tokensFiltered.size());

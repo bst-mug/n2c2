@@ -25,8 +25,8 @@ public class XMLStatsWriterTest {
         writer.write(Criterion.ABDOMINAL, 0.5d);
         writer.close();
 
-        String expected = FileUtils.readFileToString(expectedFile, "UTF-8");
-        String actual = FileUtils.readFileToString(actualFile, "UTF-8");
+        String expected = FileUtils.readFileToString(expectedFile, "UTF-8").replaceAll("[\r\n]+", "");
+        String actual = FileUtils.readFileToString(actualFile, "UTF-8").replaceAll("[\r\n]+", "");
 
         assertEquals(expected, actual);
     }
