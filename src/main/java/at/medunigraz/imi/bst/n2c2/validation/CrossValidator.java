@@ -52,7 +52,7 @@ public class CrossValidator {
     }
 
     private Map<Criterion, Double> evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
-        for (Criterion c : Criterion.values()) {
+        for (Criterion c : Criterion.classifiableValues()) {
             LOG.info("Evaluating criterion {}...", c);
             Classifier classifier = classifierFactory.getClassifier(c);
 
