@@ -21,7 +21,7 @@ public class BILSTMClassifierTest {
 	public void train() {
 
 		// read in patients
-		File sampleDirectory = new File("C:/DataN2c2/samplesTraining");
+		File sampleDirectory = new File("Z:/n2c2/data/samplesTraining");
 		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
 				TrueFileFilter.INSTANCE);
 

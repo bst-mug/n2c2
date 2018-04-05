@@ -11,6 +11,7 @@ import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.nn.api.Layer;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
@@ -76,7 +77,7 @@ public class BILSTMClassifier implements Classifier {
 	private MultiLayerNetwork net;
 
 	// location of precalculated vectors
-	private String wordVectorsPath = "C:/DataN2c2/google/GoogleNews-vectors-negative300.bin.gz";
+	private String wordVectorsPath = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
 
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -88,10 +89,8 @@ public class BILSTMClassifier implements Classifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetworkTbptt();
+		initializeNetworkDebug();
 		initializeMonitoring();
-
-		tbpttLength = truncateLength / 5;
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
 		LOG.info("tbptt length   :\t" + tbpttLength);
@@ -107,7 +106,7 @@ public class BILSTMClassifier implements Classifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetwork();
+		initializeNetworkDebug();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -146,6 +145,32 @@ public class BILSTMClassifier implements Classifier {
 		this.net.init();
 		this.net.setListeners(new ScoreIterationListener(1));
 	}
+	
+	/**
+	 * SOFTMAX activation and MCXENT loss function for binary classification.
+	 * Not using truncate backpropagation throught time (tbptt) with
+	 * GravesBidirectionalLSTM for the moment.
+	 */
+	private void initializeNetworkDebug() {
+
+		// initialize network
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).iterations(1).learningRate(0.1)
+				.rmsDecay(0.95).seed(12345).regularization(true).l2(0.001).weightInit(WeightInit.XAVIER)
+				.updater(Updater.ADAGRAD).list()
+				.layer(0,
+						new GravesLSTM.Builder().nIn(vectorSize).nOut(200).activation(Activation.SOFTSIGN)
+								.build())
+				.layer(1,
+						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX)
+								.nIn(200).nOut(2).build())
+				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+	}
 
 	/**
 	 * SOFTMAX activation and MCXENT loss function for binary classification.
@@ -158,15 +183,15 @@ public class BILSTMClassifier implements Classifier {
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
 				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).iterations(1).learningRate(0.1)
 				.rmsDecay(0.95).seed(12345).regularization(true).l2(0.001).weightInit(WeightInit.XAVIER)
-				.updater(Updater.RMSPROP).list()
+				.updater(Updater.ADAGRAD).list()
 				.layer(0,
-						new GravesLSTM.Builder().nIn(vectorSize).nOut(truncateLength).activation(Activation.TANH)
+						new GravesLSTM.Builder().nIn(vectorSize).nOut(truncateLength).activation(Activation.SOFTSIGN)
 								.build())
 				.layer(1,
 						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX)
 								.nIn(truncateLength).nOut(2).build())
-				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(truncateLength / 5)
-				.tBPTTBackwardLength(truncateLength / 5).pretrain(false).backprop(true).build();
+				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
@@ -247,6 +272,16 @@ public class BILSTMClassifier implements Classifier {
 
 	@Override
 	public void train(List<Patient> examples) {
+
+		// Print the number of parameters in the network (and for each layer)
+		Layer[] layers = net.getLayers();
+		int totalNumParams = 0;
+		for (int i = 0; i < layers.length; i++) {
+			int nParams = layers[i].numParams();
+			LOG.info("Number of parameters in layer " + i + ": " + nParams);
+			totalNumParams += nParams;
+		}
+		LOG.info("Total number of network parameters: " + totalNumParams);
 
 		// start training
 		try {
