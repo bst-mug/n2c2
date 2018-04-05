@@ -64,7 +64,6 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         return fullCommand;
     }
 
-    @Override
     public void evaluate() {
         ProcessBuilder pb = new ProcessBuilder(getFullCommand());
         LOG.debug(String.join(" ", pb.command()));
@@ -174,11 +173,6 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     public float getOverallAccuracy() {
         return getAccuracyByCriterion(Criterion.OVERALL);
-    }
-
-    @Override
-    public double getF1() {
-        return getOverallAccuracy();
     }
 
     @Override
