@@ -97,6 +97,12 @@ public class BILSTMClassifier implements Classifier {
 		initializeTruncateLength();
 		initializeNetwork();
 		initializeMonitoring();
+
+		LOG.debug("Minibatchsize:\t" + miniBatchSize);
+		LOG.debug("tbptt length:\t" + tbpttLength);
+		LOG.debug("Epochs:\t" + nEpochs);
+		LOG.debug("Truncate lenght:\t" + truncateLength);
+		LOG.debug("Vector size:\t" + vectorSize);
 	}
 
 	private void initializeTokenizer() {
