@@ -40,6 +40,7 @@ public class CrossValidator {
         dataset.splitIntoFolds(k);
 
         for (int i = 0; i < k; i++) {
+            LOG.info("Evaluating fold {}/{}...", i + 1, k);
             List<Patient> train = dataset.getTrainingSet(i);
             List<Patient> test = dataset.getTestSet(i);
             List<Patient> gold = dataset.getGoldSet(i);
@@ -52,6 +53,7 @@ public class CrossValidator {
 
     private Map<Criterion, Double> evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
         for (Criterion c : Criterion.values()) {
+            LOG.info("Evaluating criterion {}...", c);
             Classifier classifier = classifierFactory.getClassifier(c);
 
             classifier.train(train);
