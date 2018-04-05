@@ -87,11 +87,11 @@ public class BILSTMClassifier implements Classifier {
 		initializeNetwork();
 		initializeMonitoring();
 		
-		LOG.debug("Minibatchsize:\t" + miniBatchSize);
-		LOG.debug("tbptt length:\t" + tbpttLength);
-		LOG.debug("Epochs:\t" + nEpochs);
-		LOG.debug("Truncate lenght:\t" + truncateLength);
-		LOG.debug("Vector size:\t" + vectorSize);
+		LOG.info("Minibatchsize:\t" + miniBatchSize);
+		LOG.info("tbptt length:\t" + tbpttLength);
+		LOG.info("Epochs:\t" + nEpochs);
+		LOG.info("Truncate lenght:\t" + truncateLength);
+		LOG.info("Vector size:\t" + vectorSize);
 	}
 
 	public BILSTMClassifier(List<Patient> examples) {
@@ -104,11 +104,11 @@ public class BILSTMClassifier implements Classifier {
 		initializeNetwork();
 		initializeMonitoring();
 
-		LOG.debug("Minibatchsize:\t" + miniBatchSize);
-		LOG.debug("tbptt length:\t" + tbpttLength);
-		LOG.debug("Epochs:\t" + nEpochs);
-		LOG.debug("Truncate lenght:\t" + truncateLength);
-		LOG.debug("Vector size:\t" + vectorSize);
+		LOG.info("Minibatchsize:\t" + miniBatchSize);
+		LOG.info("tbptt length:\t" + tbpttLength);
+		LOG.info("Epochs:\t" + nEpochs);
+		LOG.info("Truncate lenght:\t" + truncateLength);
+		LOG.info("Vector size:\t" + vectorSize);
 	}
 
 	private void initializeTokenizer() {
