@@ -11,6 +11,7 @@ import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -32,6 +33,7 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
 import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
@@ -61,7 +63,7 @@ public class BILSTMClassifier implements Classifier {
 	// Google word vector size
 	int vectorSize = 300;
 
-	// accessing Google word vectors 
+	// accessing Google word vectors
 	private WordVectors wordVectors;
 
 	// training data
@@ -88,6 +90,8 @@ public class BILSTMClassifier implements Classifier {
 		initializeTruncateLength();
 		initializeNetworkTbptt();
 		initializeMonitoring();
+
+		tbpttLength = truncateLength / 5;
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
 		LOG.info("tbptt length   :\t" + tbpttLength);
@@ -151,18 +155,18 @@ public class BILSTMClassifier implements Classifier {
 	private void initializeNetworkTbptt() {
 
 		// initialize network
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
-				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
-				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).iterations(1).learningRate(0.1)
+				.rmsDecay(0.95).seed(12345).regularization(true).l2(0.001).weightInit(WeightInit.XAVIER)
+				.updater(Updater.RMSPROP).list()
 				.layer(0,
 						new GravesLSTM.Builder().nIn(vectorSize).nOut(truncateLength).activation(Activation.TANH)
 								.build())
 				.layer(1,
-						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
-								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
-				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
-				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
+						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX)
+								.nIn(truncateLength).nOut(2).build())
+				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(truncateLength / 5)
+				.tBPTTBackwardLength(truncateLength / 5).pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
