@@ -7,9 +7,6 @@ import java.util.List;
 
 public interface Evaluator {
 
-    @Deprecated
-    void evaluate();
-
     void evaluate(List<Patient> gold, List<Patient> results);
 
     double getF1();

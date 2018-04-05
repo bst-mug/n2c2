@@ -1,15 +1,11 @@
 package at.medunigraz.imi.bst.n2c2.evaluator;
 
-public abstract class AbstractEvaluator implements Evaluator {
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 
-    private double f1 = 0;
+public abstract class AbstractEvaluator implements Evaluator {
 
     @Override
     public double getF1() {
-        if (f1 == 0) {
-            evaluate();
-        }
-
-        return f1;
+        return getF1ByCriterion(Criterion.OVERALL);
     }
 }
