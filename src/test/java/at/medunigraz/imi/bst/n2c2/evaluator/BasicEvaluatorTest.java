@@ -31,6 +31,6 @@ public class BasicEvaluatorTest {
 
         evaluator.evaluate(gold, results);
 
-        assertEquals(0.5, evaluator.getF1(), 0.00001);
+        assertEquals(0.5, evaluator.getF1ByCriterion(Criterion.ABDOMINAL), 0.00001);
     }
 }

@@ -21,12 +21,16 @@ public class BasicEvaluator extends AbstractEvaluator {
     @Override
     public void evaluate(List<Patient> gold, List<Patient> results) {
         int count = 0;
-        double overallPrecision = 0, overallRecall = 0;
+        double overallAccuracy = 0;
 
         // Map of results by patient id for comparison
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
 
         for (Criterion criterion: Criterion.values()) {
+            if (criterion  == Criterion.OVERALL) {
+                continue;
+            }
+
             int tp = 0, fp = 0, tn = 0, fn = 0;
 
             // TODO parallel stream
@@ -51,23 +55,19 @@ public class BasicEvaluator extends AbstractEvaluator {
             }
 
             Metrics metrics = new Metrics(tp, fp, tn, fn);
-            if (!metrics.isValid()) {
-                continue;
-            }
 
-            overallPrecision += metrics.getPrecision();
-            overallRecall += metrics.getRecall();
+            overallAccuracy += metrics.getAccuracy();
             count++;
 
             metricsByCriterion.put(criterion, metrics);
         }
 
-        metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallPrecision / count, overallRecall / count));
+        metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
     }
 
     @Override
     public double getF1ByCriterion(Criterion c) {
-        return metricsByCriterion.get(c).getF1();
+        return metricsByCriterion.get(c).getAccuracy();
     }
 
     private Match comparePatients(Patient gold, Patient actual, Criterion criterion) {
