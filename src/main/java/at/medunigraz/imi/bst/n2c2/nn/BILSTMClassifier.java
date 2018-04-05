@@ -86,7 +86,7 @@ public class BILSTMClassifier implements Classifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetworkTbpttLength();
+		initializeNetworkTbptt();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -148,7 +148,7 @@ public class BILSTMClassifier implements Classifier {
 	 * Using truncated backpropagation throught time (tbptt) with GravesLSTM for
 	 * the moment.
 	 */
-	private void initializeNetworkTbpttLength() {
+	private void initializeNetworkTbptt() {
 
 		// initialize network
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
