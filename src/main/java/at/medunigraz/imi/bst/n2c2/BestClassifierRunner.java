@@ -2,6 +2,7 @@ package at.medunigraz.imi.bst.n2c2;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.BestClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.InterAnnotatorAgreement;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
@@ -28,7 +29,7 @@ public class BestClassifierRunner {
 
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         ClassifierFactory factory = new BestClassifierFactory();
-        Evaluator evaluator = new InterAnnotatorAgreement();
+        Evaluator evaluator = new BasicEvaluator();
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
         Map<Criterion, Double> metrics = cv.evaluate();
