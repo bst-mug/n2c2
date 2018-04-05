@@ -361,5 +361,10 @@
 			<artifactId>weka-stable</artifactId>
 			<version>3.8.2</version>
 		</dependency>
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>LibSVM</artifactId>
+			<version>1.0.10</version>
+		</dependency>
 	</dependencies>
 </project>
