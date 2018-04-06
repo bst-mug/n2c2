@@ -113,7 +113,8 @@ public class N2c2PatientIterator implements DataSetIterator {
 		List<List<String>> allTokens = new ArrayList<>(narratives.size());
 		int maxLength = 0;
 		for (String narrative : narratives) {
-			List<String> tokens = tokenizerFactory.create(narrative).getTokens();
+			String cleaned = narrative.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
+			List<String> tokens = tokenizerFactory.create(cleaned).getTokens();
 			List<String> tokensFiltered = new ArrayList<>();
 			for (String token : tokens) {
 				if (wordVectors.hasWord(token))

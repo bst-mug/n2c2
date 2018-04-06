@@ -56,9 +56,9 @@ public class BILSTMClassifier implements Classifier {
 	private int tbpttLength = 50;
 
 	// total number of training epochs
-	private int nEpochs = 1000;
+	private int nEpochs = 100;
 
-	// define initial time series length
+	// specifies time series length
 	private int truncateLength = 64;
 
 	// Google word vector size
@@ -89,7 +89,7 @@ public class BILSTMClassifier implements Classifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetworkDebug();
+		initializeNetwork();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -128,28 +128,24 @@ public class BILSTMClassifier implements Classifier {
 	 */
 	private void initializeNetwork() {
 
-		// initialize network
+		// Set up network configuration
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().updater(Updater.ADAM).adamMeanDecay(0.9)
 				.adamVarDecay(0.999).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
 				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 				.gradientNormalizationThreshold(1.0).learningRate(2e-2).list()
-				.layer(0,
-						new GravesBidirectionalLSTM.Builder().nIn(vectorSize).nOut(truncateLength)
-								.activation(Activation.TANH).build())
+				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.TANH).build())
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
-								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(truncateLength).nOut(2).build())
+								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(256).nOut(2).build())
 				.pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
 		this.net.setListeners(new ScoreIterationListener(1));
 	}
-	
+
 	/**
-	 * SOFTMAX activation and MCXENT loss function for binary classification.
-	 * Not using truncate backpropagation throught time (tbptt) with
-	 * GravesBidirectionalLSTM for the moment.
+	 * Debugging network.
 	 */
 	private void initializeNetworkDebug() {
 
@@ -158,12 +154,10 @@ public class BILSTMClassifier implements Classifier {
 				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).iterations(1).learningRate(0.1)
 				.rmsDecay(0.95).seed(12345).regularization(true).l2(0.001).weightInit(WeightInit.XAVIER)
 				.updater(Updater.ADAGRAD).list()
-				.layer(0,
-						new GravesLSTM.Builder().nIn(vectorSize).nOut(200).activation(Activation.SOFTSIGN)
-								.build())
+				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.SOFTSIGN).build())
 				.layer(1,
-						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX)
-								.nIn(200).nOut(2).build())
+						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX).nIn(256).nOut(2)
+								.build())
 				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
 				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
 
@@ -184,12 +178,10 @@ public class BILSTMClassifier implements Classifier {
 				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).iterations(1).learningRate(0.1)
 				.rmsDecay(0.95).seed(12345).regularization(true).l2(0.001).weightInit(WeightInit.XAVIER)
 				.updater(Updater.ADAGRAD).list()
-				.layer(0,
-						new GravesLSTM.Builder().nIn(vectorSize).nOut(truncateLength).activation(Activation.SOFTSIGN)
-								.build())
+				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.SOFTSIGN).build())
 				.layer(1,
-						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX)
-								.nIn(truncateLength).nOut(2).build())
+						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX).nIn(256).nOut(2)
+								.build())
 				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
 				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
 
@@ -250,12 +242,13 @@ public class BILSTMClassifier implements Classifier {
 	 * 
 	 */
 	private void initializeTruncateLength() {
-
+		
 		List<List<String>> allTokens = new ArrayList<>(patientExamples.size());
 		int maxLength = 0;
 		for (Patient patient : patientExamples) {
 			String narrative = patient.getText();
-			List<String> tokens = tokenizerFactory.create(narrative).getTokens();
+			String cleaned = narrative.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
+			List<String> tokens = tokenizerFactory.create(cleaned).getTokens();
 			List<String> tokensFiltered = new ArrayList<>();
 			for (String token : tokens) {
 				if (wordVectors.hasWord(token)) {

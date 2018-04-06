@@ -23,10 +23,10 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<!-- Change the nd4j.backend property to nd4j-cuda-7.5-platform or nd4j-cuda-8.0-platform
+		<!-- Change the nd4j.backend property to nd4j-cuda-7.5-platform or nd4j-cuda-8.0-platform 
 			to use CUDA GPUs -->
-		<!-- <nd4j.backend>nd4j-native-platform</nd4j.backend> -->
-		<nd4j.backend>nd4j-cuda-8.0-platform</nd4j.backend>
+		<nd4j.backend>nd4j-native-platform</nd4j.backend>
+		<!-- <nd4j.backend>nd4j-cuda-8.0-platform</nd4j.backend> -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<shadedClassifier>bin</shadedClassifier>
 
@@ -36,12 +36,12 @@
 		<arbiter.version>0.9.1</arbiter.version>
 		<rl4j.version>0.9.1</rl4j.version>
 
-		<!-- For Spark examples: change the _1 to _2 to switch between Spark 1
+		<!-- For Spark examples: change the _1 to _2 to switch between Spark 1 
 			and Spark 2 -->
 		<dl4j.spark.version>0.9.1_spark_1</dl4j.spark.version>
 		<datavec.spark.version>0.9.1_spark_1</datavec.spark.version>
 
-		<!-- Scala binary version: DL4J's Spark and UI functionality are released
+		<!-- Scala binary version: DL4J's Spark and UI functionality are released 
 			with both Scala 2.10 and 2.11 support -->
 		<scala.binary.version>2.11</scala.binary.version>
 
@@ -235,7 +235,7 @@
 		<!-- BEGIN added for deeplearning4j -->
 		<!-- .............................. -->
 
-		<!-- ND4J backend. You need one in every DL4J project. Normally define
+		<!-- ND4J backend. You need one in every DL4J project. Normally define 
 			artifactId as either "nd4j-native-platform" or "nd4j-cuda-7.5-platform" -->
 		<dependency>
 			<groupId>org.nd4j</groupId>
@@ -255,7 +255,7 @@
 			<version>${dl4j.version}</version>
 		</dependency>
 
-		<!-- deeplearning4j-ui is used for HistogramIterationListener + visualization:
+		<!-- deeplearning4j-ui is used for HistogramIterationListener + visualization: 
 			see http://deeplearning4j.org/visualization -->
 		<dependency>
 			<groupId>org.deeplearning4j</groupId>
@@ -277,7 +277,7 @@
 			<version>${datavec.version}</version>
 		</dependency>
 
-		<!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions
+		<!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions 
 			example -->
 		<dependency>
 			<groupId>jfree</groupId>
@@ -351,11 +351,11 @@
 			<artifactId>opencsv</artifactId>
 			<version>4.1</version>
 		</dependency>
-        <dependency>
-            <groupId>com.github.haifengl</groupId>
-            <artifactId>smile-core</artifactId>
-            <version>1.5.1</version>
-        </dependency>
+		<dependency>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-core</artifactId>
+			<version>1.5.1</version>
+		</dependency>
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-stable</artifactId>
