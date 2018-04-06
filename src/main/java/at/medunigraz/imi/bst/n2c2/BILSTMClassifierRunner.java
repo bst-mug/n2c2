@@ -1,18 +1,13 @@
 package at.medunigraz.imi.bst.n2c2;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
+import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xml.sax.SAXException;
 
-import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.BILSTMClassifier;
 
@@ -40,21 +35,10 @@ public class BILSTMClassifierRunner {
 
 		// read in patients
 		File sampleDirectory = new File(patientData);
-		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
-				TrueFileFilter.INSTANCE);
+		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
-		try {
-			List<Patient> patients = new ArrayList<Patient>();
-			for (File patientSample : sampleFiles) {
-				patients.add(new PatientDAO().fromXML(patientSample));
-			}
-			BILSTMClassifier classifier = new BILSTMClassifier(patients, wordVectorData);
-			classifier.train(patients);
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		BILSTMClassifier classifier = new BILSTMClassifier(patients, wordVectorData);
+		classifier.train(patients);
 
 		LOG.info("Finished training");
 	}
