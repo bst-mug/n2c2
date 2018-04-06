@@ -18,6 +18,7 @@ import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
+import org.deeplearning4j.nn.conf.WorkspaceMode;
 import org.deeplearning4j.nn.conf.layers.GravesBidirectionalLSTM;
 import org.deeplearning4j.nn.conf.layers.GravesLSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
@@ -33,6 +34,8 @@ import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
@@ -89,7 +92,7 @@ public class BILSTMClassifier implements Classifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetwork();
+		initializeNetworkDebug();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -149,17 +152,22 @@ public class BILSTMClassifier implements Classifier {
 	 */
 	private void initializeNetworkDebug() {
 
-		// initialize network
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).iterations(1).learningRate(0.1)
-				.rmsDecay(0.95).seed(12345).regularization(true).l2(0.001).weightInit(WeightInit.XAVIER)
-				.updater(Updater.ADAGRAD).list()
-				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.SOFTSIGN).build())
+		// https://deeplearning4j.org/workspaces
+		// Nd4j.getMemoryManager().setAutoGcWindow(10000);
+		Nd4j.getMemoryManager().togglePeriodicGc(false);
+
+		// seed for reproducibility
+		final int seed = 0;
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
+				.updater(Adam.builder().beta1(0.9).beta2(0.999).build()).regularization(true).l2(1e-5)
+				.weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(2e-2).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
+				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE).list()
+				.layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.TANH).build())
 				.layer(1,
-						new RnnOutputLayer.Builder(LossFunction.MCXENT).activation(Activation.SOFTMAX).nIn(256).nOut(2)
-								.build())
-				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
-				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
+						new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
+								.lossFunction(LossFunctions.LossFunction.MCXENT).nIn(256).nOut(2).build())
+				.pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
@@ -242,7 +250,7 @@ public class BILSTMClassifier implements Classifier {
 	 * 
 	 */
 	private void initializeTruncateLength() {
-		
+
 		List<List<String>> allTokens = new ArrayList<>(patientExamples.size());
 		int maxLength = 0;
 		for (Patient patient : patientExamples) {
