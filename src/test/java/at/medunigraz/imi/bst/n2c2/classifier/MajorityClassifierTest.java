@@ -25,19 +25,5 @@ public class MajorityClassifierTest {
         mc.train(train);
 
         assertEquals(Eligibility.NOT_MET, mc.predict(new Patient()));
-
-
-        List<Patient> test = new ArrayList<>();
-        Patient a = new Patient().withText("Patient A");
-        Patient b = new Patient().withText("Patient B");
-        test.add(a);
-        test.add(b);
-
-        List<Patient> expected = new ArrayList<>();
-        expected.add(a.withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-        expected.add(b.withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET));
-
-        List<Patient> actual = mc.predict(test);
-        assertEquals(expected, actual);
     }
 }
