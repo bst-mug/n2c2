@@ -90,7 +90,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         f.setMinTermFreq(1);
         f.setOutputWordCounts(true);
 
-        // TODO evaluate impact
+        // Overall, stemmer does not have any positive impact
         //f.setStemmer(getStemmer());
 
         f.setTokenizer(getTokenizer());
@@ -234,7 +234,10 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private Stemmer getStemmer() {
-        // TODO consider Porter
-        return new SnowballStemmer();
+        // XXX SnowballStemmer should be added to classpath.
+        // Easiest way is to add https://mvnrepository.com/artifact/com.github.rholder/snowball-stemmer to pom.xml
+        Stemmer stemmer = new SnowballStemmer();
+        ((SnowballStemmer) stemmer).setStemmer("english");
+        return stemmer;
     }
 }
