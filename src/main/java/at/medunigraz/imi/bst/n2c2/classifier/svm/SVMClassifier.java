@@ -102,8 +102,8 @@ public class SVMClassifier extends CriterionBasedClassifier {
         // Enable only for performance reasons
         //f.setWordsToKeep(5000);
 
-
-        // TODO L2 norm
+        // Overall, normalization does not have any positive impact
+        //f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 
         f.setTFTransform(true);
         f.setIDFTransform(true);
