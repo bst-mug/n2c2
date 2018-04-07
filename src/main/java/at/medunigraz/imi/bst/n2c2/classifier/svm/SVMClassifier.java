@@ -99,8 +99,9 @@ public class SVMClassifier extends CriterionBasedClassifier {
         //f.setStopwords(new File(refDir + "stopwords.txt"));
         //f.setUseStoplist(Constants.CONFIG.getStoplist());
 
-        // Enable only for performance reasons
-        //f.setWordsToKeep(5000);
+        // Makes the default value explicit (even though it's optimal)
+        f.setWordsToKeep(1000);
+        //f.setDictionaryFileToSaveTo(new File("dict.csv"));
 
         // Overall, normalization does not have any positive impact
         //f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
