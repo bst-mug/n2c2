@@ -37,10 +37,16 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
     private Classifier model;
     private Instances dataset;
+    private double cost;
+
+    public SVMClassifier(Criterion criterion, double cost) {
+        super(criterion);
+        this.cost = cost;
+        reset();
+    }
 
     public SVMClassifier(Criterion criterion) {
-        super(criterion);
-        reset();
+        this(criterion, 1);
     }
 
     public void reset() {
@@ -63,7 +69,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         svm.setKernelType(new SelectedTag(0, LibSVM.TAGS_KERNELTYPE));
 
         // FIXME optimize
-        svm.setCost(1);
+        svm.setCost(cost);
 
         // ID index is removed from classification, but is available for debugging
         Remove remove = new Remove();
@@ -104,7 +110,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         //f.setDictionaryFileToSaveTo(new File("dict.csv"));
 
         // Overall, normalization does not have any positive impact
-        //f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
+        f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 
         f.setTFTransform(true);
         f.setIDFTransform(true);

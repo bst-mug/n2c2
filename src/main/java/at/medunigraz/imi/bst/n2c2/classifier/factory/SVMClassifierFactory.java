@@ -12,8 +12,12 @@ public class SVMClassifierFactory implements ClassifierFactory {
 
     private static final Map<Criterion, Classifier> classifierByCriterion = new HashMap<>();
 
-    static {
+    public SVMClassifierFactory() {
         Arrays.stream(Criterion.values()).forEach(c -> classifierByCriterion.put(c, new SVMClassifier(c)));
+    }
+
+    public SVMClassifierFactory(double cost) {
+        Arrays.stream(Criterion.values()).forEach(c -> classifierByCriterion.put(c, new SVMClassifier(c, cost)));
     }
 
     @Override
