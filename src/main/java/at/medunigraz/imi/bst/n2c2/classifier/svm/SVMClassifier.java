@@ -12,7 +12,7 @@ import weka.classifiers.meta.FilteredClassifier;
 import weka.core.*;
 import weka.core.stemmers.SnowballStemmer;
 import weka.core.stemmers.Stemmer;
-import weka.core.tokenizers.NGramTokenizer;
+import weka.core.tokenizers.AlphabeticTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.Filter;
 import weka.filters.MultiFilter;
@@ -227,11 +227,9 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private Tokenizer getTokenizer() {
-        // TODO explore other tokenizers
-        // TODO Check whether the default AlphabeticTokenizer still doesn't support diacritics
-        NGramTokenizer tokenizer = new NGramTokenizer();
-        // TODO explore larger ngrams
-        tokenizer.setNGramMaxSize(1);
+        // XXX AlphabeticTokenizer does not support diacritics (see hasMoreElements method).
+        // This shouldn't be an issue in English though.
+        Tokenizer tokenizer = new AlphabeticTokenizer();
         return tokenizer;
     }
 
