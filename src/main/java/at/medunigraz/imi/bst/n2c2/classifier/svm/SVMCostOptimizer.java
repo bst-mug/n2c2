@@ -32,7 +32,7 @@ public class SVMCostOptimizer {
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         Evaluator evaluator = new BasicEvaluator();
 
-        for (int exp = -5; exp <= 15; exp += 2) {
+        for (int exp = -20; exp <= 20; exp += 0.5) {
             double cost = Math.pow(2, exp);
 
             ClassifierFactory factory = new SVMClassifierFactory(cost);
@@ -43,12 +43,12 @@ public class SVMCostOptimizer {
                 updateBestCosts(entry.getKey(), entry.getValue(), exp);
             }
 
-            LOG.info("exp = %d", exp);
+            LOG.info("exp = {}", exp);
             LOG.info(bestCostPerCriterion);
         }
     }
 
-    private static void updateBestCosts(Criterion criterion, double metric, int exp) {
+    private static void updateBestCosts(Criterion criterion, double metric, float exp) {
         CostMetric costMetric = bestCostPerCriterion.get(criterion);
 
         if (metric > costMetric.metric) {
@@ -58,12 +58,12 @@ public class SVMCostOptimizer {
     }
 
     public static class CostMetric {
-        int exp = 0;
+        float exp = 0;
         double metric = 0;
 
         @Override
         public String toString() {
-            return String.format("C = 2^%d = %f => A = %f", exp, Math.pow(2, exp), metric);
+            return String.format("C = 2^%f = %f => A = %f", exp, Math.pow(2, exp), metric);
         }
     }
 }
