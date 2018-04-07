@@ -32,8 +32,6 @@ import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
@@ -59,7 +57,7 @@ public class BILSTMClassifier implements Classifier {
 	private int tbpttLength = 50;
 
 	// total number of training epochs
-	private int nEpochs = 100;
+	private int nEpochs = 40;
 
 	// specifies time series length
 	private int truncateLength = 64;
@@ -295,19 +293,8 @@ public class BILSTMClassifier implements Classifier {
 
 				LOG.info("Epoch " + i + " complete. Starting evaluation:");
 
-				// run evaluation on training set (should be test set)
-				Evaluation evaluation = new Evaluation();
-				while (train.hasNext()) {
-					DataSet t = train.next();
-					INDArray features = t.getFeatureMatrix();
-					INDArray lables = t.getLabels();
-					INDArray inMask = t.getFeaturesMaskArray();
-					INDArray outMask = t.getLabelsMaskArray();
-					INDArray predicted = net.output(features, false, inMask, outMask);
-
-					evaluation.evalTimeSeries(lables, predicted, outMask);
-				}
-				train.reset();
+				// run evaluation on training data (change to test data)
+				Evaluation evaluation = net.evaluate(train);
 				LOG.info(evaluation.stats());
 			}
 		} catch (IOException e) {
