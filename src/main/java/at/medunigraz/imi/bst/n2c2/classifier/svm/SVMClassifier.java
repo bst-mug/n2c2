@@ -45,6 +45,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     public SVMClassifier(Criterion criterion, double cost) {
         super(criterion);
         this.cost = cost;
+        this.model = initializeModel();
         reset();
     }
 
@@ -53,16 +54,14 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     public void reset() {
-        // TODO check what should be reset every time and what not
-        model = initializeModel();
-        dataset = null;
+        this.dataset = createEmptyDataset();
     }
 
     private Classifier initializeModel() {
         // TODO non-deterministic. see https://weka.wikispaces.com/LibSVM
         LibSVM svm = new LibSVM();
 
-        // -K <int>
+        // TODO try other kernels
         // Set type of kernel function (default: 2)
         // 0 = linear: u'*v
         // 1 = polynomial: (gamma*u'*v + coef0)^degree
@@ -119,7 +118,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private List<Attribute> initializeAttributes() {
-        // TODO method could be static
         List<Attribute> attributes = new ArrayList<>();
 
         List<String> eligibilityValues = new ArrayList<>();
@@ -133,19 +131,15 @@ public class SVMClassifier extends CriterionBasedClassifier {
         return attributes;
     }
 
-
     @Override
     public void train(List<Patient> examples) {
         reset();
 
-        createDataset(examples);
+        // TODO might be used for prediction as well
+        examples.forEach(p -> dataset.add(createTrainingInstance(p)));
 
         LOG.debug("Training SVM with {} patients...", examples.size());
 
-        // TODO dataset file cache
-
-        // TODO other kernels
-        // TODO other multi-class strategies
         try {
             model.buildClassifier(dataset);
         } catch (Exception e) {
@@ -163,13 +157,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
         data.setClassIndex(ELIGIBILITY_INDEX);
 
         return data;
-    }
-
-    private void createDataset(List<Patient> patients) {
-        dataset = createEmptyDataset();
-
-        // TODO might be used for prediction as well
-        patients.forEach(p -> dataset.add(createTrainingInstance(p)));
     }
 
     private Instance createTrainingInstance(Patient p) {
