@@ -142,12 +142,11 @@ public class Patient {
     	ArrayList<PatientVisits> a_pv_afterDate = new ArrayList<>(); 
     	ArrayList<PatientVisits> a_pv = getAllVisits(); 
     	Date date_ofLastVisit = getLastVisit().getVisit_date(); 
-    	
     	Date date_inthepast = getPastTimestamp(date_ofLastVisit, months); 
     	
     	for(int i = 0; i<a_pv.size(); i++){
     		if(a_pv.get(i).getVisit_date().after(date_inthepast)){
-    			a_pv_afterDate.add(a_pv_afterDate.get(i)); 
+    			a_pv_afterDate.add(a_pv.get(i)); 
     		}
     	}
     	

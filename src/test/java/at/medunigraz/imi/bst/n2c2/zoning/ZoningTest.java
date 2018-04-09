@@ -27,6 +27,10 @@ public class ZoningTest {
 		int size = a_pv.size(); 
 		assertTrue(size == 3); 
 		
+		ArrayList<PatientVisits> a_multipv = pat.getMultipleVisits(12); 
+		int sizeMulti = a_multipv.size(); 
+		assertTrue(sizeMulti == 2); 
+		
 //		PatientVisits pv0 = a_pv.get(0);
 //		assertNull(pv0.getVisit_text());
 //		assertNull(pv0.getVisit_date());
@@ -44,7 +48,7 @@ public class ZoningTest {
 		assertThat(tpv_first.getVisit_text(), containsString("FISHKILL"));
 		
 		PatientVisits tpv_last = pat.getLastVisit(); 
-		assertThat(tpv_last.getVisit_text(), containsString("PHYSICAL EXAMINATION"));
+		assertThat(tpv_last.getVisit_text(), containsString("PHYSICAL EXAMINATION"));		
 		
 		Period p = pat.getTimeIntervalBetweenVisits(tpv_first, tpv_last); 
 		// first visit: 2067-05-22 ... last visit: 2069-11-02
@@ -55,6 +59,8 @@ public class ZoningTest {
 		assertTrue(p_days == 11); 
 		assertTrue(p_months == 5); 
 		assertTrue(p_years == 2); 
+		
+		
 		
 	}
 	
