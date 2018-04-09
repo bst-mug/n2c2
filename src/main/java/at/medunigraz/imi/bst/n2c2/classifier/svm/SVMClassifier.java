@@ -135,7 +135,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
     public void train(List<Patient> examples) {
         reset();
 
-        // TODO might be used for prediction as well
         examples.forEach(p -> dataset.add(createTrainingInstance(p)));
 
         LOG.debug("Training SVM with {} patients...", examples.size());
@@ -190,9 +189,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
     @Override
     public Eligibility predict(Patient p) {
-        // TODO consider overwriting as well for a single test set
-        // List<Patient> predict(List<Patient> patientList)
-
         if (this.dataset.size() == 0) {
             throw new UnsupportedOperationException("Dataset is empty. Check whether training was performed.");
         }
@@ -206,12 +202,8 @@ public class SVMClassifier extends CriterionBasedClassifier {
             throw new RuntimeException(e);
         }
 
-        // TODO check if needed
-        instance.setClassValue(cls);
-
-        // TODO process Patient in the same way as training
-
-        Eligibility eligibility = Eligibility.get(instance.classAttribute().value((int) cls));
+        String e = this.dataset.classAttribute().value((int) cls);
+        Eligibility eligibility = Eligibility.get(e);
 
         LOG.debug("Predicted {} for patient {}.", eligibility, p.getID());
 
