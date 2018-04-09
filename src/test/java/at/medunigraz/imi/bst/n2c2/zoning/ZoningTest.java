@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Period;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -45,6 +46,15 @@ public class ZoningTest {
 		PatientVisits tpv_last = pat.getLastVisit(); 
 		assertThat(tpv_last.getVisit_text(), containsString("PHYSICAL EXAMINATION"));
 		
+		Period p = pat.getTimeIntervalBetweenVisits(tpv_first, tpv_last); 
+		// first visit: 2067-05-22 ... last visit: 2069-11-02
+		int p_days = p.getDays(); 
+		int p_months = p.getMonths(); 
+		int p_years = p.getYears(); 
+		
+		assertTrue(p_days == 11); 
+		assertTrue(p_months == 5); 
+		assertTrue(p_years == 2); 
 		
 	}
 	
