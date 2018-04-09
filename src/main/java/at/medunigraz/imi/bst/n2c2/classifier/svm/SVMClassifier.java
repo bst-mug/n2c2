@@ -35,6 +35,9 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private static final int TEXT_INDEX = 1;
     private static final int ELIGIBILITY_INDEX = 2;
 
+    private static final int DEFAULT_COST = 1;
+    private static final int DEFAULT_WORDS_TO_KEEP = 1000;
+
     private Classifier model;
     private Instances dataset;
     private double cost;
@@ -46,7 +49,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     public SVMClassifier(Criterion criterion) {
-        this(criterion, 1);
+        this(criterion, DEFAULT_COST);
     }
 
     public void reset() {
@@ -66,7 +69,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         // 2 = radial basis function: exp(-gamma*|u-v|^2)
         // 3 = sigmoid: tanh(gamma*u'*v + coef0)
         // Linear kernel is commonly recommended for text classification
-        svm.setKernelType(new SelectedTag(0, LibSVM.TAGS_KERNELTYPE));
+        svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
 
         svm.setCost(cost);
 
@@ -104,7 +107,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         //f.setUseStoplist(Constants.CONFIG.getStoplist());
 
         // Makes the default value explicit (even though it's optimal)
-        f.setWordsToKeep(1000);
+        f.setWordsToKeep(DEFAULT_WORDS_TO_KEEP);
         //f.setDictionaryFileToSaveTo(new File("dict.csv"));
 
         // Overall, normalization does not have any positive impact
