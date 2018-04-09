@@ -68,13 +68,11 @@ public class SVMClassifier extends CriterionBasedClassifier {
         // Linear kernel is commonly recommended for text classification
         svm.setKernelType(new SelectedTag(0, LibSVM.TAGS_KERNELTYPE));
 
-        // FIXME optimize
         svm.setCost(cost);
 
         // ID index is removed from classification, but is available for debugging
         Remove remove = new Remove();
         remove.setAttributeIndicesArray(new int[]{ID_INDEX});
-        //remove.setAttributeIndices("1,2,4,5");
 
         MultiFilter mf = new MultiFilter();
         Filter f = initializeFilter();
@@ -172,23 +170,23 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private Instance createTrainingInstance(Patient p) {
-        return createInstance(p, true);
+        Instance instance = createInstance(p, this.dataset);
+
+        // Answer should be given only when training...
+        instance.setValue(ELIGIBILITY_INDEX, p.getEligibility(criterion).toString());
+
+        return instance;
     }
 
     private Instance createTestInstance(Patient p) {
-        return createInstance(p, false);
+        // TODO check if it works...
+        Instances testDataset = createEmptyDataset();
+        return createInstance(p, testDataset);
     }
 
-    private Instance createInstance(Patient p, boolean trainNotTest) {
+    private Instance createInstance(Patient p, Instances dataset) {
         DenseInstance instance = new DenseInstance(NUM_ATTRIBUTES);
-
-        // TODO receive as parameter...
-        if (trainNotTest) {
-            instance.setDataset(dataset);
-        } else {
-            // TODO check if it works...
-            instance.setDataset(createEmptyDataset());
-        }
+        instance.setDataset(dataset);
 
         // ID might be null during testing
         if (p.getID() != null) {
@@ -196,12 +194,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
         }
 
         instance.setValue(TEXT_INDEX, p.getText());
-
-        // TODO move to caller
-        // Answer should not be given when testing...
-        if (trainNotTest) {
-            instance.setValue(ELIGIBILITY_INDEX, p.getEligibility(criterion).toString());
-        }
 
         return instance;
     }
