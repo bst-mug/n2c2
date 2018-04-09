@@ -193,6 +193,10 @@ public class SVMClassifier extends CriterionBasedClassifier {
         // TODO consider overwriting as well for a single test set
         // List<Patient> predict(List<Patient> patientList)
 
+        if (this.dataset.size() == 0) {
+            throw new UnsupportedOperationException("Dataset is empty. Check whether training was performed.");
+        }
+
         Instance instance = createTestInstance(p);
 
         double cls = 0;
@@ -205,7 +209,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
         // TODO check if needed
         instance.setClassValue(cls);
 
-        // TODO check reset() was called
         // TODO process Patient in the same way as training
 
         Eligibility eligibility = Eligibility.get(instance.classAttribute().value((int) cls));
