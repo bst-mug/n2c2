@@ -152,7 +152,8 @@ public class CNNClassifier implements Classifier {
 		ComputationGraphConfiguration config = new NeuralNetConfiguration.Builder()
 				.trainingWorkspaceMode(WorkspaceMode.SINGLE).inferenceWorkspaceMode(WorkspaceMode.SINGLE)
 				.weightInit(WeightInit.RELU).activation(Activation.LEAKYRELU)
-				.updater(Adam.builder().learningRate(0.01).build()).convolutionMode(ConvolutionMode.Same).l2(0.0001)
+				.updater(Adam.builder().learningRate(0.01).build()).convolutionMode(ConvolutionMode.Same).l2(0.0001).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
+				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE)
 				.graphBuilder().addInputs("input")
 				.addLayer("cnn3",
 						new ConvolutionLayer.Builder().kernelSize(3, vectorSize).stride(1, vectorSize).nIn(1)
