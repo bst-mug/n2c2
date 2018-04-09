@@ -162,7 +162,7 @@ public class Patient {
 	  p = Period.between(d_visit1, d_visit2); 
 	  return p; 
   } // End of getTimeIntervalBetweenVisits() 
-    
+
   private Date getPastTimestamp(Date current_date, int months){
 	  Calendar c = Calendar.getInstance(); 
 	  c.setTime(current_date); 
