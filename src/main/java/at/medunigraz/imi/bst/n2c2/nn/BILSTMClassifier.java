@@ -4,10 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
+import org.deeplearning4j.earlystopping.EarlyStoppingConfiguration;
+import org.deeplearning4j.earlystopping.EarlyStoppingModelSaver;
+import org.deeplearning4j.earlystopping.EarlyStoppingResult;
+import org.deeplearning4j.earlystopping.saver.InMemoryModelSaver;
+import org.deeplearning4j.earlystopping.scorecalc.DataSetLossCalculator;
+import org.deeplearning4j.earlystopping.termination.MaxEpochsTerminationCondition;
+import org.deeplearning4j.earlystopping.termination.MaxScoreIterationTerminationCondition;
+import org.deeplearning4j.earlystopping.termination.MaxTimeIterationTerminationCondition;
+import org.deeplearning4j.earlystopping.termination.ScoreImprovementEpochTerminationCondition;
+import org.deeplearning4j.earlystopping.trainer.EarlyStoppingTrainer;
+import org.deeplearning4j.earlystopping.trainer.IEarlyStoppingTrainer;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
@@ -32,8 +44,6 @@ import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
@@ -59,7 +69,7 @@ public class BILSTMClassifier implements Classifier {
 	private int tbpttLength = 50;
 
 	// total number of training epochs
-	private int nEpochs = 100;
+	private int nEpochs = 40;
 
 	// specifies time series length
 	private int truncateLength = 64;
@@ -271,9 +281,107 @@ public class BILSTMClassifier implements Classifier {
 		this.truncateLength = maxLength;
 	}
 
-	@Override
-	public void train(List<Patient> examples) {
+	private void getSplits(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
+			List<Patient> testSplit) {
 
+		// TODO generalize
+		// --------------------------------------
+		// abdominal 60 split: 77 / 125 - 46 / 75
+		// abdominal 20 split: 77 / 125 - 16 / 25
+		// abdominal 20 split: 77 / 125 - 15 / 25
+		// --------------------------------------
+		// abdominal 100 : 77 / 125 - 77 / 25
+
+		int counterPos = 1;
+		int counterNeg = 1;
+
+		for (Patient patient : examples) {
+			if (patient.getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET)) {
+				if (counterPos > 62) {
+					testSplit.add(patient);
+				} else if (counterPos > 46) {
+					validationSplit.add(patient);
+					counterPos++;
+				} else {
+					trainingSplit.add(patient);
+					counterPos++;
+				}
+			} else {
+				if (counterNeg > 100) {
+					testSplit.add(patient);
+				} else if (counterNeg > 75) {
+					validationSplit.add(patient);
+					counterNeg++;
+				} else {
+					trainingSplit.add(patient);
+					counterNeg++;
+				}
+			}
+		}
+	}
+
+	private void trainWithEarlyStopping(List<Patient> examples) {
+
+		List<Patient> trainingSplit = new ArrayList<Patient>();
+		List<Patient> validationSplit = new ArrayList<Patient>();
+		List<Patient> testSplit = new ArrayList<Patient>();
+
+		// generate splits (60 20 20)
+		getSplits(examples, trainingSplit, validationSplit, testSplit);
+
+		N2c2PatientIterator training;
+		N2c2PatientIterator validation;
+		N2c2PatientIterator test;
+
+		try {
+			training = new N2c2PatientIterator(trainingSplit, wordVectors, miniBatchSize, truncateLength);
+			validation = new N2c2PatientIterator(validationSplit, wordVectors, miniBatchSize, truncateLength);
+			test = new N2c2PatientIterator(testSplit, wordVectors, miniBatchSize, truncateLength);
+
+			// early stopping on validation
+			EarlyStoppingModelSaver<MultiLayerNetwork> saver = new InMemoryModelSaver<>();
+			EarlyStoppingConfiguration<MultiLayerNetwork> esConf = new EarlyStoppingConfiguration.Builder<MultiLayerNetwork>()
+					.epochTerminationConditions(new MaxEpochsTerminationCondition(100),
+							new ScoreImprovementEpochTerminationCondition(5))
+					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(4, TimeUnit.HOURS),
+							new MaxScoreIterationTerminationCondition(7.5))
+					.scoreCalculator(new DataSetLossCalculator(validation, true)).modelSaver(saver).build();
+
+			// conduct early stopping training
+			IEarlyStoppingTrainer trainer = new EarlyStoppingTrainer(esConf, net, training);
+			EarlyStoppingResult result = trainer.fit();
+
+			LOG.info("Termination reason: " + result.getTerminationReason());
+			LOG.info("Termination details: " + result.getTerminationDetails());
+			LOG.info("Total epochs: " + result.getTotalEpochs());
+			LOG.info("Best epoch number: " + result.getBestModelEpoch());
+			LOG.info("Score at best epoch: " + result.getBestModelScore());
+
+			test.reset();
+			// run evaluation on test data
+			LOG.info("Printing TEST evaluation measurements");
+			Evaluation evaluationTest = net.evaluate(test);
+			LOG.info(evaluationTest.stats());
+
+			validation.reset();
+			// run evaluation on validation data
+			LOG.info("Printing VALIDAITON evaluation measurements");
+			Evaluation evaluationValidation = net.evaluate(validation);
+			LOG.info(evaluationValidation.stats());
+
+			training.reset();
+			// run evaluation on test data
+			LOG.info("Printing TRAINING evaluation measurements");
+			Evaluation evaluationTraining = net.evaluate(training);
+			LOG.info(evaluationTraining.stats());
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void trainFullSet(List<Patient> examples) {
 		// Print the number of parameters in the network (and for each layer)
 		Layer[] layers = net.getLayers();
 		int totalNumParams = 0;
@@ -295,24 +403,18 @@ public class BILSTMClassifier implements Classifier {
 
 				LOG.info("Epoch " + i + " complete. Starting evaluation:");
 
-				// run evaluation on training set (should be test set)
-				Evaluation evaluation = new Evaluation();
-				while (train.hasNext()) {
-					DataSet t = train.next();
-					INDArray features = t.getFeatureMatrix();
-					INDArray lables = t.getLabels();
-					INDArray inMask = t.getFeaturesMaskArray();
-					INDArray outMask = t.getLabelsMaskArray();
-					INDArray predicted = net.output(features, false, inMask, outMask);
-
-					evaluation.evalTimeSeries(lables, predicted, outMask);
-				}
-				train.reset();
+				// run evaluation on training data (change to test data)
+				Evaluation evaluation = net.evaluate(train);
 				LOG.info(evaluation.stats());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void train(List<Patient> examples) {
+		trainWithEarlyStopping(examples);
 	}
 
 	@Override
