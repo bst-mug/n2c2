@@ -3,11 +3,17 @@ package at.medunigraz.imi.bst.n2c2.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class Patient {
 
@@ -108,6 +114,13 @@ public class Patient {
     	return visit_text; 
     } // End of trimVisitText() 
     
+    /**
+     * getFirstVisit() returns the first PatientVisits object, according
+     * to the patient text file, which was parsed. This includes the parsed 
+     * date of the visit, the number of the visits (depending on their order 
+     * in the original patient file, and the text of the visit itself. 
+     * @return PatientVisits
+     */
     public PatientVisits getFirstVisit(){
     	PatientVisits pv = new PatientVisits(); 
     	if(getAllVisits().size()>0){
@@ -130,10 +143,7 @@ public class Patient {
     	ArrayList<PatientVisits> a_pv = getAllVisits(); 
     	Date date_ofLastVisit = getLastVisit().getVisit_date(); 
     	
-    	Calendar c = Calendar.getInstance(); 
-    	c.setTime(date_ofLastVisit); 
-    	c.add(Calendar.MONTH, -months);
-    	Date date_inthepast = c.getTime(); 
+    	Date date_inthepast = getPastTimestamp(date_ofLastVisit, months); 
     	
     	for(int i = 0; i<a_pv.size(); i++){
     		if(a_pv.get(i).getVisit_date().after(date_inthepast)){
@@ -145,9 +155,28 @@ public class Patient {
     } // End of getMultipleVisits() 
     
     
-//  public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2){
-//	// TODO 
-//} // End of getTimeIntervalBetweenVisits() 
+  public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2){
+	  Period p = null; 
+	  LocalDate d_visit1 = convertDateToLocalDate(visit1.getVisit_date()); 
+	  LocalDate d_visit2 = convertDateToLocalDate(visit2.getVisit_date()); 
+	  p = Period.between(d_visit1, d_visit2); 
+	  return p; 
+  } // End of getTimeIntervalBetweenVisits() 
     
+  private Date getPastTimestamp(Date current_date, int months){
+	  Calendar c = Calendar.getInstance(); 
+	  c.setTime(current_date); 
+	  c.add(Calendar.MONTH, -months);
+	  Date past_timestamp = c.getTime(); 
+	  return past_timestamp; 
+  } // End of getPastTimestamp()
+  
+  private LocalDate convertDateToLocalDate(Date d){
+	  Instant instant = d.toInstant(); 
+	  ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+	  LocalDate locDate = zdt.toLocalDate();
+	  return locDate; 
+  } // End of convertDateToLocalDate() 
+  
     
 } // End of class Patient
