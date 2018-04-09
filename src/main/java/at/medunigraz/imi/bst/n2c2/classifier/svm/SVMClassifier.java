@@ -12,6 +12,8 @@ import weka.classifiers.meta.FilteredClassifier;
 import weka.core.*;
 import weka.core.stemmers.SnowballStemmer;
 import weka.core.stemmers.Stemmer;
+import weka.core.stopwords.Null;
+import weka.core.stopwords.StopwordsHandler;
 import weka.core.tokenizers.AlphabeticTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.Filter;
@@ -58,7 +60,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private Classifier initializeModel() {
-        // TODO non-deterministic. see https://weka.wikispaces.com/LibSVM
+        // See https://weka.wikispaces.com/LibSVM for more info
         LibSVM svm = new LibSVM();
 
         // TODO try other kernels
@@ -90,7 +92,10 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
     private Filter initializeFilter() {
         StringToWordVector f = new StringToWordVector();
+
+        // First attribute is the text (after Remove filter)
         f.setAttributeIndices("first");
+
         f.setDoNotOperateOnPerClassBasis(true);
         f.setLowerCaseTokens(true);
         f.setMinTermFreq(1);
@@ -101,9 +106,11 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
         f.setTokenizer(getTokenizer());
 
-        // TODO check whether stopwords are removed before stemming
+        // Stemming is performed before stopword removal (so, stopwords can be stemmed versions)
+        f.setStopwordsHandler(getStopwordsHandler());
+
         //f.setStopwords(new File(refDir + "stopwords.txt"));
-        //f.setUseStoplist(Constants.CONFIG.getStoplist());
+        //f.setUseStoplist(true);
 
         // Makes the default value explicit (even though it's optimal)
         f.setWordsToKeep(DEFAULT_WORDS_TO_KEEP);
@@ -149,8 +156,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private Instances createEmptyDataset() {
         ArrayList<Attribute> attributes = (ArrayList<Attribute>) initializeAttributes();
 
-        // TODO maybe remove dependency on attributes by using a different constructor?
-        // TODO capacity > 1
+        // Capacity = 1 is the initial ArrayList capacity
         Instances data = new Instances(this.getClass().getName(), attributes, 1);
 
         data.setClassIndex(ELIGIBILITY_INDEX);
@@ -168,7 +174,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private Instance createTestInstance(Patient p) {
-        // TODO check if it works...
+        // Each test instance has its own, empty, dataset to avoid peeking.
         Instances testDataset = createEmptyDataset();
         return createInstance(p, testDataset);
     }
@@ -223,5 +229,19 @@ public class SVMClassifier extends CriterionBasedClassifier {
         Stemmer stemmer = new SnowballStemmer();
         ((SnowballStemmer) stemmer).setStemmer("english");
         return stemmer;
+    }
+
+    private StopwordsHandler getStopwordsHandler() {
+        // Null does nothing and is Weka's internal default
+        StopwordsHandler handler = new Null();
+
+        // Use for a default english list
+//        handler = new Rainbow();
+
+        // Use for a given list
+//        handler = new WordsFromFile();
+//        ((WordsFromFile) handler).setStopwords(new File("stopwords.txt"));
+
+        return handler;
     }
 }
