@@ -110,7 +110,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         //f.setDictionaryFileToSaveTo(new File("dict.csv"));
 
         // Overall, normalization does not have any positive impact
-        f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
+        //f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 
         f.setTFTransform(true);
         f.setIDFTransform(true);
