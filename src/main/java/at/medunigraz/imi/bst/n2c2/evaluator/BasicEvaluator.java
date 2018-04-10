@@ -14,10 +14,14 @@ public class BasicEvaluator extends AbstractEvaluator {
 
     @Override
     public double getAccuracyByCriterion(Criterion c) {
-        return metricsByCriterion.get(c).getAccuracy();
+        return getMetricsByCriterion(c).getAccuracy();
     }
 
     private Map<Criterion, Metrics> metricsByCriterion = new HashMap<>();
+
+    public Metrics getMetricsByCriterion(Criterion c) {
+        return metricsByCriterion.get(c);
+    }
 
     @Override
     public void evaluate(List<Patient> gold, List<Patient> results) {
