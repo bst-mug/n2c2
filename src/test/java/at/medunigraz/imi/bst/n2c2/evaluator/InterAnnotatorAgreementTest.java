@@ -30,7 +30,7 @@ public class InterAnnotatorAgreementTest {
         File results = new File(getClass().getResource(RESULTS).getFile());
 
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandard, results);
-        assertEquals(1, iaa.getF1(), 0.00001);
+        assertEquals(1, iaa.getAccuracy(), 0.00001);
     }
 
     public void evaluateWithParameters() throws FileNotFoundException {
@@ -43,6 +43,6 @@ public class InterAnnotatorAgreementTest {
         results.add(new Patient().withID("a").withCriterion(Criterion.ABDOMINAL, Eligibility.MET));
 
         iaa.evaluate(gold, results);
-        assertEquals(1, iaa.getF1(), 0.00001);
+        assertEquals(1, iaa.getAccuracy(), 0.00001);
     }
 }

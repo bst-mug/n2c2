@@ -12,8 +12,9 @@ import java.util.stream.Collectors;
 
 public class BasicEvaluator extends AbstractEvaluator {
 
-    private enum Match {
-        TP, FP, TN, FN, UNKNOWN;
+    @Override
+    public double getAccuracyByCriterion(Criterion c) {
+        return metricsByCriterion.get(c).getAccuracy();
     }
 
     private Map<Criterion, Metrics> metricsByCriterion = new HashMap<>();
@@ -65,9 +66,8 @@ public class BasicEvaluator extends AbstractEvaluator {
         metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
     }
 
-    @Override
-    public double getF1ByCriterion(Criterion c) {
-        return metricsByCriterion.get(c).getAccuracy();
+    private enum Match {
+        TP, FP, TN, FN, UNKNOWN
     }
 
     private Match comparePatients(Patient gold, Patient actual, Criterion criterion) {

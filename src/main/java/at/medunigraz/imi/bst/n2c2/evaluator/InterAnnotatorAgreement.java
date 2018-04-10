@@ -167,16 +167,8 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
         }
     }
 
-    private float getAccuracyByCriterion(Criterion criterion) {
-        return accuracyPerCriterion.getOrDefault(criterion, 0f);
-    }
-
-    public float getOverallAccuracy() {
-        return getAccuracyByCriterion(Criterion.OVERALL);
-    }
-
     @Override
-    public double getF1ByCriterion(Criterion c) {
-        return getAccuracyByCriterion(c);
+    public double getAccuracyByCriterion(Criterion c) {
+        return accuracyPerCriterion.getOrDefault(c, 0f);
     }
 }
