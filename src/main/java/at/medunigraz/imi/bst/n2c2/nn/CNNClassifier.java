@@ -239,7 +239,7 @@ public class CNNClassifier implements Classifier {
 	private void getSplits(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
 			List<Patient> testSplit) {
 
-		// TODO generalize
+		// TODO generalize 
 		// --------------------------------------
 		// abdominal 60 split: 77 / 125 - 46 / 75
 		// abdominal 20 split: 77 / 125 - 16 / 25
