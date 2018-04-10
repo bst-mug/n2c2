@@ -8,6 +8,6 @@ public class ConfigTest {
 
     @Test
     public void getSVMCost() {
-        assertEquals(1, Config.SVM_COST, 0.00001);
+        assertEquals(1, Config.SVM_COST_MAKES_DECISIONS, 0.00001);
     }
 }

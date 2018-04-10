@@ -12,7 +12,9 @@ import weka.classifiers.meta.FilteredClassifier;
 import weka.core.*;
 import weka.core.stemmers.SnowballStemmer;
 import weka.core.stemmers.Stemmer;
-import weka.core.tokenizers.NGramTokenizer;
+import weka.core.stopwords.Null;
+import weka.core.stopwords.StopwordsHandler;
+import weka.core.tokenizers.AlphabeticTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.Filter;
 import weka.filters.MultiFilter;
@@ -35,40 +37,46 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private static final int TEXT_INDEX = 1;
     private static final int ELIGIBILITY_INDEX = 2;
 
+    private static final int DEFAULT_COST = 1;
+    private static final int DEFAULT_WORDS_TO_KEEP = 1000;
+
     private Classifier model;
     private Instances dataset;
+    private double cost;
 
-    public SVMClassifier(Criterion criterion) {
+    public SVMClassifier(Criterion criterion, double cost) {
         super(criterion);
+        this.cost = cost;
+        this.model = initializeModel();
         reset();
     }
 
+    public SVMClassifier(Criterion criterion) {
+        this(criterion, DEFAULT_COST);
+    }
+
     public void reset() {
-        // TODO check what should be reset every time and what not
-        model = initializeModel();
-        dataset = null;
+        this.dataset = createEmptyDataset();
     }
 
     private Classifier initializeModel() {
-        // TODO non-deterministic. see https://weka.wikispaces.com/LibSVM
+        // See https://weka.wikispaces.com/LibSVM for more info
         LibSVM svm = new LibSVM();
 
-        // -K <int>
+        // TODO try other kernels
         // Set type of kernel function (default: 2)
         // 0 = linear: u'*v
         // 1 = polynomial: (gamma*u'*v + coef0)^degree
         // 2 = radial basis function: exp(-gamma*|u-v|^2)
         // 3 = sigmoid: tanh(gamma*u'*v + coef0)
         // Linear kernel is commonly recommended for text classification
-        svm.setKernelType(new SelectedTag(0, LibSVM.TAGS_KERNELTYPE));
+        svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
 
-        // FIXME optimize
-        svm.setCost(1);
+        svm.setCost(cost);
 
         // ID index is removed from classification, but is available for debugging
         Remove remove = new Remove();
         remove.setAttributeIndicesArray(new int[]{ID_INDEX});
-        //remove.setAttributeIndices("1,2,4,5");
 
         MultiFilter mf = new MultiFilter();
         Filter f = initializeFilter();
@@ -84,26 +92,32 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
     private Filter initializeFilter() {
         StringToWordVector f = new StringToWordVector();
+
+        // First attribute is the text (after Remove filter)
         f.setAttributeIndices("first");
+
         f.setDoNotOperateOnPerClassBasis(true);
         f.setLowerCaseTokens(true);
         f.setMinTermFreq(1);
         f.setOutputWordCounts(true);
 
-        // TODO evaluate impact
+        // Overall, stemmer does not have any positive impact
         //f.setStemmer(getStemmer());
 
         f.setTokenizer(getTokenizer());
 
-        // TODO check whether stopwords are removed before stemming
+        // Stemming is performed before stopword removal (so, stopwords can be stemmed versions)
+        f.setStopwordsHandler(getStopwordsHandler());
+
         //f.setStopwords(new File(refDir + "stopwords.txt"));
-        //f.setUseStoplist(Constants.CONFIG.getStoplist());
+        //f.setUseStoplist(true);
 
-        // Enable only for performance reasons
-        //f.setWordsToKeep(5000);
+        // Makes the default value explicit (even though it's optimal)
+        f.setWordsToKeep(DEFAULT_WORDS_TO_KEEP);
+        //f.setDictionaryFileToSaveTo(new File("dict.csv"));
 
-
-        // TODO L2 norm
+        // Overall, normalization does not have any positive impact
+        //f.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 
         f.setTFTransform(true);
         f.setIDFTransform(true);
@@ -111,7 +125,6 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private List<Attribute> initializeAttributes() {
-        // TODO method could be static
         List<Attribute> attributes = new ArrayList<>();
 
         List<String> eligibilityValues = new ArrayList<>();
@@ -125,19 +138,14 @@ public class SVMClassifier extends CriterionBasedClassifier {
         return attributes;
     }
 
-
     @Override
     public void train(List<Patient> examples) {
         reset();
 
-        createDataset(examples);
+        examples.forEach(p -> dataset.add(createTrainingInstance(p)));
 
         LOG.debug("Training SVM with {} patients...", examples.size());
 
-        // TODO dataset file cache
-
-        // TODO other kernels
-        // TODO other multi-class strategies
         try {
             model.buildClassifier(dataset);
         } catch (Exception e) {
@@ -148,8 +156,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private Instances createEmptyDataset() {
         ArrayList<Attribute> attributes = (ArrayList<Attribute>) initializeAttributes();
 
-        // TODO maybe remove dependency on attributes by using a different constructor?
-        // TODO capacity > 1
+        // Capacity = 1 is the initial ArrayList capacity
         Instances data = new Instances(this.getClass().getName(), attributes, 1);
 
         data.setClassIndex(ELIGIBILITY_INDEX);
@@ -157,31 +164,24 @@ public class SVMClassifier extends CriterionBasedClassifier {
         return data;
     }
 
-    private void createDataset(List<Patient> patients) {
-        dataset = createEmptyDataset();
-
-        // TODO might be used for prediction as well
-        patients.forEach(p -> dataset.add(createTrainingInstance(p)));
-    }
-
     private Instance createTrainingInstance(Patient p) {
-        return createInstance(p, true);
+        Instance instance = createInstance(p, this.dataset);
+
+        // Answer should be given only when training...
+        instance.setValue(ELIGIBILITY_INDEX, p.getEligibility(criterion).toString());
+
+        return instance;
     }
 
     private Instance createTestInstance(Patient p) {
-        return createInstance(p, false);
+        // Each test instance has its own, empty, dataset to avoid peeking.
+        Instances testDataset = createEmptyDataset();
+        return createInstance(p, testDataset);
     }
 
-    private Instance createInstance(Patient p, boolean trainNotTest) {
+    private Instance createInstance(Patient p, Instances dataset) {
         DenseInstance instance = new DenseInstance(NUM_ATTRIBUTES);
-
-        // TODO receive as parameter...
-        if (trainNotTest) {
-            instance.setDataset(dataset);
-        } else {
-            // TODO check if it works...
-            instance.setDataset(createEmptyDataset());
-        }
+        instance.setDataset(dataset);
 
         // ID might be null during testing
         if (p.getID() != null) {
@@ -190,19 +190,14 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
         instance.setValue(TEXT_INDEX, p.getText());
 
-        // TODO move to caller
-        // Answer should not be given when testing...
-        if (trainNotTest) {
-            instance.setValue(ELIGIBILITY_INDEX, p.getEligibility(criterion).toString());
-        }
-
         return instance;
     }
 
     @Override
     public Eligibility predict(Patient p) {
-        // TODO consider overwriting as well for a single test set
-        // List<Patient> predict(List<Patient> patientList)
+        if (this.dataset.size() == 0) {
+            throw new UnsupportedOperationException("Dataset is empty. Check whether training was performed.");
+        }
 
         Instance instance = createTestInstance(p);
 
@@ -213,13 +208,8 @@ public class SVMClassifier extends CriterionBasedClassifier {
             throw new RuntimeException(e);
         }
 
-        // TODO check if needed
-        instance.setClassValue(cls);
-
-        // TODO check reset() was called
-        // TODO process Patient in the same way as training
-
-        Eligibility eligibility = Eligibility.get(instance.classAttribute().value((int) cls));
+        String e = this.dataset.classAttribute().value((int) cls);
+        Eligibility eligibility = Eligibility.get(e);
 
         LOG.debug("Predicted {} for patient {}.", eligibility, p.getID());
 
@@ -227,16 +217,31 @@ public class SVMClassifier extends CriterionBasedClassifier {
     }
 
     private Tokenizer getTokenizer() {
-        // TODO explore other tokenizers
-        // TODO Check whether the default AlphabeticTokenizer still doesn't support diacritics
-        NGramTokenizer tokenizer = new NGramTokenizer();
-        // TODO explore larger ngrams
-        tokenizer.setNGramMaxSize(1);
+        // XXX AlphabeticTokenizer does not support diacritics (see hasMoreElements method).
+        // This shouldn't be an issue in English though.
+        Tokenizer tokenizer = new AlphabeticTokenizer();
         return tokenizer;
     }
 
     private Stemmer getStemmer() {
-        // TODO consider Porter
-        return new SnowballStemmer();
+        // XXX SnowballStemmer should be added to classpath.
+        // Easiest way is to add https://mvnrepository.com/artifact/com.github.rholder/snowball-stemmer to pom.xml
+        Stemmer stemmer = new SnowballStemmer();
+        ((SnowballStemmer) stemmer).setStemmer("english");
+        return stemmer;
+    }
+
+    private StopwordsHandler getStopwordsHandler() {
+        // Null does nothing and is Weka's internal default
+        StopwordsHandler handler = new Null();
+
+        // Use for a default english list
+//        handler = new Rainbow();
+
+        // Use for a given list
+//        handler = new WordsFromFile();
+//        ((WordsFromFile) handler).setStopwords(new File("stopwords.txt"));
+
+        return handler;
     }
 }
