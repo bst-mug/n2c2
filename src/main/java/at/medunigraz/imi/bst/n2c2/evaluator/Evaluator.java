@@ -9,8 +9,8 @@ public interface Evaluator {
 
     void evaluate(List<Patient> gold, List<Patient> results);
 
-    double getF1();
+    double getAccuracy();
 
-    double getF1ByCriterion(Criterion c);
+    double getAccuracyByCriterion(Criterion c);
 
 }

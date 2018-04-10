@@ -5,11 +5,10 @@ import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BasicEvaluatorTest {
 
@@ -31,6 +30,6 @@ public class BasicEvaluatorTest {
 
         evaluator.evaluate(gold, results);
 
-        assertEquals(0.5, evaluator.getF1ByCriterion(Criterion.ABDOMINAL), 0.00001);
+        assertEquals(0.5, evaluator.getAccuracyByCriterion(Criterion.ABDOMINAL), 0.00001);
     }
 }
