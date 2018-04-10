@@ -57,9 +57,9 @@ public class SVMCostOptimizer {
         }
     }
 
-    public static class CostMetric {
-        float exp = 0;
-        double metric = 0;
+    private static class CostMetric {
+        private float exp = 0;
+        private double metric = 0;
 
         @Override
         public String toString() {
