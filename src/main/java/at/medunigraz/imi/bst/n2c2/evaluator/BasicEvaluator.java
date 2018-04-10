@@ -4,6 +4,8 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Metrics;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BasicEvaluator extends AbstractEvaluator {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     @Override
     public double getAccuracyByCriterion(Criterion c) {
@@ -83,10 +87,12 @@ public class BasicEvaluator extends AbstractEvaluator {
             if (actual.getEligibility(criterion) == Eligibility.MET) {
                 return Match.TP;
             } else if (actual.getEligibility(criterion) == Eligibility.NOT_MET) {
+                LOG.debug("Got a false negative for {} in {}", criterion, actual.getID());
                 return Match.FN;
             }
         } else if (gold.getEligibility(criterion) == Eligibility.NOT_MET) {
             if (actual.getEligibility(criterion) == Eligibility.MET) {
+                LOG.debug("Got a false positive for {} in {}", criterion, actual.getID());
                 return Match.FP;
             } else if (actual.getEligibility(criterion) == Eligibility.NOT_MET) {
                 return Match.TN;
