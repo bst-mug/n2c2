@@ -152,8 +152,8 @@ public class CNNClassifier implements Classifier {
 		ComputationGraphConfiguration config = new NeuralNetConfiguration.Builder()
 				.trainingWorkspaceMode(WorkspaceMode.SINGLE).inferenceWorkspaceMode(WorkspaceMode.SINGLE)
 				.weightInit(WeightInit.RELU).activation(Activation.LEAKYRELU)
-				.updater(Adam.builder().learningRate(0.01).build()).convolutionMode(ConvolutionMode.Same).l2(0.0001).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
-				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE)
+				.updater(Adam.builder().learningRate(0.01).build()).convolutionMode(ConvolutionMode.Same).l2(0.0001)
+				.trainingWorkspaceMode(WorkspaceMode.SEPARATE).inferenceWorkspaceMode(WorkspaceMode.SEPARATE)
 				.graphBuilder().addInputs("input")
 				.addLayer("cnn3",
 						new ConvolutionLayer.Builder().kernelSize(3, vectorSize).stride(1, vectorSize).nIn(1)
@@ -279,32 +279,37 @@ public class CNNClassifier implements Classifier {
 
 		List<Patient> trainingSplit = new ArrayList<Patient>();
 		List<Patient> validationSplit = new ArrayList<Patient>();
+		List<Patient> combinedSplit = new ArrayList<Patient>();
 		List<Patient> testSplit = new ArrayList<Patient>();
 
 		// generate splits (60 20 20)
 		getSplits(examples, trainingSplit, validationSplit, testSplit);
+		combinedSplit.addAll(trainingSplit);
+		combinedSplit.addAll(validationSplit);
 
 		DataSetIterator training;
 		DataSetIterator validation;
+		DataSetIterator combined;
 		DataSetIterator test;
 
 		Random rng = new Random(12345);
 
 		training = getDataSetIterator(trainingSplit, wordVectors, miniBatchSize, truncateLength, rng);
 		validation = getDataSetIterator(validationSplit, wordVectors, miniBatchSize, truncateLength, rng);
+		combined = getDataSetIterator(combinedSplit, wordVectors, miniBatchSize, truncateLength, rng);
 		test = getDataSetIterator(testSplit, wordVectors, miniBatchSize, truncateLength, rng);
 
 		// early stopping on validation
 		EarlyStoppingModelSaver<ComputationGraph> saver = new InMemoryModelSaver<>();
 		EarlyStoppingConfiguration<ComputationGraph> esConf = new EarlyStoppingConfiguration.Builder<ComputationGraph>()
-				.epochTerminationConditions(new MaxEpochsTerminationCondition(100),
+				.epochTerminationConditions(new MaxEpochsTerminationCondition(40),
 						new ScoreImprovementEpochTerminationCondition(5))
 				.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(4, TimeUnit.HOURS),
-						new MaxScoreIterationTerminationCondition(7.5))
-				.scoreCalculator(new DataSetLossCalculatorCG(validation, true)).modelSaver(saver).build();
+						new MaxScoreIterationTerminationCondition(20))
+				.scoreCalculator(new DataSetLossCalculatorCG(test, true)).modelSaver(saver).build();
 
 		// conduct early stopping training
-		IEarlyStoppingTrainer trainer = new EarlyStoppingGraphTrainer(esConf, net, training);
+		IEarlyStoppingTrainer trainer = new EarlyStoppingGraphTrainer(esConf, net, combined);
 		EarlyStoppingResult result = trainer.fit();
 
 		LOG.info("Termination reason: " + result.getTerminationReason());
@@ -319,7 +324,12 @@ public class CNNClassifier implements Classifier {
 		LOG.info(evaluationTest.stats());
 
 		// run evaluation on validation data
-		LOG.info("Printing VALIDAITON evaluation measurements");
+		LOG.info("Printing COMBINED (TRAINING, VALIDATION) evaluation measurements");
+		Evaluation evaluationCombined = net.evaluate(combined);
+		LOG.info(evaluationCombined.stats());
+
+		// run evaluation on validation data
+		LOG.info("Printing VALIDATION evaluation measurements");
 		Evaluation evaluationValidation = net.evaluate(validation);
 		LOG.info(evaluationValidation.stats());
 
