@@ -4,6 +4,8 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Metrics;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +14,18 @@ import java.util.stream.Collectors;
 
 public class BasicEvaluator extends AbstractEvaluator {
 
-    private enum Match {
-        TP, FP, TN, FN, UNKNOWN;
+    private static final Logger LOG = LogManager.getLogger();
+
+    @Override
+    public double getAccuracyByCriterion(Criterion c) {
+        return getMetricsByCriterion(c).getAccuracy();
     }
 
     private Map<Criterion, Metrics> metricsByCriterion = new HashMap<>();
+
+    public Metrics getMetricsByCriterion(Criterion c) {
+        return metricsByCriterion.get(c);
+    }
 
     @Override
     public void evaluate(List<Patient> gold, List<Patient> results) {
@@ -65,9 +74,8 @@ public class BasicEvaluator extends AbstractEvaluator {
         metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
     }
 
-    @Override
-    public double getF1ByCriterion(Criterion c) {
-        return metricsByCriterion.get(c).getAccuracy();
+    private enum Match {
+        TP, FP, TN, FN, UNKNOWN
     }
 
     private Match comparePatients(Patient gold, Patient actual, Criterion criterion) {
@@ -79,10 +87,12 @@ public class BasicEvaluator extends AbstractEvaluator {
             if (actual.getEligibility(criterion) == Eligibility.MET) {
                 return Match.TP;
             } else if (actual.getEligibility(criterion) == Eligibility.NOT_MET) {
+                LOG.debug("Got a false negative for {} in {}", criterion, actual.getID());
                 return Match.FN;
             }
         } else if (gold.getEligibility(criterion) == Eligibility.NOT_MET) {
             if (actual.getEligibility(criterion) == Eligibility.MET) {
+                LOG.debug("Got a false positive for {} in {}", criterion, actual.getID());
                 return Match.FP;
             } else if (actual.getEligibility(criterion) == Eligibility.NOT_MET) {
                 return Match.TN;

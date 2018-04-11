@@ -61,4 +61,23 @@ public class Metrics {
         }
         return a;
     }
+
+    public double getSensitivity() {
+        return getRecall();
+    }
+
+    public double getSpecificity() {
+        if (tn == 0) {
+            return 0;
+        }
+        return tn / (double) (fp + tn);
+    }
+
+    public double getFalsePositives() {
+        return fp;
+    }
+
+    public double getFalseNegatives() {
+        return fn;
+    }
 }

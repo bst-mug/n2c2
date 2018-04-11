@@ -47,7 +47,7 @@ public class DAOEvaluatorIntegrationTest {
         PATIENT_DAO.toXML(patient, regeneratedSampleFile);
 
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandardFolder, equalResultsFolder);
-        assertEquals(1, iaa.getF1(), 0.00001);
+        assertEquals(1, iaa.getAccuracy(), 0.00001);
     }
 
     @Test
@@ -60,9 +60,9 @@ public class DAOEvaluatorIntegrationTest {
         PATIENT_DAO.toXML(patient, differentSampleFile);
 
         InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandardFolder, differentResultsFolder);
-        assertEquals(0, iaa.getF1(), 0.00001);
+        assertEquals(0, iaa.getAccuracy(), 0.00001);
 
         // TODO change after second version of iaa.py is released
-        // assertEquals(0.9230769, iaa.getF1(), 0.00001);  // 1 - 1/13 = 0.9230769
+        // assertEquals(0.9230769, iaa.getAccuracy(), 0.00001);  // 1 - 1/13 = 0.9230769
     }
 }
