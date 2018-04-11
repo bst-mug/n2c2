@@ -3,7 +3,7 @@ package at.medunigraz.imi.bst.n2c2.validation;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.BaselineClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
-import at.medunigraz.imi.bst.n2c2.evaluator.InterAnnotatorAgreement;
+import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -22,13 +22,13 @@ public class CrossValidatorTest {
 
     @Before
     public void SetUp() {
-        Assume.assumeTrue(InterAnnotatorAgreement.scriptExists());
+        Assume.assumeTrue(OfficialEvaluator.scriptExists());
     }
 
     @Test
     public void evaluate() throws FileNotFoundException {
         ClassifierFactory factory = new BaselineClassifierFactory();
-        Evaluator evaluator = new InterAnnotatorAgreement();
+        Evaluator evaluator = new OfficialEvaluator();
 
         // 3/5 not met is the expected output
         List<Patient> patients = new ArrayList<>();

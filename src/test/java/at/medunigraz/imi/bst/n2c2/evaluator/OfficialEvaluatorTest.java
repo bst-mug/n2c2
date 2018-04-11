@@ -14,14 +14,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class InterAnnotatorAgreementTest {
+public class OfficialEvaluatorTest {
 
     private static final String GOLD = "/gold-standard/";
     private static final String RESULTS = "/results/";
 
     @Before
     public void SetUp() {
-        Assume.assumeTrue(InterAnnotatorAgreement.scriptExists());
+        Assume.assumeTrue(OfficialEvaluator.scriptExists());
     }
 
     @Test
@@ -29,12 +29,12 @@ public class InterAnnotatorAgreementTest {
         File goldStandard = new File(getClass().getResource(GOLD).getFile());
         File results = new File(getClass().getResource(RESULTS).getFile());
 
-        InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandard, results);
+        OfficialEvaluator iaa = new OfficialEvaluator(goldStandard, results);
         assertEquals(1, iaa.getAccuracy(), 0.00001);
     }
 
     public void evaluateWithParameters() throws FileNotFoundException {
-        InterAnnotatorAgreement iaa = new InterAnnotatorAgreement();
+        OfficialEvaluator iaa = new OfficialEvaluator();
 
         List<Patient> gold = new ArrayList<>();
         gold.add(new Patient().withID("a").withCriterion(Criterion.ABDOMINAL, Eligibility.MET));

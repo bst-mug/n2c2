@@ -15,7 +15,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 
-public class InterAnnotatorAgreement extends AbstractEvaluator {
+public class OfficialEvaluator extends AbstractEvaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -40,14 +40,14 @@ public class InterAnnotatorAgreement extends AbstractEvaluator {
 
     private Map<Criterion, Float> accuracyPerCriterion = new TreeMap<>();
 
-    public InterAnnotatorAgreement() throws FileNotFoundException {
+    public OfficialEvaluator() throws FileNotFoundException {
         if (!scriptExists()) {
             throw new FileNotFoundException(IAA_SCRIPT);
         }
     }
 
     @Deprecated
-    public InterAnnotatorAgreement(File goldStandard, File results) {
+    public OfficialEvaluator(File goldStandard, File results) {
         this.goldStandard = goldStandard;
         this.results = results;
         evaluate();
