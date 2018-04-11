@@ -1,5 +1,6 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
+@Deprecated
 public class Metrics {
 
     private int tp, fp, tn, fn;
