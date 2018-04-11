@@ -1,7 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.integration;
 
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
-import at.medunigraz.imi.bst.n2c2.evaluator.InterAnnotatorAgreement;
+import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -33,7 +33,7 @@ public class DAOEvaluatorIntegrationTest {
 
     @Before
     public void SetUp() {
-        Assume.assumeTrue(InterAnnotatorAgreement.scriptExists());
+        Assume.assumeTrue(OfficialEvaluator.scriptExists());
     }
 
     @Test
@@ -46,8 +46,8 @@ public class DAOEvaluatorIntegrationTest {
         Patient patient = PATIENT_DAO.fromXML(sampleFile);
         PATIENT_DAO.toXML(patient, regeneratedSampleFile);
 
-        InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandardFolder, equalResultsFolder);
-        assertEquals(1, iaa.getAccuracy(), 0.00001);
+        OfficialEvaluator iaa = new OfficialEvaluator(goldStandardFolder, equalResultsFolder);
+        assertEquals(1, iaa.getOfficialRankingMeasure(), 0.00001);
     }
 
     @Test
@@ -59,10 +59,10 @@ public class DAOEvaluatorIntegrationTest {
         patient.withCriterion(Criterion.ABDOMINAL, Eligibility.MET);
         PATIENT_DAO.toXML(patient, differentSampleFile);
 
-        InterAnnotatorAgreement iaa = new InterAnnotatorAgreement(goldStandardFolder, differentResultsFolder);
-        assertEquals(0, iaa.getAccuracy(), 0.00001);
+        OfficialEvaluator iaa = new OfficialEvaluator(goldStandardFolder, differentResultsFolder);
+        assertEquals(0, iaa.getOfficialRankingMeasure(), 0.00001);
 
         // TODO change after second version of iaa.py is released
-        // assertEquals(0.9230769, iaa.getAccuracy(), 0.00001);  // 1 - 1/13 = 0.9230769
+        // assertEquals(0.9230769, iaa.getOfficialRankingMeasure(), 0.00001);  // 1 - 1/13 = 0.9230769
     }
 }

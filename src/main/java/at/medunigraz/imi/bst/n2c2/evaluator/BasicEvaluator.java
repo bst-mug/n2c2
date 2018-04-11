@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class BasicEvaluator extends AbstractEvaluator {
+public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public double getAccuracyByCriterion(Criterion c) {
+    public double getOfficialRankingMeasureByCriterion(Criterion c) {
         return getMetricsByCriterion(c).getAccuracy();
     }
 
@@ -74,12 +74,17 @@ public class BasicEvaluator extends AbstractEvaluator {
         metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
     }
 
+    @Override
+    public double getOfficialRankingMeasure() {
+        return getOfficialRankingMeasureByCriterion(Criterion.OVERALL);
+    }
+
     private enum Match {
         TP, FP, TN, FN, UNKNOWN
     }
 
     private Match comparePatients(Patient gold, Patient actual, Criterion criterion) {
-        if (Eligibility.values().length != 2) {
+        if (Eligibility.classifiableValues().length != 2) {
             throw new UnsupportedOperationException("Multi-class comparison is not supported.");
         }
 

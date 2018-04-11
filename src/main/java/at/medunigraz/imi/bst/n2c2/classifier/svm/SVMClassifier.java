@@ -128,7 +128,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
         List<Attribute> attributes = new ArrayList<>();
 
         List<String> eligibilityValues = new ArrayList<>();
-        Arrays.stream(Eligibility.values()).forEach(e -> eligibilityValues.add(e.toString()));
+        Arrays.stream(Eligibility.classifiableValues()).forEach(e -> eligibilityValues.add(e.toString()));
 
         List<String> textValue = null;
         attributes.add(new Attribute("id", textValue));

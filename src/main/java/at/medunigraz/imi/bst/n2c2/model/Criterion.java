@@ -21,10 +21,23 @@ public enum Criterion {
     MAJOR_DIABETES,
     MAKES_DECISIONS,
     MI_6MOS,
-    OVERALL;
+    @Deprecated
+    OVERALL,
+    OVERALL_MICRO,
+    OVERALL_MACRO;
 
     public static Criterion get(String value) {
-        return valueOf(value.replace('-', '_').toUpperCase());
+        String cleanedValue = value.replaceAll("[()]", "").replace('-', '_').replace(' ', '_');
+        return valueOf(cleanedValue.toUpperCase());
+    }
+
+    public static boolean isValid(String value) {
+        try {
+            get(value);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -35,6 +48,8 @@ public enum Criterion {
     public static Criterion[] classifiableValues() {
         Set<Criterion> ret = new HashSet<>(Arrays.asList(values()));
         ret.remove(Criterion.OVERALL);
+        ret.remove(Criterion.OVERALL_MICRO);
+        ret.remove(Criterion.OVERALL_MACRO);
         return ret.toArray(new Criterion[]{});
     }
 }

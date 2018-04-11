@@ -83,6 +83,12 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<target>
+                                <!-- Evaluation script -->
+                                <get
+                                        src="https://raw.githubusercontent.com/filannim/2018_n2c2_evaluation_scripts/master/track1_eval.py"
+                                        dest="${project.build.directory}/track1_eval.py"
+                                        verbose="false" usetimestamp="true"/>
+                                <!-- Sample file -->
 								<get
 									src="https://n2c2.dbmi.hms.harvard.edu/files/n2c2_sample_file_annotations.zip"
 									dest="${project.build.directory}/n2c2_sample_file_annotations.zip"
