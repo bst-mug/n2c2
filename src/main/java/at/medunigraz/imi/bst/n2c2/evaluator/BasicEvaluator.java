@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class BasicEvaluator extends AbstractEvaluator {
+public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public double getAccuracyByCriterion(Criterion c) {
+    public double getOfficialRankingMeasureByCriterion(Criterion c) {
         return getMetricsByCriterion(c).getAccuracy();
     }
 
@@ -72,6 +72,11 @@ public class BasicEvaluator extends AbstractEvaluator {
         }
 
         metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
+    }
+
+    @Override
+    public double getOfficialRankingMeasure() {
+        return getOfficialRankingMeasureByCriterion(Criterion.OVERALL);
     }
 
     private enum Match {

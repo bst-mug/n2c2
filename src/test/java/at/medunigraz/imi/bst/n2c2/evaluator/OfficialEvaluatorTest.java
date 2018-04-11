@@ -30,7 +30,7 @@ public class OfficialEvaluatorTest {
         File results = new File(getClass().getResource(RESULTS).getFile());
 
         OfficialEvaluator iaa = new OfficialEvaluator(goldStandard, results);
-        assertEquals(1, iaa.getAccuracy(), 0.00001);
+        assertEquals(1, iaa.getOfficialRankingMeasure(), 0.00001);
     }
 
     public void evaluateWithParameters() throws FileNotFoundException {
@@ -43,6 +43,6 @@ public class OfficialEvaluatorTest {
         results.add(new Patient().withID("a").withCriterion(Criterion.ABDOMINAL, Eligibility.MET));
 
         iaa.evaluate(gold, results);
-        assertEquals(1, iaa.getAccuracy(), 0.00001);
+        assertEquals(1, iaa.getOfficialRankingMeasure(), 0.00001);
     }
 }

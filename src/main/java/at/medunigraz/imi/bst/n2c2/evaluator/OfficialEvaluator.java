@@ -15,7 +15,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 
-public class OfficialEvaluator extends AbstractEvaluator {
+public class OfficialEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -110,6 +110,11 @@ public class OfficialEvaluator extends AbstractEvaluator {
         evaluate();
     }
 
+    @Override
+    public double getOfficialRankingMeasure() {
+        return getOfficialRankingMeasureByCriterion(Criterion.OVERALL);
+    }
+
     private File createDirAndSave(List<Patient> patients, String prefix) throws IOException {
         File ret = Files.createTempDirectory(prefix).toFile();
         DatasetUtil.saveToFolder(patients, ret);
@@ -168,7 +173,7 @@ public class OfficialEvaluator extends AbstractEvaluator {
     }
 
     @Override
-    public double getAccuracyByCriterion(Criterion c) {
+    public double getOfficialRankingMeasureByCriterion(Criterion c) {
         return accuracyPerCriterion.getOrDefault(c, 0f);
     }
 }
