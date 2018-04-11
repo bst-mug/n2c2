@@ -79,7 +79,7 @@ public class BasicEvaluator extends AbstractEvaluator {
     }
 
     private Match comparePatients(Patient gold, Patient actual, Criterion criterion) {
-        if (Eligibility.values().length != 2) {
+        if (Eligibility.classifiableValues().length != 2) {
             throw new UnsupportedOperationException("Multi-class comparison is not supported.");
         }
 
