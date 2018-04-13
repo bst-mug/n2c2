@@ -60,9 +60,6 @@ public class DAOEvaluatorIntegrationTest {
         PATIENT_DAO.toXML(patient, differentSampleFile);
 
         OfficialEvaluator iaa = new OfficialEvaluator(goldStandardFolder, differentResultsFolder);
-        assertEquals(0, iaa.getOfficialRankingMeasure(), 0.00001);
-
-        // TODO change after second version of iaa.py is released
-        // assertEquals(0.9230769, iaa.getOfficialRankingMeasure(), 0.00001);  // 1 - 1/13 = 0.9230769
+        assertEquals(0.915, iaa.getOfficialRankingMeasure(), 0.00001);
     }
 }
