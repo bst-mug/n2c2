@@ -2,10 +2,9 @@ language: java
 jdk:
   - oraclejdk8
   - oraclejdk9
-addons:
-  apt:
-    packages:
-      - python3
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install python3
 script: mvn test -B
 after_success:
   - mvn clean test jacoco:report coveralls:report
