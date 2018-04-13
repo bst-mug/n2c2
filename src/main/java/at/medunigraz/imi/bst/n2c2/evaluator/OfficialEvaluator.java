@@ -32,7 +32,7 @@ public class OfficialEvaluator implements Evaluator {
     private static final List<String> COMMAND = new ArrayList<>();
 
     static {
-        COMMAND.add("python");
+        COMMAND.add("python3");
         COMMAND.add(IAA_SCRIPT);
     }
 
