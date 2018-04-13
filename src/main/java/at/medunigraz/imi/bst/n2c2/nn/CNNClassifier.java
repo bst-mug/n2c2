@@ -71,7 +71,7 @@ public class CNNClassifier implements Classifier {
 	private int tbpttLength = 50;
 
 	// total number of training epochs
-	private int nEpochs = 40;
+	private int nEpochs = 100;
 
 	// specifies time series length
 	private int truncateLength = 64;
@@ -239,7 +239,7 @@ public class CNNClassifier implements Classifier {
 	private void getSplits(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
 			List<Patient> testSplit) {
 
-		// TODO generalize 
+		// TODO generalize
 		// --------------------------------------
 		// abdominal 60 split: 77 / 125 - 46 / 75
 		// abdominal 20 split: 77 / 125 - 16 / 25
@@ -342,6 +342,44 @@ public class CNNClassifier implements Classifier {
 
 	private void trainFullSet(List<Patient> examples) {
 
+		List<Patient> trainingSplit = new ArrayList<Patient>();
+		List<Patient> validationSplit = new ArrayList<Patient>();
+		List<Patient> combinedSplit = new ArrayList<Patient>();
+		List<Patient> testSplit = new ArrayList<Patient>();
+
+		// generate splits (60 20 20)
+		getSplits(examples, trainingSplit, validationSplit, testSplit);
+		combinedSplit.addAll(trainingSplit);
+		combinedSplit.addAll(validationSplit);
+
+		DataSetIterator training;
+		DataSetIterator validation;
+		DataSetIterator combined;
+		DataSetIterator test;
+
+		Random rng = new Random(12345);
+
+		training = getDataSetIterator(trainingSplit, wordVectors, miniBatchSize, truncateLength, rng);
+		validation = getDataSetIterator(validationSplit, wordVectors, miniBatchSize, truncateLength, rng);
+		combined = getDataSetIterator(combinedSplit, wordVectors, miniBatchSize, truncateLength, rng);
+		test = getDataSetIterator(testSplit, wordVectors, miniBatchSize, truncateLength, rng);
+
+		for (int i = 0; i < nEpochs; i++) {
+			net.fit(combined);
+			combined.reset();
+			LOG.info("Epoch " + i + " complete.");
+			LOG.info("Starting TRAINING evaluation:");
+
+			// run evaluation on combined data
+			Evaluation evaluationCombined = net.evaluate(combined);
+			LOG.info(evaluationCombined.stats());
+
+			LOG.info("Starting TEST evaluation:");
+			// run evaluation on test data
+			Evaluation evaluationTest = net.evaluate(test);
+			LOG.info(evaluationTest.stats());
+			test.reset();
+		}
 	}
 
 	private static DataSetIterator getDataSetIterator(List<Patient> patients, WordVectors wordVectors,
@@ -367,7 +405,8 @@ public class CNNClassifier implements Classifier {
 
 	@Override
 	public void train(List<Patient> examples) {
-		trainWithEarlyStopping(examples);
+		// trainWithEarlyStopping(examples);
+		trainFullSet(examples);
 	}
 
 	@Override

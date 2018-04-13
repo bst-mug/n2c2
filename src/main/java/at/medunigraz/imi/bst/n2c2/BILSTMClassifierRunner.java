@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
-import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.BILSTMClassifier;
+import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
 public class BILSTMClassifierRunner {
 
