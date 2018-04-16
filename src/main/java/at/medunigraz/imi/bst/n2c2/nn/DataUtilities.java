@@ -60,8 +60,14 @@ public class DataUtilities {
 		System.out.println("\n" + fileCount + " files and " + dirCount + " directories extracted to: " + outputPath);
 	}
 
-	public List<String> getSentences(String narrative) {
-		String abbreviations = "\\d|Mr|Dr|Drs|Ms|c|C";
+	/**
+	 * Getting cleaned sented presetion out of narrative as (problem-) list.
+	 * 
+	 * @param narrative
+	 * @return List<String> Problem list.
+	 */
+	public static List<String> getSentences(String narrative) {
+		String abbreviations = "\\d|[mM][rR]|[dD][rR]|[dD][rR][sS]|[sM][sS]|[cC]";
 
 		String cleanedNarrative = "";
 		String tempString = "";
@@ -73,7 +79,7 @@ public class DataUtilities {
 				if (line.length() > 0) {
 					tempString = line.trim();
 					if (tempString.length() > 0)
-						cleanedNarrative += tempString.replaceAll("[\t\\*\\*_\\%]+", " ").trim() + "\n";
+						cleanedNarrative += tempString.replaceAll("[\t\\*\\*_\\%=#]+", " ").trim() + "\n";
 				}
 			}
 		} catch (IOException e) {
@@ -94,10 +100,14 @@ public class DataUtilities {
 			}
 		}
 
-		// post cleaning
-		// TODO
+		// post cleansing
+		ArrayList<String> cleandedSentences = new ArrayList<String>();
+		for (String sentence : sentences) {
+			String cleandedSentence = sentence.replaceAll("&nbsp;|<BR>|\\s+|--", " ");
+			cleandedSentences.add(cleandedSentence.trim());
+		}
+		cleandedSentences.forEach(sentence -> System.out.println(sentence));
 
-		sentences.forEach(sentence -> System.out.println(sentence.trim()));
 		return sentences;
 	}
 }

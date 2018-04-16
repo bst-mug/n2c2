@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.xml.sax.SAXException;
 
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
@@ -17,7 +17,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class DataUtilitiesTest {
 
-	@Test
+	@Ignore
 	public void train() {
 
 		// read in patients
@@ -32,8 +32,8 @@ public class DataUtilitiesTest {
 				patients.add(new PatientDAO().fromXML(patientSample));
 			}
 
-			System.out.println(patients.get(3).getID());
-			new DataUtilities().getSentences(patients.get(3).getText());
+			System.out.println(patients.get(200).getID());
+			DataUtilities.getSentences(patients.get(200).getText());
 
 		} catch (IOException e) {
 			e.printStackTrace();
