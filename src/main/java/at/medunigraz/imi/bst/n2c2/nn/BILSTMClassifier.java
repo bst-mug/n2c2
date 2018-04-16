@@ -98,6 +98,10 @@ public class BILSTMClassifier implements Classifier {
 
 	private static final Logger LOG = LogManager.getLogger();
 
+	public BILSTMClassifier() {
+		throw new org.apache.commons.lang.NotImplementedException("BILSTMClassifier empty constructor is not implemented!");
+	}
+
 	public BILSTMClassifier(List<Patient> examples, String pathToWordVectors) {
 
 		this.patientExamples = examples;
@@ -594,6 +598,15 @@ public class BILSTMClassifier implements Classifier {
 
 	@Override
 	public void train(List<Patient> examples) {
+		//if (examples == predefined list)	// 2 lists: 1 for 100% (?); 1 for 60% (size?)
+		// do not train;
+		// try to load the model from a file;
+		//		if (file does not exist)
+		//             retrain()
+
+		// else
+		// train on new list
+
 		trainFullSetBML(examples);
 	}
 
