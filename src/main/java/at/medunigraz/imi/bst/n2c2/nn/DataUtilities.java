@@ -6,10 +6,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Refactored from dl4j examples.
@@ -53,5 +58,46 @@ public class DataUtilities {
 			}
 		}
 		System.out.println("\n" + fileCount + " files and " + dirCount + " directories extracted to: " + outputPath);
+	}
+
+	public List<String> getSentences(String narrative) {
+		String abbreviations = "\\d|Mr|Dr|Drs|Ms|c|C";
+
+		String cleanedNarrative = "";
+		String tempString = "";
+
+		// cleansing beginning input lines
+		try {
+			List<String> lines = IOUtils.readLines(new StringReader(narrative));
+			for (String line : lines) {
+				if (line.length() > 0) {
+					tempString = line.trim();
+					if (tempString.length() > 0)
+						cleanedNarrative += tempString.replaceAll("[\t\\*\\*_\\%]+", " ").trim() + "\n";
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// new line split logic
+		String[] splits = cleanedNarrative.split("\n(?=[A-Z]|[0-9])");
+		ArrayList<String> sentences = new ArrayList<String>();
+
+		// period character split logic
+		for (String split : splits) {
+			split = split.replaceAll("[\r\n\\s]+", " ").trim();
+			split = split.replaceAll("\\.+", ".").trim();
+			if (split.length() > 0) {
+				sentences.addAll(Arrays.asList(split.split("(?<!" + abbreviations + ")(\\.)(\\s+)")));
+			}
+		}
+
+		// post cleaning
+		// TODO
+
+		sentences.forEach(sentence -> System.out.println(sentence.trim()));
+		return sentences;
 	}
 }

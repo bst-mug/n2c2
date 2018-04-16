@@ -3,7 +3,9 @@ package at.medunigraz.imi.bst.n2c2.nn;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -49,6 +51,8 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
@@ -73,7 +77,7 @@ public class BILSTMClassifier implements Classifier {
 	private int tbpttLength = 50;
 
 	// total number of training epochs
-	private int nEpochs = 100;
+	private int nEpochs = 50;
 
 	// specifies time series length
 	private int truncateLength = 64;
@@ -94,9 +98,29 @@ public class BILSTMClassifier implements Classifier {
 	private MultiLayerNetwork net;
 
 	// location of precalculated vectors
-	private String wordVectorsPath = "C:/Users/Markus/Downloads/GoogleNews-vectors-negative300.bin.gz";
+	private String wordVectorsPath = "C:\\Users\\Markus\\Downloads\\GoogleNews-vectors-negative300.bin.gz";
+
+	// criterion index
+	private Map<Criterion, Integer> criterionIndex = new HashMap<Criterion, Integer>();
 
 	private static final Logger LOG = LogManager.getLogger();
+
+	public BILSTMClassifier() {
+	}
+
+	public BILSTMClassifier(String pathToWordVectors, String modelName) {
+
+		this.wordVectorsPath = pathToWordVectors;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
+
+		initializeTokenizer();
+		initializeCriterionIndex();
+
+		// TODO load from persisted variable via properties file
+		this.truncateLength = 5305;
+		this.initializeNetworkFromFile(modelName);
+
+	}
 
 	public BILSTMClassifier(List<Patient> examples, String pathToWordVectors) {
 
@@ -134,9 +158,34 @@ public class BILSTMClassifier implements Classifier {
 		LOG.info("Vector size    :\t" + vectorSize);
 	}
 
+	private void initializeCriterionIndex() {
+		this.criterionIndex.put(Criterion.ABDOMINAL, 0);
+		this.criterionIndex.put(Criterion.ADVANCED_CAD, 1);
+		this.criterionIndex.put(Criterion.ALCOHOL_ABUSE, 2);
+		this.criterionIndex.put(Criterion.ASP_FOR_MI, 3);
+		this.criterionIndex.put(Criterion.CREATININE, 4);
+		this.criterionIndex.put(Criterion.DIETSUPP_2MOS, 5);
+		this.criterionIndex.put(Criterion.DRUG_ABUSE, 6);
+		this.criterionIndex.put(Criterion.ENGLISH, 7);
+		this.criterionIndex.put(Criterion.HBA1C, 8);
+		this.criterionIndex.put(Criterion.KETO_1YR, 9);
+		this.criterionIndex.put(Criterion.MAJOR_DIABETES, 10);
+		this.criterionIndex.put(Criterion.MAKES_DECISIONS, 11);
+		this.criterionIndex.put(Criterion.MI_6MOS, 12);
+	}
+
 	private void initializeTokenizer() {
 		tokenizerFactory = new DefaultTokenizerFactory();
 		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+	}
+
+	public void initializeNetworkFromFile(String modelFile) {
+		try {
+			File networkFile = new File(getClass().getResource("/models/" + modelFile).getPath());
+			this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -490,15 +539,36 @@ public class BILSTMClassifier implements Classifier {
 
 			for (int i = 0; i < nEpochs; i++) {
 
-				net.fit(fullSet);
-				fullSet.reset();
+				// net.fit(fullSet);
+				// fullSet.reset();
+				//
+				// LOG.info("Epoch " + i + " complete.");
+				// LOG.info("Starting FULL SET evaluation:");
+				//
+				// EvaluationBinary eb = new EvaluationBinary();
+				// while (fullSet.hasNext()) {
+				// DataSet t = fullSet.next();
+				// INDArray features = t.getFeatureMatrix();
+				// INDArray lables = t.getLabels();
+				// INDArray inMask = t.getFeaturesMaskArray();
+				// INDArray outMask = t.getLabelsMaskArray();
+				// INDArray predicted = net.output(features, false, inMask,
+				// outMask);
+				//
+				// eb.eval(lables, predicted, outMask);
+				// }
+				// fullSet.reset();
+				// LOG.info(eb.stats());
+
+				net.fit(combined);
+				combined.reset();
 
 				LOG.info("Epoch " + i + " complete.");
-				LOG.info("Starting FULL SET evaluation:");
+				LOG.info("Starting COMBINED (TRAINING + VALIDATION) evaluation:");
 
 				EvaluationBinary eb = new EvaluationBinary();
-				while (fullSet.hasNext()) {
-					DataSet t = fullSet.next();
+				while (combined.hasNext()) {
+					DataSet t = combined.next();
 					INDArray features = t.getFeatureMatrix();
 					INDArray lables = t.getLabels();
 					INDArray inMask = t.getFeaturesMaskArray();
@@ -507,47 +577,24 @@ public class BILSTMClassifier implements Classifier {
 
 					eb.eval(lables, predicted, outMask);
 				}
-				fullSet.reset();
-				LOG.info(eb.stats());
+				combined.reset();
+				LOG.info(System.getProperty("line.separator") + eb.stats());
 
-				// net.fit(combined);
-				// combined.reset();
-				//
-				// LOG.info("Epoch " + i + " complete.");
-				// LOG.info("Starting COMBINED (TRAINING + VALIDATION)
-				// evaluation:");
-				//
-				// eb = new EvaluationBinary();
-				// while (combined.hasNext()) {
-				// DataSet t = combined.next();
-				// INDArray features = t.getFeatureMatrix();
-				// INDArray lables = t.getLabels();
-				// INDArray inMask = t.getFeaturesMaskArray();
-				// INDArray outMask = t.getLabelsMaskArray();
-				// INDArray predicted = net.output(features, false, inMask,
-				// outMask);
-				//
-				// eb.eval(lables, predicted, outMask);
-				// }
-				// combined.reset();
-				// LOG.info(eb.stats());
-				//
-				// LOG.info("Starting TEST evaluation:");
-				// // run evaluation on test data
-				// eb = new EvaluationBinary();
-				// while (test.hasNext()) {
-				// DataSet t = test.next();
-				// INDArray features = t.getFeatureMatrix();
-				// INDArray lables = t.getLabels();
-				// INDArray inMask = t.getFeaturesMaskArray();
-				// INDArray outMask = t.getLabelsMaskArray();
-				// INDArray predicted = net.output(features, false, inMask,
-				// outMask);
-				//
-				// eb.eval(lables, predicted, outMask);
-				// }
-				// test.reset();
-				// LOG.info(eb.stats());
+				LOG.info("Starting TEST evaluation:");
+				// run evaluation on test data
+				eb = new EvaluationBinary();
+				while (test.hasNext()) {
+					DataSet t = test.next();
+					INDArray features = t.getFeatureMatrix();
+					INDArray lables = t.getLabels();
+					INDArray inMask = t.getFeaturesMaskArray();
+					INDArray outMask = t.getLabelsMaskArray();
+					INDArray predicted = net.output(features, false, inMask, outMask);
+
+					eb.eval(lables, predicted, outMask);
+				}
+				test.reset();
+				LOG.info(System.getProperty("line.separator") + eb.stats());
 			}
 
 			// save model after n epochs
@@ -597,18 +644,93 @@ public class BILSTMClassifier implements Classifier {
 		trainFullSetBML(examples);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(at.medunigraz.
+	 * imi.bst.n2c2.model.Patient)
+	 */
 	@Override
 	public Eligibility predict(Patient p) {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(at.medunigraz.
+	 * imi.bst.n2c2.model.Patient, at.medunigraz.imi.bst.n2c2.model.Criterion)
+	 */
 	@Override
 	public Eligibility predict(Patient p, Criterion c) {
-		return null;
+
+		String patientNarrative = p.getText();
+
+		INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
+		INDArray networkOutput = net.output(features);
+
+		int timeSeriesLength = networkOutput.size(2);
+		INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(),
+				NDArrayIndex.point(timeSeriesLength - 1));
+
+		double probabilityForCriterion = 0.0;
+		probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
+		Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
+
+		LOG.info("\n\n-------------------------------");
+		LOG.info("Patient narrative: \n" + patientNarrative);
+		LOG.info("\n\nProbabilities at last time step for {}", c.name());
+		LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
+		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
+
+		return eligibility;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(java.util.List)
+	 */
 	@Override
 	public List<Patient> predict(List<Patient> patientList) {
-		return null;
+		patientList.forEach((k) -> {
+			criterionIndex.forEach((c, v) -> {
+				k.withCriterion(c, this.predict(k, c));
+			});
+		});
+		return patientList;
+	}
+
+	/**
+	 * Load features from narrative.
+	 * 
+	 * @param reviewContents
+	 *            Narrative content.
+	 * @param maxLength
+	 *            Maximum length of token series length.
+	 * @return Time series feature presentation of narrative.
+	 */
+	private INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
+
+		List<String> tokens = tokenizerFactory.create(reviewContents).getTokens();
+		List<String> tokensFiltered = new ArrayList<>();
+		for (String t : tokens) {
+			if (wordVectors.hasWord(t))
+				tokensFiltered.add(t);
+		}
+		int outputLength = Math.max(maxLength, tokensFiltered.size());
+
+		INDArray features = Nd4j.create(1, vectorSize, outputLength);
+
+		for (int j = 0; j < tokens.size() && j < maxLength; j++) {
+			String token = tokens.get(j);
+			INDArray vector = wordVectors.getWordVectorMatrix(token);
+			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
+					vector);
+		}
+		return features;
 	}
 }
