@@ -1,6 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.stats;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -10,6 +11,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.Map;
 
 public class XMLStatsWriter extends AbstractStatsWriter {
 
@@ -53,6 +55,21 @@ public class XMLStatsWriter extends AbstractStatsWriter {
         metricElement.appendChild(doc.createTextNode(String.valueOf(accuracy)));
 
         topicElement.appendChild(metricElement);
+    }
+
+    public void write(OfficialMetrics metrics) {
+        for (Criterion c : Criterion.values()) {
+            Element topicElement = doc.createElement(GROUPED_BY.toLowerCase());
+            topicElement.setAttribute("name", c.name());
+            rootElement.appendChild(topicElement);
+
+            Map<String, Double> metricsByCriterion = metrics.getMetrics(c);
+            for (Map.Entry<String, Double> entry : metricsByCriterion.entrySet()) {
+                Element metricElement = doc.createElement(entry.getKey().toLowerCase());
+                metricElement.appendChild(doc.createTextNode(String.valueOf(entry.getValue())));
+                topicElement.appendChild(metricElement);
+            }
+        }
     }
 
     @Override

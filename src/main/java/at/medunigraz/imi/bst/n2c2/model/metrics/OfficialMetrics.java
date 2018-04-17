@@ -14,9 +14,22 @@ public class OfficialMetrics implements Metrics {
      */
     private static final int NUM_TOTAL_FIELDS = 9;
 
+    private static final String PRECISION_MET = "Prec_met";
+    private static final String RECALL_MET = "Rec_met";
+    private static final String SPECIFICITY_MET = "Speci_met";
+    private static final String F1_MET = "F1_met";
+
+    private static final String PRECISION_NOT_MET = "Prec_notmet";
+    private static final String RECALL_NOT_MET = "Rec_notmet";
+    private static final String F1_NOT_MET = "F1_notmet";
+
+    private static final String F1_OVERALL = "F1_overall";
+    private static final String AUC_OVERALL = "AUC_overall";
+
     private Map<Criterion, Map<Eligibility, Metrics>> metrics = new HashMap<>();
 
     public OfficialMetrics() {
+        // TODO lazy initialization
         for (Criterion c : Criterion.values()) {
             Map<Eligibility, Metrics> mapPerCriterion = new HashMap<>();
             for (Eligibility e : Eligibility.values()) {
@@ -75,6 +88,11 @@ public class OfficialMetrics implements Metrics {
         return getF1(criterion, Eligibility.OVERALL);
     }
 
+    /**
+     * @param c
+     * @return
+     * @deprecated Use getMetrics() instead
+     */
     public double[] getMetricsArray(Criterion c) {
         double[] ret = new double[NUM_TOTAL_FIELDS];
 
@@ -92,6 +110,24 @@ public class OfficialMetrics implements Metrics {
         // OVERALL
         ret[7] = getF1(c, Eligibility.OVERALL);
         ret[8] = getAreaUnderCurve(c, Eligibility.OVERALL);
+
+        return ret;
+    }
+
+    public Map<String, Double> getMetrics(Criterion c) {
+        Map<String, Double> ret = new HashMap<>();
+
+        ret.put(PRECISION_MET, getPrecision(c, Eligibility.MET));
+        ret.put(RECALL_MET, getRecall(c, Eligibility.MET));
+        ret.put(SPECIFICITY_MET, getSpecificity(c, Eligibility.MET));
+        ret.put(F1_MET, getF1(c, Eligibility.MET));
+
+        ret.put(PRECISION_NOT_MET, getPrecision(c, Eligibility.NOT_MET));
+        ret.put(RECALL_NOT_MET, getRecall(c, Eligibility.NOT_MET));
+        ret.put(F1_NOT_MET, getF1(c, Eligibility.NOT_MET));
+
+        ret.put(F1_OVERALL, getF1(c, Eligibility.OVERALL));
+        ret.put(AUC_OVERALL, getAreaUnderCurve(c, Eligibility.OVERALL));
 
         return ret;
     }

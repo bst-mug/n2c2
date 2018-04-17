@@ -1,6 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.stats;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.Eligibility;
+import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,6 +17,10 @@ public class XMLStatsWriterTest {
     @Rule
     public final TemporaryFolder testFolder = new TemporaryFolder();
 
+    private static String normalizeLineDelimiter(String s) {
+        return s.replaceAll("[\r\n]+", "");
+    }
+
     @Test
     public void write() throws IOException {
         final File actualFile = testFolder.newFile("test.xml");
@@ -22,12 +28,16 @@ public class XMLStatsWriterTest {
 
         StatsWriter writer = new XMLStatsWriter(actualFile);
 
-        writer.write(Criterion.ABDOMINAL, 0.5d);
+        OfficialMetrics metrics = new OfficialMetrics();
+        metrics.withPrecision(Criterion.ABDOMINAL, Eligibility.MET, 0.6167);
+        metrics.withRecall(Criterion.ABDOMINAL, Eligibility.NOT_MET, 0.7459);
+        writer.write(metrics);
         writer.close();
 
-        String expected = FileUtils.readFileToString(expectedFile, "UTF-8").replaceAll("[\r\n]+", "");
-        String actual = FileUtils.readFileToString(actualFile, "UTF-8").replaceAll("[\r\n]+", "");
+        String expected = XMLStatsWriterTest.normalizeLineDelimiter(FileUtils.readFileToString(expectedFile, "UTF-8"));
+        String actual = XMLStatsWriterTest.normalizeLineDelimiter(FileUtils.readFileToString(actualFile, "UTF-8"));
 
         assertEquals(expected, actual);
     }
+
 }
