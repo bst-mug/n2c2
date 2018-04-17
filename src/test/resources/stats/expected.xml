@@ -1,5 +1,5 @@
 <report>
   <criterion name="ABDOMINAL">
-    <accuracy>0.5</accuracy>
+      <f1>0.5</f1>
   </criterion>
 </report>
