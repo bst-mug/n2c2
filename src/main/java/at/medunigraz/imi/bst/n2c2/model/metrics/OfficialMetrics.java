@@ -8,6 +8,12 @@ import java.util.Map;
 
 public class OfficialMetrics implements Metrics {
 
+    /**
+     * ------------ met -------------    ------ not met -------    -- overall ---
+     * Prec.   Rec.    Speci.  F(b=1)    Prec.   Rec.    F(b=1)    F(b=1)  AUC
+     */
+    private static final int NUM_TOTAL_FIELDS = 9;
+
     private Map<Criterion, Map<Eligibility, Metrics>> metrics = new HashMap<>();
 
     public OfficialMetrics() {
@@ -67,6 +73,27 @@ public class OfficialMetrics implements Metrics {
 
     public double getOfficialRankingMeasureByCriterion(Criterion criterion) {
         return getF1(criterion, Eligibility.OVERALL);
+    }
+
+    public double[] getMetricsArray(Criterion c) {
+        double[] ret = new double[NUM_TOTAL_FIELDS];
+
+        // MET
+        ret[0] = getPrecision(c, Eligibility.MET);
+        ret[1] = getRecall(c, Eligibility.MET);
+        ret[2] = getSpecificity(c, Eligibility.MET);
+        ret[3] = getF1(c, Eligibility.MET);
+
+        // NOT MET
+        ret[4] = getPrecision(c, Eligibility.NOT_MET);
+        ret[5] = getRecall(c, Eligibility.NOT_MET);
+        ret[6] = getF1(c, Eligibility.NOT_MET);
+
+        // OVERALL
+        ret[7] = getF1(c, Eligibility.OVERALL);
+        ret[8] = getAreaUnderCurve(c, Eligibility.OVERALL);
+
+        return ret;
     }
 
     public double getOfficialRankingMeasure() {

@@ -1,7 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.stats;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
 
 import java.io.Closeable;
 import java.io.Flushable;
@@ -18,7 +18,7 @@ public interface StatsWriter extends Closeable, Flushable {
         accuracyByCriterion.forEach((key, value) -> write(key, value));
     }
 
-    default void write(Metrics metrics) {
+    default void write(OfficialMetrics metrics) {
         Arrays.stream(Criterion.classifiableValues()).forEach(c -> write(c, metrics.getOfficialRankingMeasureByCriterion(c)));
     }
 }

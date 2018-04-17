@@ -49,7 +49,7 @@ public class XMLStatsWriter extends AbstractStatsWriter {
         topicElement.setAttribute("name", c.name());
         rootElement.appendChild(topicElement);
 
-        Element metricElement = doc.createElement(METRIC_NAME.toLowerCase());
+        Element metricElement = doc.createElement("accuracy");
         metricElement.appendChild(doc.createTextNode(String.valueOf(accuracy)));
 
         topicElement.appendChild(metricElement);
