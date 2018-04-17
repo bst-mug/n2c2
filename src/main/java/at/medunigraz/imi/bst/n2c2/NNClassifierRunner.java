@@ -29,7 +29,7 @@ public class NNClassifierRunner {
         Evaluator evaluator = new OfficialEvaluator();
 
         SingleFoldValidator sfv = new SingleFoldValidator(patients, factory, evaluator);
-        // FIXME michel 20180416 In a not too distant future, in a galaxy not-so-far away, we will receive a Map<Criterion,MetricSet> object here
+        // FIXME michel 20180416 In a not too distant future, in a galaxy not-so-far away, we will receive a Map<Criterion,OfficialMetrics> object here
         Map<Criterion, Double> metrics = sfv.evaluate();
         LOG.info(metrics);
 

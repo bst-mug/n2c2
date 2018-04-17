@@ -2,8 +2,9 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
-import at.medunigraz.imi.bst.n2c2.model.Metrics;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -21,9 +23,9 @@ public class BasicEvaluator implements Evaluator {
         return getMetricsByCriterion(c).getAccuracy();
     }
 
-    private Map<Criterion, Metrics> metricsByCriterion = new HashMap<>();
+    private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
 
-    public Metrics getMetricsByCriterion(Criterion c) {
+    public BasicMetrics getMetricsByCriterion(Criterion c) {
         return metricsByCriterion.get(c);
     }
 
@@ -63,7 +65,7 @@ public class BasicEvaluator implements Evaluator {
                 }
             }
 
-            Metrics metrics = new Metrics(tp, fp, tn, fn);
+            BasicMetrics metrics = new BasicMetrics(tp, fp, tn, fn);
 
             overallAccuracy += metrics.getAccuracy();
             count++;
@@ -71,7 +73,12 @@ public class BasicEvaluator implements Evaluator {
             metricsByCriterion.put(criterion, metrics);
         }
 
-        metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
+        metricsByCriterion.put(Criterion.OVERALL, new BasicMetrics(overallAccuracy / count));
+    }
+
+    @Override
+    public Metrics getMetrics() {
+        return metricsByCriterion.get(Criterion.OVERALL);
     }
 
     @Override

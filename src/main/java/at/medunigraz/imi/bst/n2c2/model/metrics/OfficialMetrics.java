@@ -1,13 +1,16 @@
-package at.medunigraz.imi.bst.n2c2.model;
+package at.medunigraz.imi.bst.n2c2.model.metrics;
+
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MetricSet {
+public class OfficialMetrics implements Metrics {
 
     private Map<Criterion, Map<Eligibility, Metrics>> metrics = new HashMap<>();
 
-    public MetricSet() {
+    public OfficialMetrics() {
         for (Criterion c : Criterion.values()) {
             Map<Eligibility, Metrics> mapPerCriterion = new HashMap<>();
             for (Eligibility e : Eligibility.values()) {
@@ -17,27 +20,27 @@ public class MetricSet {
         }
     }
 
-    public MetricSet withPrecision(Criterion criterion, Eligibility eligibility, double value) {
+    public OfficialMetrics withPrecision(Criterion criterion, Eligibility eligibility, double value) {
         metrics.get(criterion).get(eligibility).precision = value;
         return this;
     }
 
-    public MetricSet withRecall(Criterion criterion, Eligibility eligibility, double value) {
+    public OfficialMetrics withRecall(Criterion criterion, Eligibility eligibility, double value) {
         metrics.get(criterion).get(eligibility).recall = value;
         return this;
     }
 
-    public MetricSet withSpecificity(Criterion criterion, Eligibility eligibility, double value) {
+    public OfficialMetrics withSpecificity(Criterion criterion, Eligibility eligibility, double value) {
         metrics.get(criterion).get(eligibility).specificity = value;
         return this;
     }
 
-    public MetricSet withF1(Criterion criterion, Eligibility eligibility, double value) {
+    public OfficialMetrics withF1(Criterion criterion, Eligibility eligibility, double value) {
         metrics.get(criterion).get(eligibility).f1 = value;
         return this;
     }
 
-    public MetricSet withAreaUnderCurve(Criterion criterion, Eligibility eligibility, double value) {
+    public OfficialMetrics withAreaUnderCurve(Criterion criterion, Eligibility eligibility, double value) {
         metrics.get(criterion).get(eligibility).auc = value;
         return this;
     }

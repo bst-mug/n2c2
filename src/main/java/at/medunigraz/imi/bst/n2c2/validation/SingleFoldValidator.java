@@ -9,11 +9,9 @@ import at.medunigraz.imi.bst.n2c2.util.Dataset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SingleFoldValidator {
 
@@ -72,7 +70,7 @@ public class SingleFoldValidator {
 
         Map<Criterion, Double> ret = new HashMap<>();
         for (Criterion c : Criterion.values()) {
-            // FIXME michel 20180416 get a MetricSet object
+            // FIXME michel 20180416 get a OfficialMetrics object
             ret.put(c, evaluator.getOfficialRankingMeasureByCriterion(c));
         }
         return ret;

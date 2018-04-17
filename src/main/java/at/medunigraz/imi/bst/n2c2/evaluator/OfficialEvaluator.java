@@ -2,8 +2,8 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
-import at.medunigraz.imi.bst.n2c2.model.MetricSet;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +38,7 @@ public class OfficialEvaluator implements Evaluator {
 
     private File goldStandard, results;
 
-    private MetricSet metrics = new MetricSet();
+    private OfficialMetrics metrics = new OfficialMetrics();
 
     public OfficialEvaluator() throws FileNotFoundException {
         if (!scriptExists()) {
@@ -195,7 +195,7 @@ public class OfficialEvaluator implements Evaluator {
         }
     }
 
-    public MetricSet getMetrics() {
+    public OfficialMetrics getMetrics() {
         return metrics;
     }
 

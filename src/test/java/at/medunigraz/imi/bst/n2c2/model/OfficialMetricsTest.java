@@ -1,14 +1,15 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
+import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class MetricSetTest {
+public class OfficialMetricsTest {
 
     @Test
     public void getPrecision() {
-        MetricSet metrics = new MetricSet();
+        OfficialMetrics metrics = new OfficialMetrics();
 
         final double value = 0.6167;
 

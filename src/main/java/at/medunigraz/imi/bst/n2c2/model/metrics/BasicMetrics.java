@@ -1,25 +1,27 @@
-package at.medunigraz.imi.bst.n2c2.model;
+package at.medunigraz.imi.bst.n2c2.model.metrics;
+
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 
 @Deprecated
-public class Metrics {
+public class BasicMetrics implements Metrics {
 
     private int tp, fp, tn, fn;
 
     private double p, r, a;
 
-    public Metrics(int tp, int fp, int tn, int fn) {
+    public BasicMetrics(int tp, int fp, int tn, int fn) {
         this.tp = tp;
         this.fp = fp;
         this.tn = tn;
         this.fn = fn;
     }
 
-    public Metrics(double p, double r) {
+    public BasicMetrics(double p, double r) {
         this.p = p;
         this.r = r;
     }
 
-    public Metrics(double a) {
+    public BasicMetrics(double a) {
         this.a = a;
     }
 
@@ -80,5 +82,15 @@ public class Metrics {
 
     public double getFalseNegatives() {
         return fn;
+    }
+
+    @Override
+    public double getOfficialRankingMeasure() {
+        return getAccuracy();
+    }
+
+    @Override
+    public double getOfficialRankingMeasureByCriterion(Criterion c) {
+        return getAccuracy();
     }
 }
