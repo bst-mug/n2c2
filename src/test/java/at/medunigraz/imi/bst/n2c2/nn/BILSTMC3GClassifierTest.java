@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
-public class DataUtilitiesTest {
+public class BILSTMC3GClassifierTest {
 
 	@Ignore
 	public void train() {
@@ -25,30 +25,21 @@ public class DataUtilitiesTest {
 		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
 				TrueFileFilter.INSTANCE);
 
-		DataUtilities utilities = new DataUtilities();
-
 		List<Patient> patients;
-		List<String> sentences;
 		try {
 			patients = new ArrayList<Patient>();
 			for (File patientSample : sampleFiles) {
 				patients.add(new PatientDAO().fromXML(patientSample));
 			}
 
-			System.out.println(patients.get(200).getID());
-			sentences = DataUtilities.getSentences(patients.get(200).getText());
-
-			for (String sentence : sentences) {
-				String normalized = utilities.processTextReduced(sentence);
-				String char3Grams001 = utilities.getChar3GramRepresentation(normalized);
-				System.out.println(sentence + "\t" + normalized + "\t" + char3Grams001);
-			}
-
+			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(patients);
+			classifier.train(patients);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		}
+
 		assertEquals(true, true);
 	}
 }
