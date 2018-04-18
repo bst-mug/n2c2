@@ -58,15 +58,17 @@ public class CrossValidator {
     }
 
     private Metrics evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
+        List<Patient> predicted = test;
+        
         for (Criterion c : Criterion.classifiableValues()) {
             LOG.info("Evaluating criterion {}...", c);
             Classifier classifier = classifierFactory.getClassifier(c);
 
             classifier.train(train);
-            test = classifier.predict(test);
+            predicted = classifier.predict(predicted);
         }
 
-        evaluator.evaluate(gold, test);
+        evaluator.evaluate(gold, predicted);
 
         return evaluator.getMetrics();
     }
