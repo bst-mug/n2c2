@@ -45,18 +45,6 @@ public class XMLStatsWriter extends AbstractStatsWriter {
         flush();
     }
 
-    @Override
-    public void write(Criterion c, Double accuracy) {
-        Element topicElement = doc.createElement(GROUPED_BY.toLowerCase());
-        topicElement.setAttribute("name", c.name());
-        rootElement.appendChild(topicElement);
-
-        Element metricElement = doc.createElement("accuracy");
-        metricElement.appendChild(doc.createTextNode(String.valueOf(accuracy)));
-
-        topicElement.appendChild(metricElement);
-    }
-
     public void write(MetricSet metrics) {
         for (Criterion c : Criterion.values()) {
             Element topicElement = doc.createElement(GROUPED_BY.toLowerCase());

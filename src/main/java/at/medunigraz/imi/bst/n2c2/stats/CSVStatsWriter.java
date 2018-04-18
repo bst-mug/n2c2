@@ -36,14 +36,6 @@ public class CSVStatsWriter extends AbstractStatsWriter {
         }
     }
 
-
-    @Override
-    @Deprecated
-    public void write(Criterion c, Double accuracy) {
-        String[] entries = new String[]{c.name(), String.valueOf(accuracy)};
-        writer.writeNext(entries);
-    }
-
     public void write(MetricSet metrics) {
         for (Criterion c : Criterion.values()) {
             // Keys might not properly ordered
