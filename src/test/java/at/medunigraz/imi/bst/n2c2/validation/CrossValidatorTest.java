@@ -7,6 +7,7 @@ import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,10 +39,10 @@ public class CrossValidatorTest {
         patients.get(4).withCriterion(Criterion.ABDOMINAL, Eligibility.MET);
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        Map<Criterion, Double> metrics = cv.evaluate(patients.size());
+        Metrics metrics = cv.evaluate(patients.size());
 
         // Official evaluation script average per class (2), so expected is 4/5/2.
-        assertEquals(0.4, metrics.get(Criterion.ABDOMINAL), 0.00001);
+        assertEquals(0.4, metrics.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
     }
 
     private List<Patient> emptyPatients(int n) {

@@ -5,15 +5,12 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.util.Dataset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CrossValidator {
 
@@ -29,12 +26,12 @@ public class CrossValidator {
         this.evaluator = evaluator;
     }
 
-    public Map<Criterion, Double> evaluate() {
+    public Metrics evaluate() {
         return evaluate(Dataset.DEFAULT_FOLDS);
     }
 
-    public Map<Criterion, Double> evaluate(int k) {
-        List<Map<Criterion, Double>> metrics = new ArrayList<>();
+    public Metrics evaluate(int k) {
+        Metrics metrics = null;
 
         Dataset dataset = new Dataset(patients);
         dataset.splitIntoFolds(k);
@@ -45,27 +42,34 @@ public class CrossValidator {
             List<Patient> test = dataset.getTestSet(i);
             List<Patient> gold = dataset.getGoldSet(i);
 
-            metrics.add(evaluateFold(train, test, gold));
+            Metrics foldMetrics = evaluateFold(train, test, gold);
+
+            // First initialization
+            if (metrics == null) {
+                metrics = foldMetrics;
+            } else {
+                metrics.add(foldMetrics);
+            }
         }
 
-        return metrics.stream().flatMap(e -> e.entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.averagingDouble(Map.Entry::getValue)));
+        metrics.divideBy(k);
+
+        return metrics;
     }
 
-    private Map<Criterion, Double> evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
+    private Metrics evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
+        List<Patient> predicted = test;
+        
         for (Criterion c : Criterion.classifiableValues()) {
             LOG.info("Evaluating criterion {}...", c);
             Classifier classifier = classifierFactory.getClassifier(c);
 
             classifier.train(train);
-            test = classifier.predict(test);
+            predicted = classifier.predict(predicted);
         }
 
-        evaluator.evaluate(gold, test);
+        evaluator.evaluate(gold, predicted);
 
-        Map<Criterion, Double> ret = new HashMap<>();
-        for (Criterion c : Criterion.values()) {
-            ret.put(c, evaluator.getOfficialRankingMeasureByCriterion(c));
-        }
-        return ret;
+        return evaluator.getMetrics();
     }
 }

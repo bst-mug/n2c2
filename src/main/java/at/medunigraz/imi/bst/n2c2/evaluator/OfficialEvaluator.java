@@ -2,8 +2,8 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
-import at.medunigraz.imi.bst.n2c2.model.MetricSet;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -159,6 +159,9 @@ public class OfficialEvaluator implements Evaluator {
 
                                                            288 files found
          */
+
+        // TODO consolidate evaluate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
+        metrics = new MetricSet();
 
         for (int i = 0; i < output.length; i++) {
             String line = output[i];

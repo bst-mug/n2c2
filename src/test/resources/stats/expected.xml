@@ -1,5 +1,167 @@
 <report>
   <criterion name="ABDOMINAL">
-    <accuracy>0.5</accuracy>
+    <prec_met>0.6167</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.7459</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="ADVANCED_CAD">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="ALCOHOL_ABUSE">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="ASP_FOR_MI">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="CREATININE">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="DIETSUPP_2MOS">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="DRUG_ABUSE">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="ENGLISH">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="HBA1C">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="KETO_1YR">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="MAJOR_DIABETES">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="MAKES_DECISIONS">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="MI_6MOS">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="OVERALL_MICRO">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
+  </criterion>
+  <criterion name="OVERALL_MACRO">
+    <prec_met>0.0</prec_met>
+    <prec_notmet>0.0</prec_notmet>
+    <rec_met>0.0</rec_met>
+    <speci_met>0.0</speci_met>
+    <f1_overall>0.0</f1_overall>
+    <f1_met>0.0</f1_met>
+    <rec_notmet>0.0</rec_notmet>
+    <f1_notmet>0.0</f1_notmet>
+    <auc_overall>0.0</auc_overall>
   </criterion>
 </report>
