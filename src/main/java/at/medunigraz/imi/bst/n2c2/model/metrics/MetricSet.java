@@ -28,14 +28,14 @@ public class MetricSet implements Metrics {
     private static final String F1_OVERALL = "F1_overall";
     private static final String AUC_OVERALL = "AUC_overall";
 
-    private Map<Criterion, Map<Eligibility, Metrics>> metrics = new HashMap<>();
+    private Map<Criterion, Map<Eligibility, OfficialMetrics>> metrics = new HashMap<>();
 
     public MetricSet() {
         // TODO lazy initialization
         for (Criterion c : Criterion.values()) {
-            Map<Eligibility, Metrics> mapPerCriterion = new HashMap<>();
+            Map<Eligibility, OfficialMetrics> mapPerCriterion = new HashMap<>();
             for (Eligibility e : Eligibility.values()) {
-                mapPerCriterion.put(e, new Metrics());
+                mapPerCriterion.put(e, new OfficialMetrics());
             }
             metrics.put(c, mapPerCriterion);
         }
@@ -167,7 +167,7 @@ public class MetricSet implements Metrics {
         return getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MICRO);
     }
 
-    public class Metrics {
+    public class OfficialMetrics {
         public double precision = 0;
         public double recall = 0;
         public double specificity = 0;
@@ -175,11 +175,11 @@ public class MetricSet implements Metrics {
         public double auc = 0;
 
         /**
-         * Adds a given Metrics object to the current one.
+         * Adds a given OfficialMetrics object to the current one.
          *
          * @param addend
          */
-        public void add(Metrics addend) {
+        public void add(OfficialMetrics addend) {
             this.precision += addend.precision;
             this.recall += addend.recall;
             this.specificity += addend.specificity;
