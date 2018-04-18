@@ -21,8 +21,6 @@ public enum Criterion {
     MAJOR_DIABETES,
     MAKES_DECISIONS,
     MI_6MOS,
-    @Deprecated
-    OVERALL,
     OVERALL_MICRO,
     OVERALL_MACRO;
 
@@ -47,7 +45,6 @@ public enum Criterion {
 
     public static Criterion[] classifiableValues() {
         Set<Criterion> ret = new HashSet<>(Arrays.asList(values()));
-        ret.remove(Criterion.OVERALL);
         ret.remove(Criterion.OVERALL_MICRO);
         ret.remove(Criterion.OVERALL_MACRO);
         return ret.toArray(new Criterion[]{});

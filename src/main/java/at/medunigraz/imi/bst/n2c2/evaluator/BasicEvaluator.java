@@ -36,10 +36,6 @@ public class BasicEvaluator implements Evaluator {
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
 
         for (Criterion criterion: Criterion.values()) {
-            if (criterion  == Criterion.OVERALL) {
-                continue;
-            }
-
             int tp = 0, fp = 0, tn = 0, fn = 0;
 
             // TODO parallel stream
@@ -71,12 +67,12 @@ public class BasicEvaluator implements Evaluator {
             metricsByCriterion.put(criterion, metrics);
         }
 
-        metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
+        metricsByCriterion.put(Criterion.OVERALL_MACRO, new Metrics(overallAccuracy / count));
     }
 
     @Override
     public double getOfficialRankingMeasure() {
-        return getOfficialRankingMeasureByCriterion(Criterion.OVERALL);
+        return getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MACRO);
     }
 
     private enum Match {
