@@ -10,12 +10,6 @@ import java.util.Map;
 
 public class MetricSet implements Metrics {
 
-    /**
-     * ------------ met -------------    ------ not met -------    -- overall ---
-     * Prec.   Rec.    Speci.  F(b=1)    Prec.   Rec.    F(b=1)    F(b=1)  AUC
-     */
-    private static final int NUM_TOTAL_FIELDS = 9;
-
     private static final String PRECISION_MET = "Prec_met";
     private static final String RECALL_MET = "Rec_met";
     private static final String SPECIFICITY_MET = "Speci_met";
