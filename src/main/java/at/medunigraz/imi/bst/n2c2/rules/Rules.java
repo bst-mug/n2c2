@@ -5,10 +5,38 @@ public class Rules {
 
 	Patterns p = new Patterns(); 
 	
+	final public String[] a_CriterionID_drug_abuse = {}; 
+	
+	final public String[] a_CriterionID_alcohol_abuse = {}; 
+	
+	final public String[] a_CriterionID_english = {}; 
+	
+	final public String[] a_CriterionID_makes_decision = {}; 
+	
+	final public String[] a_CriterionID_abdominal = {}; 
+	
+	final public String[] a_CriterionID_major_diabetes = {}; 
+	
+	final public String[] a_CriterionID_advanced_cad = {}; 
+	
+	final public String[] a_CriterionID_MI_6mos = {}; 
+	
+	final public String[] a_CriterionID_keto_1year = {}; 
+	
+	final public String[] a_CriterionID_dietsupp_2mos = {}; 
+	
+	final public String[] a_CriterionID_asp_for_mi = {}; 
+	
+	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c"}; 
+	
+	final public String[] a_CriterionID_creatinine = {}; 
+	
+	
 	
 	private String[] regex_drug_abuse = {
 			
 			// drug abuse, current or past 
+			
 			
 			
 	}; 
@@ -17,11 +45,16 @@ public class Rules {
 			
 			// current alcohol use over weekly recommended limits 
 			
+			
+			
 	}; 
 	
 	private String[] regex_english = {
 			
 			// patient must speak English 
+			
+			
+			
 			
 	}; 
 	
@@ -82,6 +115,8 @@ public class Rules {
 			
 			// use of aspirin to prevent myocardial infarction 
 			
+			
+			
 		
 			
 	};		
@@ -90,41 +125,41 @@ public class Rules {
 			
 			// any hba1c value between 6.5 and 9.5 % 
 			
-			p.r_criterionID + p.r_whitespace + p.r_1_digit,
+			p.getR_criterionID() + p.r_whitespace + p.r_1_digit,
 			
-			p.r_criterionID + p.r_whitespace + p.r_1_digit + p.r_dot + p.r_1_digit,
+			p.getR_criterionID() + p.r_whitespace + p.r_1_digit + p.r_dot + p.r_1_digit,
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_dot + p.r_1_digit,
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_dot + p.r_1_digit,
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_dot + p.r_2_digit,
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_dot + p.r_2_digit,
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_1_digit, 
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_2_digit, 
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_2_digit, 
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_1_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_1_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_1_digit + p.r_dot + p.r_2_digit,
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_1_digit + p.r_dot + p.r_2_digit,
 			
-			p.r_criterionID + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_2_digit + p.r_dot + p.r_1_digit,
+			p.getR_criterionID() + p.r_whitespace + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_forwardslash + p.r_2_digit + p.r_2_digit + p.r_whitespace + p.r_2_digit + p.r_dot + p.r_1_digit,
 			
-			p.r_criterionID + p.r_white_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_2_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_2_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_2_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_2_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_2_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_2_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_word_white + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_word_white + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_word_white + p.r_1_digit + p.r_dot + p.r_1_digit, 
 			
-			p.r_criterionID + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_word_white + p.r_2_digit + p.r_dot + p.r_1_digit
+			p.getR_criterionID() + p.r_white_word_white + p.r_word_white + p.r_word_white + p.r_word_white + p.r_2_digit + p.r_dot + p.r_1_digit
 			
 			
 	}; 

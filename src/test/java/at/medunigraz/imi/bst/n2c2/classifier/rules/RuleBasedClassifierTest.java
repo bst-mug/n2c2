@@ -11,6 +11,7 @@ import org.xml.sax.SAXException;
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.rules.RuleBasedClassifier;
+import at.medunigraz.imi.bst.n2c2.rules.Rules;
 
 public class RuleBasedClassifierTest {
 
@@ -22,7 +23,11 @@ public class RuleBasedClassifierTest {
 		
 		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
 		
-		Boolean is_met = rbc.is_HbA1c_met(pat); 
+		Rules r = new Rules(); 
+		
+		String[] criterion_hba1c = r.a_CriterionID_drug_abuse; 
+		
+		Boolean is_met = rbc.is_criterion_met(pat, criterion_hba1c); 
 		assertTrue(is_met == false); 
 		
 		

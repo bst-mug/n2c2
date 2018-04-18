@@ -19,50 +19,16 @@ public class Patterns {
 	final String r_dot = "."; 
 	
 	private String r_criterionID = "(criterionID)";
-
 	
-	public String getR_1_digit() {
-		return r_1_digit;
-	}
-
-	public String getR_2_digit() {
-		return r_2_digit;
-	}
-
-	public String getR_whitespace() {
-		return r_whitespace;
-	}
-
-	public String getR_forwardslash() {
-		return r_forwardslash;
-	}
-
-	public String getR_word() {
-		return r_word;
-	}
-
-	public String getR_white_word_white() {
-		return r_white_word_white;
-	}
-
-	public String getR_word_white() {
-		return r_word_white;
-	}
-
-	public String getR_dot() {
-		return r_dot;
-	}
-
-	public String getR_criterionID() {
-		return r_criterionID;
-	} 
 	
 	public String setR_criterionID(String criterionID) {
 		r_criterionID = getR_criterionID().replace("criterionID", criterionID); 
 		return r_criterionID; 
 	}
 	
-	
+	public String getR_criterionID() {
+		return r_criterionID;
+	} 
 	
 	
 
