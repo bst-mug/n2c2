@@ -17,11 +17,15 @@ public class RuleBasedClassifier {
 		
 		for(int i = 0; i<valid_snippets.length; i++){
 			
+			System.out.println("is_snippet_found() --> valid_snippets --> " + valid_snippets[i]);
+			
 			if(fulltext.contains(valid_snippets[i])){
 				
 				snippet_annotation[0] = valid_snippets[i]; 
 				
 				snippet_annotation[1] = getWantedLineOfData(fulltext, valid_snippets); 
+				
+				System.out.println("is_snippet_found() --> " + snippet_annotation[0] + snippet_annotation[1]);
 				
 			}
 			
@@ -32,42 +36,51 @@ public class RuleBasedClassifier {
 	} // End of is_snippet_found() 
 	
 	
-	public Boolean is_criterion_met(Patient patient, String[] criterion_snippets){
+	public Boolean is_criterion_met(Patient patient, String[] criterion_snippets, String[] regex_CriterionID){
 	
-		String[] crit_data = is_snippet_found(patient, criterion_snippets);
-		
-		String criterionID = crit_data[0]; 
-		
-		String criterion_annotation = crit_data[1]; 
-		
-		System.out.println("CriterionID: ... " + criterionID);
-		
-		pattern.setR_criterionID(criterionID); 
-		
-		
-		String[] regex_CriterionID = r.getRegex_hba1c(); 
-		
-				
 		Boolean is_criterion_met = null; 
 		
+		String[] crit_data = is_snippet_found(patient, criterion_snippets);
 		
-		if(criterion_annotation != null){ 
+		if(crit_data[0] == null) {
 			
-			for(int i = 0; i<regex_CriterionID.length; i++){
+			return null; 
+			
+		}else{
+			
+			String criterionID = crit_data[0]; 
+			
+			String criterion_annotation = crit_data[1]; 
+			
+			System.out.println("CriterionID: ... " + criterionID);
+			
+			pattern.setR_criterionID(criterionID); 
+			
+			if(criterion_annotation != null){ 
 				
-				System.out.println("regex criterion ID -- " + regex_CriterionID[i]);
-				
-				if(criterion_annotation.matches(regex_CriterionID[i])){ 
+				for(int i = 0; i<regex_CriterionID.length; i++){
 					
-					CriterionData cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
+					System.out.println("regex criterion ID -- " + regex_CriterionID[i]);
 					
-					double cd_value = cd.getCriterion_value(); 
-					
-					System.out.println("criterion value: " + cd_value);
-					
-					if(cd_value >= 6.5 && cd_value <= 9.5){
+					if(criterion_annotation.matches(regex_CriterionID[i])){ 
 						
-						is_criterion_met = true; 
+						CriterionData cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
+						
+						double cd_value = cd.getCriterion_value(); 
+						
+						System.out.println("criterion value: " + cd_value);
+						
+						if(cd_value >= 6.5 && cd_value <= 9.5){
+							
+							is_criterion_met = true; 
+							
+						}else{
+							
+							is_criterion_met = false; 
+							
+						}
+						
+						break; 
 						
 					}else{
 						
@@ -75,17 +88,13 @@ public class RuleBasedClassifier {
 						
 					}
 					
-					break; 
-					
-				}else{
-					
-					is_criterion_met = false; 
-					
-				}
+				} // End of for loop 
 				
-			} // End of for loop 
+			} // End of if statement 
 			
-		} // End of if statement 
+		}
+		
+		
 		
 		return is_criterion_met; 
 		

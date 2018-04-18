@@ -5,11 +5,12 @@ public class Rules {
 
 	Patterns p = new Patterns(); 
 	
-	final public String[] a_CriterionID_drug_abuse = {}; 
+	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs"}; 
+	// TODO - nothing in sample file --- see how it is stated in the other files 
 	
-	final public String[] a_CriterionID_alcohol_abuse = {}; 
+	final public String[] a_CriterionID_alcohol_abuse = {"alcohol"}; 
 	
-	final public String[] a_CriterionID_english = {}; 
+	final public String[] a_CriterionID_english = {"Spanish", "German"}; 
 	
 	final public String[] a_CriterionID_makes_decision = {}; 
 	
