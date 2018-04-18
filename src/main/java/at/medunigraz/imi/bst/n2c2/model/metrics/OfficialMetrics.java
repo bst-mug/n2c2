@@ -132,6 +132,33 @@ public class OfficialMetrics implements Metrics {
         return ret;
     }
 
+    /**
+     * Adds another object to this one, used e.g. for cross-validation.
+     *
+     * @param addend
+     * @return
+     */
+    public void add(OfficialMetrics addend) {
+        for (Criterion c : Criterion.values()) {
+            for (Eligibility e : Eligibility.values()) {
+                metrics.get(c).get(e).add(addend.metrics.get(c).get(e));
+            }
+        }
+    }
+
+    /**
+     * Averages a previously added object, effectively dividing all metrics by divisor.
+     *
+     * @param divisor
+     */
+    public void divideBy(int divisor) {
+        for (Criterion c : Criterion.values()) {
+            for (Eligibility e : Eligibility.values()) {
+                metrics.get(c).get(e).divideBy(divisor);
+            }
+        }
+    }
+
     public double getOfficialRankingMeasure() {
         return getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MICRO);
     }
@@ -142,6 +169,32 @@ public class OfficialMetrics implements Metrics {
         public double specificity = 0;
         public double f1 = 0;
         public double auc = 0;
+
+        /**
+         * Adds a given Metrics object to the current one.
+         *
+         * @param addend
+         */
+        public void add(Metrics addend) {
+            this.precision += addend.precision;
+            this.recall += addend.recall;
+            this.specificity += addend.specificity;
+            this.f1 += addend.f1;
+            this.auc += addend.auc;
+        }
+
+        /**
+         * Divide all metrics by a given divisor. Used for averaging over folds in cross-validation.
+         *
+         * @param divisor
+         */
+        public void divideBy(double divisor) {
+            this.precision /= divisor;
+            this.recall /= divisor;
+            this.specificity /= divisor;
+            this.f1 /= divisor;
+            this.auc /= divisor;
+        }
     }
 
 }
