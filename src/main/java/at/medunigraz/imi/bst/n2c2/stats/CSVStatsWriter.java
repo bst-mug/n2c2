@@ -7,6 +7,7 @@ import com.opencsv.CSVWriter;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 public class CSVStatsWriter extends AbstractStatsWriter {
     private CSVWriter writer;
@@ -45,14 +46,19 @@ public class CSVStatsWriter extends AbstractStatsWriter {
 
     public void write(OfficialMetrics metrics) {
         for (Criterion c : Criterion.values()) {
-            double[] values = metrics.getMetricsArray(c);
+            // Keys might not properly ordered
+            Map<String, Double> metricsMap = metrics.getMetrics(c);
 
             // Criterion + values
-            String[] entries = new String[1 + values.length];
-
+            String[] entries = new String[1 + metricsMap.size()];
             entries[0] = c.name();
-            for (int i = 0; i < values.length; i++) {
-                entries[i + 1] = String.valueOf(values[i]);
+
+            // This is properly ordered
+            List<String> metricNames = OfficialMetrics.getMetricNames();
+            int i = 0;
+            for (String metricName : metricNames) {
+                double value = metricsMap.get(metricName);
+                entries[++i] = String.valueOf(metricsMap.get(metricName));
             }
 
             writer.writeNext(entries);

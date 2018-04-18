@@ -90,32 +90,6 @@ public class OfficialMetrics implements Metrics {
         return getF1(criterion, Eligibility.OVERALL);
     }
 
-    /**
-     * @param c
-     * @return
-     * @deprecated Use getMetrics() instead
-     */
-    public double[] getMetricsArray(Criterion c) {
-        double[] ret = new double[NUM_TOTAL_FIELDS];
-
-        // MET
-        ret[0] = getPrecision(c, Eligibility.MET);
-        ret[1] = getRecall(c, Eligibility.MET);
-        ret[2] = getSpecificity(c, Eligibility.MET);
-        ret[3] = getF1(c, Eligibility.MET);
-
-        // NOT MET
-        ret[4] = getPrecision(c, Eligibility.NOT_MET);
-        ret[5] = getRecall(c, Eligibility.NOT_MET);
-        ret[6] = getF1(c, Eligibility.NOT_MET);
-
-        // OVERALL
-        ret[7] = getF1(c, Eligibility.OVERALL);
-        ret[8] = getAreaUnderCurve(c, Eligibility.OVERALL);
-
-        return ret;
-    }
-
     public Map<String, Double> getMetrics(Criterion c) {
         Map<String, Double> ret = new HashMap<>();
 
