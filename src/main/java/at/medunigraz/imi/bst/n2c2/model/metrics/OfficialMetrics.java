@@ -132,6 +132,15 @@ public class OfficialMetrics implements Metrics {
         return ret;
     }
 
+    @Override
+    public void add(at.medunigraz.imi.bst.n2c2.model.metrics.Metrics addend) {
+        if (!(addend instanceof OfficialMetrics)) {
+            throw new UnsupportedOperationException("Can only add metrics of the same type.");
+        }
+
+        add((OfficialMetrics) addend);
+    }
+
     /**
      * Adds another object to this one, used e.g. for cross-validation.
      *
@@ -151,7 +160,8 @@ public class OfficialMetrics implements Metrics {
      *
      * @param divisor
      */
-    public void divideBy(int divisor) {
+    @Override
+    public void divideBy(double divisor) {
         for (Criterion c : Criterion.values()) {
             for (Eligibility e : Eligibility.values()) {
                 metrics.get(c).get(e).divideBy(divisor);

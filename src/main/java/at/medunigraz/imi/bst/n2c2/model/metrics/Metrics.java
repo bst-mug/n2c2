@@ -7,4 +7,8 @@ public interface Metrics {
     double getOfficialRankingMeasure();
 
     double getOfficialRankingMeasureByCriterion(Criterion c);
+
+    void add(Metrics addend);
+
+    void divideBy(double divisor);
 }
