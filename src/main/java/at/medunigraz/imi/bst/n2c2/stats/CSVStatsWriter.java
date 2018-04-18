@@ -6,6 +6,7 @@ import com.opencsv.CSVWriter;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.List;
 
 public class CSVStatsWriter extends AbstractStatsWriter {
     private CSVWriter writer;
@@ -21,12 +22,10 @@ public class CSVStatsWriter extends AbstractStatsWriter {
     }
 
     protected void writeHeader() {
-        // Grouped by + metrics
-        String[] header = new String[1 + METRICS.length];
-        header[0] = GROUPED_BY;
+        List<String> metricNames = OfficialMetrics.getMetricNames();
 
-        // Copy metrics name to the header
-        System.arraycopy(METRICS, 0, header, 1, METRICS.length);
+        metricNames.add(0, GROUPED_BY);
+        String[] header = metricNames.toArray(new String[metricNames.size()]);
 
         writer.writeNext(header);
         try {

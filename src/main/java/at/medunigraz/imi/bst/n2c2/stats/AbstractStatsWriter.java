@@ -8,11 +8,6 @@ public abstract class AbstractStatsWriter implements StatsWriter {
 
     protected static final String GROUPED_BY = "Criterion";
 
-    /**
-     * @deprecated Use OfficialMetrics getMetrics() instead
-     */
-    protected static final String[] METRICS = new String[]{"Prec_met", "Rec_met", "Speci_met", "F1_met", "Prec_notmet", "Rec_notmet", "F1_notmet", "F1_overall", "AUC_overall"};
-
     public AbstractStatsWriter(OutputStream output) {
         this.output = output;
     }

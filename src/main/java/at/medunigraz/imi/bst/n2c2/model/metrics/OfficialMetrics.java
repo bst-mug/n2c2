@@ -3,7 +3,9 @@ package at.medunigraz.imi.bst.n2c2.model.metrics;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OfficialMetrics implements Metrics {
@@ -128,6 +130,24 @@ public class OfficialMetrics implements Metrics {
 
         ret.put(F1_OVERALL, getF1(c, Eligibility.OVERALL));
         ret.put(AUC_OVERALL, getAreaUnderCurve(c, Eligibility.OVERALL));
+
+        return ret;
+    }
+
+    public static List<String> getMetricNames() {
+        List<String> ret = new ArrayList<>();
+
+        ret.add(PRECISION_MET);
+        ret.add(RECALL_MET);
+        ret.add(SPECIFICITY_MET);
+        ret.add(F1_MET);
+
+        ret.add(PRECISION_NOT_MET);
+        ret.add(RECALL_NOT_MET);
+        ret.add(F1_NOT_MET);
+
+        ret.add(F1_OVERALL);
+        ret.add(AUC_OVERALL);
 
         return ret;
     }
