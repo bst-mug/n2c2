@@ -18,7 +18,7 @@ public class Rules {
 	
 	final public String[] a_CriterionID_major_diabetes = {}; 
 	
-	final public String[] a_CriterionID_advanced_cad = {}; 
+	final public String[] a_CriterionID_advanced_cad = {"cad", "advanced cad", "CAD"}; 
 	
 	final public String[] a_CriterionID_MI_6mos = {}; 
 	
