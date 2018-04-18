@@ -160,6 +160,9 @@ public class OfficialEvaluator implements Evaluator {
                                                            288 files found
          */
 
+        // TODO consolidate evaluate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
+        metrics = new OfficialMetrics();
+
         for (int i = 0; i < output.length; i++) {
             String line = output[i];
             LOG.debug(line);
