@@ -6,6 +6,7 @@ import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
 import org.apache.logging.log4j.LogManager;
@@ -37,10 +38,11 @@ public class SVMCostOptimizer {
 
             ClassifierFactory factory = new SVMClassifierFactory(cost);
             CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-            Map<Criterion, Double> metrics = cv.evaluate();
+            Metrics metrics = cv.evaluate();
 
-            for (Map.Entry<Criterion, Double> entry : metrics.entrySet()) {
-                updateBestCosts(entry.getKey(), entry.getValue(), exp);
+            for (Criterion c : Criterion.values()) {
+                double value = metrics.getOfficialRankingMeasureByCriterion(c);
+                updateBestCosts(c, value, exp);
             }
 
             LOG.info("exp = {}", exp);
