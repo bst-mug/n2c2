@@ -6,32 +6,32 @@ public class Rules {
 	Patterns p = new Patterns(); 
 	
 	
-	String[] regex_drug_abuse = {
+	private String[] regex_drug_abuse = {
 			
 			// drug abuse, current or past 
 			
 			
 	}; 
 	
-	String[] regex_alcohol_abuse = {
+	private String[] regex_alcohol_abuse = {
 			
 			// current alcohol use over weekly recommended limits 
 			
 	}; 
 	
-	String[] regex_english = {
+	private String[] regex_english = {
 			
 			// patient must speak English 
 			
 	}; 
 	
-	String[] regex_makes_decision = {
+	private String[] regex_makes_decision = {
 			
 			// patient must make their own medical decisions 
 			
 	}; 
 	
-	String[] regex_abdominal = {
+	private String[] regex_abdominal = {
 			
 			// history of intra abdominal surgery, small or 
 			// large intestine resection or small bowel obstruction 
@@ -41,21 +41,21 @@ public class Rules {
 	}; 
 	
 	
-	String[] regex_major_diabetes = {
+	private String[] regex_major_diabetes = {
 			
 			// major diabetes related complication 
 			
 			
 	}; 
 	
-	String[] regex_advanced_cad = {
+	private String[] regex_advanced_cad = {
 			
 			// advanced cardiovascular disease 
 			
 			
 	}; 
 	
-	String[] regex_MI_6mos = {
+	private String[] regex_MI_6mos = {
 			
 			// myocardial infarction in the past 6 months 
 			
@@ -63,14 +63,14 @@ public class Rules {
 			
 	}; 
 	
-	String[] regex_keto_1year = {
+	private String[] regex_keto_1year = {
 			
 			// diagnoses of ketoacidosis in the past year 
 			
 			
 	}; 
 		
-	String[] regex_dietsupp_2mos = {
+	private String[] regex_dietsupp_2mos = {
 			
 			// taken a dietary supplement (excluding vitamin D) in the past two months 
 			
@@ -78,7 +78,7 @@ public class Rules {
 			
 	};	
 	
-	String[] regex_asp_for_mi = {
+	private String[] regex_asp_for_mi = {
 			
 			// use of aspirin to prevent myocardial infarction 
 			
@@ -86,7 +86,7 @@ public class Rules {
 			
 	};		
 	
-	String[] regex_hba1c = {
+	private String[] regex_hba1c = {
 			
 			// any hba1c value between 6.5 and 9.5 % 
 			
@@ -130,7 +130,7 @@ public class Rules {
 	}; 
 	
 	
-	String[] regex_creatinine = {
+	private String[] regex_creatinine = {
 			
 			// serum creatinine > upper limit of normal 
 			
