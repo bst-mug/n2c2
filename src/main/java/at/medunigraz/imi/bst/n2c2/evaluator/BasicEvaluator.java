@@ -20,7 +20,6 @@ public class BasicEvaluator implements Evaluator {
 
     private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
 
-    @Override
     public double getOfficialRankingMeasureByCriterion(Criterion c) {
         return getMetricsByCriterion(c).getAccuracy();
     }
@@ -75,11 +74,6 @@ public class BasicEvaluator implements Evaluator {
     @Override
     public Metrics getMetrics() {
         return metricsByCriterion.get(Criterion.OVERALL_MACRO);
-    }
-
-    @Override
-    public double getOfficialRankingMeasure() {
-        return getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MACRO);
     }
 
     private enum Match {

@@ -71,7 +71,7 @@ public class SingleFoldValidator {
         Map<Criterion, Double> ret = new HashMap<>();
         for (Criterion c : Criterion.values()) {
             // FIXME michel 20180416 get a MetricSet object
-            ret.put(c, evaluator.getOfficialRankingMeasureByCriterion(c));
+            ret.put(c, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(c));
         }
         return ret;
     }

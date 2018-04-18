@@ -47,7 +47,7 @@ public class DAOEvaluatorIntegrationTest {
         PATIENT_DAO.toXML(patient, regeneratedSampleFile);
 
         OfficialEvaluator iaa = new OfficialEvaluator(goldStandardFolder, equalResultsFolder);
-        assertEquals(1, iaa.getOfficialRankingMeasure(), 0.00001);
+        assertEquals(1, iaa.getMetrics().getOfficialRankingMeasure(), 0.00001);
     }
 
     @Test
@@ -60,6 +60,6 @@ public class DAOEvaluatorIntegrationTest {
         PATIENT_DAO.toXML(patient, differentSampleFile);
 
         OfficialEvaluator iaa = new OfficialEvaluator(goldStandardFolder, differentResultsFolder);
-        assertEquals(0.915, iaa.getOfficialRankingMeasure(), 0.00001);
+        assertEquals(0.915, iaa.getMetrics().getOfficialRankingMeasure(), 0.00001);
     }
 }

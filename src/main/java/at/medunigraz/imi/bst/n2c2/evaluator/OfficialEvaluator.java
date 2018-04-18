@@ -110,11 +110,6 @@ public class OfficialEvaluator implements Evaluator {
         evaluate();
     }
 
-    @Override
-    public double getOfficialRankingMeasure() {
-        return metrics.getOfficialRankingMeasure();
-    }
-
     private File createDirAndSave(List<Patient> patients, String prefix) throws IOException {
         File ret = Files.createTempDirectory(prefix).toFile();
         DatasetUtil.saveToFolder(patients, ret);
@@ -200,10 +195,5 @@ public class OfficialEvaluator implements Evaluator {
 
     public MetricSet getMetrics() {
         return metrics;
-    }
-
-    @Override
-    public double getOfficialRankingMeasureByCriterion(Criterion c) {
-        return metrics.getOfficialRankingMeasureByCriterion(c);
     }
 }
