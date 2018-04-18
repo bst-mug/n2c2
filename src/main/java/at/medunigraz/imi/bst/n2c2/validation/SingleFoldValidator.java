@@ -70,7 +70,7 @@ public class SingleFoldValidator {
 
         Map<Criterion, Double> ret = new HashMap<>();
         for (Criterion c : Criterion.values()) {
-            // FIXME michel 20180416 get a OfficialMetrics object
+            // FIXME michel 20180416 get a MetricSet object
             ret.put(c, evaluator.getOfficialRankingMeasureByCriterion(c));
         }
         return ret;

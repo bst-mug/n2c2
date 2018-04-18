@@ -1,7 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.stats;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -57,7 +57,7 @@ public class XMLStatsWriter extends AbstractStatsWriter {
         topicElement.appendChild(metricElement);
     }
 
-    public void write(OfficialMetrics metrics) {
+    public void write(MetricSet metrics) {
         for (Criterion c : Criterion.values()) {
             Element topicElement = doc.createElement(GROUPED_BY.toLowerCase());
             topicElement.setAttribute("name", c.name());

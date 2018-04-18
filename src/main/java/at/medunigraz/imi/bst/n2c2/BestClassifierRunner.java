@@ -4,7 +4,7 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.SVMClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
 import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
@@ -29,7 +29,7 @@ public class BestClassifierRunner {
         OfficialEvaluator evaluator = new OfficialEvaluator();
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        OfficialMetrics metrics = (OfficialMetrics) cv.evaluate();
+        MetricSet metrics = (MetricSet) cv.evaluate();
         LOG.info(metrics);
 
         StatsWriter writer = new XMLStatsWriter(statsFile);

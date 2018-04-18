@@ -3,7 +3,7 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.metrics.OfficialMetrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +38,7 @@ public class OfficialEvaluator implements Evaluator {
 
     private File goldStandard, results;
 
-    private OfficialMetrics metrics = new OfficialMetrics();
+    private MetricSet metrics = new MetricSet();
 
     public OfficialEvaluator() throws FileNotFoundException {
         if (!scriptExists()) {
@@ -161,7 +161,7 @@ public class OfficialEvaluator implements Evaluator {
          */
 
         // TODO consolidate evaluate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
-        metrics = new OfficialMetrics();
+        metrics = new MetricSet();
 
         for (int i = 0; i < output.length; i++) {
             String line = output[i];
@@ -198,7 +198,7 @@ public class OfficialEvaluator implements Evaluator {
         }
     }
 
-    public OfficialMetrics getMetrics() {
+    public MetricSet getMetrics() {
         return metrics;
     }
 
