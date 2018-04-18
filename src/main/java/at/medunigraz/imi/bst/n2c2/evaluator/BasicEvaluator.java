@@ -18,12 +18,12 @@ public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
+
     @Override
     public double getOfficialRankingMeasureByCriterion(Criterion c) {
         return getMetricsByCriterion(c).getAccuracy();
     }
-
-    private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
 
     public BasicMetrics getMetricsByCriterion(Criterion c) {
         return metricsByCriterion.get(c);
