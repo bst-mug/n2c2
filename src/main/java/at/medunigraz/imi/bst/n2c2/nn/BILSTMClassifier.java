@@ -659,18 +659,6 @@ public class BILSTMClassifier implements Classifier {
 	 *
 	 * @see
 	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(at.medunigraz.
-	 * imi.bst.n2c2.model.Patient)
-	 */
-	@Override
-	public Eligibility predict(Patient p) {
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(at.medunigraz.
 	 * imi.bst.n2c2.model.Patient, at.medunigraz.imi.bst.n2c2.model.Criterion)
 	 */
 	@Override

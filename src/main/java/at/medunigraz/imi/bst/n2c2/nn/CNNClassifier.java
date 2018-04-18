@@ -410,11 +410,6 @@ public class CNNClassifier implements Classifier {
 	}
 
 	@Override
-	public Eligibility predict(Patient p) {
-		return null;
-	}
-
-	@Override
 	public Eligibility predict(Patient p, Criterion c) {
 		return null;
 	}
