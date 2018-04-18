@@ -49,7 +49,6 @@ public class CSVStatsWriter extends AbstractStatsWriter {
             List<String> metricNames = MetricSet.getMetricNames();
             int i = 0;
             for (String metricName : metricNames) {
-                double value = metricsMap.get(metricName);
                 entries[++i] = String.valueOf(metricsMap.get(metricName));
             }
 
