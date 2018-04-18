@@ -82,7 +82,7 @@ public class Rules {
 			
 			// use of aspirin to prevent myocardial infarction 
 			
-			
+		
 			
 	};		
 	
@@ -136,7 +136,72 @@ public class Rules {
 			
 			
 	
-	}; 
+	};
+
+
+	public String[] getRegex_drug_abuse() {
+		return regex_drug_abuse;
+	}
+
+
+	public String[] getRegex_alcohol_abuse() {
+		return regex_alcohol_abuse;
+	}
+
+
+	public String[] getRegex_english() {
+		return regex_english;
+	}
+
+
+	public String[] getRegex_makes_decision() {
+		return regex_makes_decision;
+	}
+
+
+	public String[] getRegex_abdominal() {
+		return regex_abdominal;
+	}
+
+
+	public String[] getRegex_major_diabetes() {
+		return regex_major_diabetes;
+	}
+
+
+	public String[] getRegex_advanced_cad() {
+		return regex_advanced_cad;
+	}
+
+
+	public String[] getRegex_MI_6mos() {
+		return regex_MI_6mos;
+	}
+
+
+	public String[] getRegex_keto_1year() {
+		return regex_keto_1year;
+	}
+
+
+	public String[] getRegex_dietsupp_2mos() {
+		return regex_dietsupp_2mos;
+	}
+
+
+	public String[] getRegex_asp_for_mi() {
+		return regex_asp_for_mi;
+	}
+
+
+	public String[] getRegex_hba1c() {
+		return regex_hba1c;
+	}
+
+
+	public String[] getRegex_creatinine() {
+		return regex_creatinine;
+	} 
 	
 	
 	
