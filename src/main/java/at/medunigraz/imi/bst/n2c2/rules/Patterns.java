@@ -57,6 +57,10 @@ public class Patterns {
 		return r_criterionID;
 	} 
 	
+	public String setR_criterionID(String criterionID) {
+		return getR_criterionID().replace("criterionID", criterionID); 
+	}
+	
 	
 	
 	
