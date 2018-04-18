@@ -18,7 +18,7 @@ public class Patterns {
 	
 	final String r_dot = "."; 
 	
-	final String r_criterionID = "(criterionID)";
+	private String r_criterionID = "(criterionID)";
 
 	
 	public String getR_1_digit() {
@@ -58,7 +58,8 @@ public class Patterns {
 	} 
 	
 	public String setR_criterionID(String criterionID) {
-		return getR_criterionID().replace("criterionID", criterionID); 
+		r_criterionID = getR_criterionID().replace("criterionID", criterionID); 
+		return r_criterionID; 
 	}
 	
 	
