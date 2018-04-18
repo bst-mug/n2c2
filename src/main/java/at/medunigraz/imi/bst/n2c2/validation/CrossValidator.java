@@ -64,7 +64,7 @@ public class CrossValidator {
 
         Map<Criterion, Double> ret = new HashMap<>();
         for (Criterion c : Criterion.values()) {
-            ret.put(c, evaluator.getOfficialRankingMeasureByCriterion(c));
+            ret.put(c, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(c));
         }
         return ret;
     }
