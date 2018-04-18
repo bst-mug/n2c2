@@ -4,113 +4,62 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class RuleBasedClassifier {
 	
+	Rules r = new Rules(); 
 	
-	private String[] is_HbA1c_found(Patient p){
+	Patterns pattern = new Patterns(); 
+	
+	
+	private String[] is_snippet_found(Patient p, String[] valid_snippets){
 		
-		String[] criterion_annotation = new String[2]; 
+		String[] snippet_annotation = new String[2]; 
 		
 		String fulltext = p.getText(); 
 		
-		String[] hba1c_criterionIDs = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c"}; 
-		
-		for(int i = 0; i<hba1c_criterionIDs.length; i++){
+		for(int i = 0; i<valid_snippets.length; i++){
 			
-			if(fulltext.contains(hba1c_criterionIDs[i])){
+			if(fulltext.contains(valid_snippets[i])){
 				
-				criterion_annotation[0] = hba1c_criterionIDs[i]; 
+				snippet_annotation[0] = valid_snippets[i]; 
 				
-				criterion_annotation[1] = getWantedLineOfData(fulltext, hba1c_criterionIDs); 
+				snippet_annotation[1] = getWantedLineOfData(fulltext, valid_snippets); 
 				
 			}
 			
 		} // End of for loop 
 		
-		return criterion_annotation; 
+		return snippet_annotation;
 		
-	} // End of is_HbA1c_found() 
+	} // End of is_snippet_found() 
 	
-	public Boolean is_HbA1c_met(Patient p){ 
+	
+	public Boolean is_criterion_met(Patient patient, String[] criterion_snippets){
+	
+		String[] crit_data = is_snippet_found(patient, criterion_snippets);
 		
-		String HbA1c_criterionID = is_HbA1c_found(p)[0];
+		String criterionID = crit_data[0]; 
 		
-		System.out.println("HbA1c_criterionID: ... " + HbA1c_criterionID);
+		String criterion_annotation = crit_data[1]; 
 		
-		String HbA1c_annotation = is_HbA1c_found(p)[1]; 
+		System.out.println("CriterionID: ... " + criterionID);
 		
-		String r_1_digit = "[0-9]"; 
-		
-		String r_2_digit = "[0-9][0-9]"; 
-		
-		String r_whitespace = "\\s"; 
-		
-		String r_forwardslash = "\\/"; 
-		
-		String r_word = "(\\w+)"; 
-		
-		String r_white_word_white = r_whitespace + r_word + r_whitespace;
-		
-		String r_word_white = r_word + r_whitespace; 
-		
-		String r_dot = "."; 
-		
-		String r_criterionID = "(criterionID)"; 
-		
-		r_criterionID = r_criterionID.replace("criterionID", "" + HbA1c_criterionID); 
+		pattern.setR_criterionID(criterionID); 
 		
 		
+		String[] regex_CriterionID = r.getRegex_hba1c(); 
 		
-		String[] regex_CriterionID = {
 				
-				r_criterionID + r_whitespace + r_1_digit,
-				
-				r_criterionID + r_whitespace + r_1_digit + r_dot + r_1_digit,
-				
-				r_criterionID + r_whitespace + r_2_digit + r_dot + r_1_digit,
-				
-				r_criterionID + r_whitespace + r_2_digit + r_dot + r_2_digit,
-				
-				r_criterionID + r_whitespace + r_2_digit + r_forwardslash + r_2_digit + r_forwardslash + r_2_digit + r_2_digit + r_whitespace + r_1_digit, 
-				
-				r_criterionID + r_whitespace + r_2_digit + r_forwardslash + r_2_digit + r_forwardslash + r_2_digit + r_2_digit + r_whitespace + r_2_digit, 
-				
-				r_criterionID + r_whitespace + r_2_digit + r_forwardslash + r_2_digit + r_forwardslash + r_2_digit + r_2_digit + r_whitespace + r_1_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_whitespace + r_2_digit + r_forwardslash + r_2_digit + r_forwardslash + r_2_digit + r_2_digit + r_whitespace + r_1_digit + r_dot + r_2_digit,
-				
-				r_criterionID + r_whitespace + r_2_digit + r_forwardslash + r_2_digit + r_forwardslash + r_2_digit + r_2_digit + r_whitespace + r_2_digit + r_dot + r_1_digit,
-				
-				r_criterionID + r_white_word_white + r_1_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_2_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_1_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_2_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_word_white + r_1_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_word_white + r_2_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_word_white + r_word_white + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_word_white + r_word_white + r_1_digit + r_dot + r_1_digit, 
-				
-				r_criterionID + r_white_word_white + r_word_white + r_word_white + r_word_white + r_2_digit + r_dot + r_1_digit
-				
-				
-		}; 
+		Boolean is_criterion_met = null; 
 		
-		Boolean is_HbA1c_met = null; 
 		
-		if(HbA1c_annotation != null){ 
+		if(criterion_annotation != null){ 
 			
 			for(int i = 0; i<regex_CriterionID.length; i++){
 				
 				System.out.println("regex criterion ID -- " + regex_CriterionID[i]);
 				
-				if(HbA1c_annotation.matches(regex_CriterionID[i])){ 
+				if(criterion_annotation.matches(regex_CriterionID[i])){ 
 					
-					CriterionData cd = getCriterionData(HbA1c_annotation, regex_CriterionID[i], r_criterionID); 
+					CriterionData cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
 					
 					double cd_value = cd.getCriterion_value(); 
 					
@@ -118,11 +67,11 @@ public class RuleBasedClassifier {
 					
 					if(cd_value >= 6.5 && cd_value <= 9.5){
 						
-						is_HbA1c_met = true; 
+						is_criterion_met = true; 
 						
 					}else{
 						
-						is_HbA1c_met = false; 
+						is_criterion_met = false; 
 						
 					}
 					
@@ -130,7 +79,7 @@ public class RuleBasedClassifier {
 					
 				}else{
 					
-					is_HbA1c_met = false; 
+					is_criterion_met = false; 
 					
 				}
 				
@@ -138,9 +87,11 @@ public class RuleBasedClassifier {
 			
 		} // End of if statement 
 		
-		return is_HbA1c_met; 
+		return is_criterion_met; 
 		
-	} // End of is_HbA1c_met() 
+	
+	} // End of is_criterion_met() 
+	
 	
 	private String getWantedLineOfData(String text, String[] identifiers){
 		
@@ -170,6 +121,7 @@ public class RuleBasedClassifier {
 		return wanted_line; 
 		
 	} // End of getWantedLineOfData() 
+	
 	
 	private CriterionData getCriterionData(String line, String valid_regex, String critID){
 		
@@ -223,9 +175,6 @@ public class RuleBasedClassifier {
 			
 			
 		}
-		
-		
-		
 		
 		return cd; 
 		
