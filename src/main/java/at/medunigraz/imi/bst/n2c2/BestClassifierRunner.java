@@ -23,7 +23,8 @@ public class BestClassifierRunner {
 
     public static void main(String[] args) throws IOException {
         final File dataFolder = new File("data");
-        final File statsFile = new File("stats/best.xml");
+        final File xmlStatsFile = new File("stats/best.xml");
+        final File csvStatsFile = new File("stats/best.csv");
 
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         ClassifierFactory factory = new SVMClassifierFactory();
@@ -33,11 +34,11 @@ public class BestClassifierRunner {
         MetricSet metrics = (MetricSet) cv.evaluate();
         LOG.info(metrics);
 
-        StatsWriter xmlWriter = new XMLStatsWriter(statsFile);
+        StatsWriter xmlWriter = new XMLStatsWriter(xmlStatsFile);
         xmlWriter.write(metrics);
         xmlWriter.close();
 
-        StatsWriter csvWriter = new CSVStatsWriter(statsFile);
+        StatsWriter csvWriter = new CSVStatsWriter(csvStatsFile);
         csvWriter.write(metrics);
         csvWriter.close();
     }
