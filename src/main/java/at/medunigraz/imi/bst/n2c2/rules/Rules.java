@@ -8,13 +8,14 @@ public class Rules {
 	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs", "cocaine"}; 
 	// TODO - nothing in sample file --- see how it is stated in the other files 
 	
-	final public String[] a_CriterionID_alcohol_abuse = {"alcohol"}; 
+	final public String[] a_CriterionID_alcohol_abuse = {"alcohol", "ETOH", "Etoh", "etoh", "etOH"}; 
 	
-	final public String[] a_CriterionID_english = {"Spanish", "German", "Italian", "Chinese", "Arab", "Austrian"}; 
+	final public String[] a_CriterionID_english = {"Spanish", "German", "French", "Italian", "Chinese", "Arab", "Austrian", 
+			"credit manager", "set designer"}; 
 	
-	final public String[] a_CriterionID_makes_decision = {"alert", "set designer"}; 
+	final public String[] a_CriterionID_makes_decision = {"alert",  "aware", "Lives alone", "lives alone"}; 
 	
-	final public String[] a_CriterionID_abdominal = {"bowel surgery", }; 
+	final public String[] a_CriterionID_abdominal = {"bowel surgery", "Polypectomy", "POLYPECTOMY", "Resection"}; 
 	
 	final public String[] a_CriterionID_major_diabetes = {"retinopathy", "amputation", "kidney damage", "skin condition", 
 			"nephropathy", "neuropathy", "polyneuropathy", "macular degeneration"}; 
@@ -23,17 +24,19 @@ public class Rules {
 			"Lipitor", "ischemic equivalent", "CAD, s/p MI", "nitropatch", "chest  pain", "chest pain", "EKG changes", 
 			"Metoprolol", "Cardia", "Ischemia", "ischemia", "Cozaar", "MI", "anginal  symptoms", "anginal", "Zocor", 
 			"Plavix", "unstable angina", "LISINOPRIL", "nferior STEMI", "Atenolol", "Diltiazem", "Zestril", "Mevacor",
-			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste"}; 
+			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste", "amlodipine", "IMI", "isinorpill", "Toprol-XL", "Toprol",
+			"enalapril", "Lasix", "HCTZ"}; 
 	
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
-	final public String[] a_CriterionID_keto_1year = {}; 
+	final public String[] a_CriterionID_keto_1year = {"keto", "ketoacidosis"}; 
 	
-	final public String[] a_CriterionID_dietsupp_2mos = {"Folate", "calcium carbonate", "vitamin d", "vit d", "Vit.D", "vitamine D"}; 
+	final public String[] a_CriterionID_dietsupp_2mos = {"Folate", "calcium carbonate", "vitamin d", "vit d", "Vit.D", 
+			"vitamine D", "iron supplements", "multivitamins", "supplement"}; 
 	
 	final public String[] a_CriterionID_asp_for_mi = {"heparin", "ASA", "aspirin", "Pt on asa"}; 
 	
-	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c"}; 
+	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"}; 
 	
 	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre", "Cr"}; 
 	
