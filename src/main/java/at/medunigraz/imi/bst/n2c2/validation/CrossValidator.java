@@ -1,9 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.validation;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.util.Dataset;
@@ -36,7 +34,7 @@ public class CrossValidator extends AbstractValidator {
             List<Patient> test = dataset.getTestSet(i);
             List<Patient> gold = dataset.getGoldSet(i);
 
-            Metrics foldMetrics = evaluateFold(train, test, gold);
+            Metrics foldMetrics = validateFold(train, test, gold);
 
             // First initialization
             if (metrics == null) {
@@ -49,21 +47,5 @@ public class CrossValidator extends AbstractValidator {
         metrics.divideBy(k);
 
         return metrics;
-    }
-
-    private Metrics evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
-        List<Patient> predicted = test;
-        
-        for (Criterion c : Criterion.classifiableValues()) {
-            LOG.info("Evaluating criterion {}...", c);
-            Classifier classifier = classifierFactory.getClassifier(c);
-
-            classifier.train(train);
-            predicted = classifier.predict(predicted);
-        }
-
-        evaluator.evaluate(gold, predicted);
-
-        return evaluator.getMetrics();
     }
 }

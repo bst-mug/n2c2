@@ -1,9 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.validation;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.util.Dataset;
@@ -40,25 +38,6 @@ public class SingleFoldValidator extends AbstractValidator {
         List<Patient> test = dataset.getTestSet(0);
         List<Patient> gold = dataset.getGoldSet(0);
 
-        return evaluateFold(train, test, gold);
-    }
-
-    private Metrics evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
-        for (Criterion c : Criterion.classifiableValues()) {
-            LOG.info("Evaluating criterion {}...", c);
-            // So far, neural nets classify in a single pass all eligibility criteria
-            // Therefore, we need *one* of the following:
-            // FIXME (A) Make neural nets resilient to multiple calls to predict() - maybe check if the patientID was already predicted and just return a cached copy
-            // FIXME (B) The current method detects all eligibility criteria are set and stops early.
-            // michel 20180416 (B) makes more sense to me
-
-            Classifier classifier = classifierFactory.getClassifier(c);
-            classifier.train(train);
-            test = classifier.predict(test);
-        }
-
-        evaluator.evaluate(gold, test);
-
-        return evaluator.getMetrics();
+        return validateFold(train, test, gold);
     }
 }
