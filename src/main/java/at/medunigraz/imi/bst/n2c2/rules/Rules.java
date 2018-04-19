@@ -5,32 +5,35 @@ public class Rules {
 
 	Patterns p = new Patterns(); 
 	
-	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs"}; 
+	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs", "cocaine"}; 
 	// TODO - nothing in sample file --- see how it is stated in the other files 
 	
 	final public String[] a_CriterionID_alcohol_abuse = {"alcohol"}; 
 	
-	final public String[] a_CriterionID_english = {"Spanish", "German"}; 
+	final public String[] a_CriterionID_english = {"Spanish", "German", "Italian", "Chinese", "Arab", "Austrian"}; 
 	
-	final public String[] a_CriterionID_makes_decision = {}; 
+	final public String[] a_CriterionID_makes_decision = {"alert", "set designer"}; 
 	
-	final public String[] a_CriterionID_abdominal = {}; 
+	final public String[] a_CriterionID_abdominal = {"bowel surgery", }; 
 	
 	final public String[] a_CriterionID_major_diabetes = {}; 
 	
-	final public String[] a_CriterionID_advanced_cad = {"cad", "advanced cad", "CAD"}; 
+	final public String[] a_CriterionID_advanced_cad = {"cad", "advanced cad", "CAD", "captopril", "lipitor", "Lopressor", 
+			"Lipitor", "ischemic equivalent", "CAD, s/p MI", "nitropatch", "chest  pain", "chest pain", "EKG changes", 
+			"Metoprolol", "Cardia", "Ischemia", "ischemia", "Cozaar", "MI", "anginal  symptoms", "anginal", "Zocor", 
+			"Plavix", "unstable angina", "LISINOPRIL", "nferior STEMI"}; 
 	
-	final public String[] a_CriterionID_MI_6mos = {}; 
+	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
 	final public String[] a_CriterionID_keto_1year = {}; 
 	
-	final public String[] a_CriterionID_dietsupp_2mos = {}; 
+	final public String[] a_CriterionID_dietsupp_2mos = {"Folate"}; 
 	
-	final public String[] a_CriterionID_asp_for_mi = {}; 
+	final public String[] a_CriterionID_asp_for_mi = {"heparin", "ASA", "aspirin"}; 
 	
-	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c"}; 
+	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c"}; 
 	
-	final public String[] a_CriterionID_creatinine = {}; 
+	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre"}; 
 	
 	
 	
