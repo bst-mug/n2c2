@@ -5,7 +5,7 @@ public class Rules {
 
 	Patterns p = new Patterns(); 
 	
-	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs", "cocaine"}; 
+	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs", "cocaine", "beer", "6 pack"}; 
 	// TODO - nothing in sample file --- see how it is stated in the other files 
 	
 	final public String[] a_CriterionID_alcohol_abuse = {"alcohol", "ETOH", "Etoh", "etoh", "etOH"}; 
@@ -25,7 +25,8 @@ public class Rules {
 			"Metoprolol", "Cardia", "Ischemia", "ischemia", "Cozaar", "MI", "anginal  symptoms", "anginal", "Zocor", 
 			"Plavix", "unstable angina", "LISINOPRIL", "nferior STEMI", "Atenolol", "Diltiazem", "Zestril", "Mevacor",
 			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste", "amlodipine", "IMI", "isinorpill", "Toprol-XL", "Toprol",
-			"enalapril", "Lasix", "HCTZ"}; 
+			"enalapril", "Lasix", "HCTZ", "Hctz", "HYDROCHLOROTHIAZIDE", "ATORVASTATIN", "ATENOLOL", "Enalapril Maleate", 
+			"inferior ischemia", }; 
 	
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
@@ -38,7 +39,7 @@ public class Rules {
 	
 	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"}; 
 	
-	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre", "Cr"}; 
+	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre", "Cr", "CRE", "CREA"}; 
 	
 	
 	
