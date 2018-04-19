@@ -19,21 +19,21 @@ public class SingleFoldValidator extends AbstractValidator {
     }
 
     public Metrics validate() {
-        return validate(10);
+        return validate(Dataset.DEFAULT_TEST_SET_PORCENTAGE);
     }
 
-    public Metrics validate(float validationSetPercentage) {
+    public Metrics validate(float testSetPercentage) {
         Metrics metrics = null;
 
         // FIXME split dataset accordingly. maybe use a fixed list Markus will provide
-        validationSetPercentage = 10;
+        testSetPercentage = 10;
 
         // FIXME draft, but working code: split into 10 folds, but do not cross-validate
-        // 1 fold is then 10% validationSetPercentage
+        // 1 fold is then 10% testSetPercentage
         Dataset dataset = new Dataset(patients);
         dataset.splitIntoFolds(10);
 
-        LOG.info("Evaluating with {}% validation set...", validationSetPercentage);
+        LOG.info("Evaluating with {}% validation set...", testSetPercentage);
         List<Patient> train = dataset.getTrainingSet(0);
         List<Patient> test = dataset.getTestSet(0);
         List<Patient> gold = dataset.getGoldSet(0);

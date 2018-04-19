@@ -8,6 +8,7 @@ import java.util.List;
 public class Dataset {
 
     public static final int DEFAULT_FOLDS = 10;
+    public static final float DEFAULT_TEST_SET_PORCENTAGE = 10;
 
     private List<Patient> patients;
     private CrossValidation cv = null;
