@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SingleFoldValidator {
+public class SingleFoldValidator extends AbstractValidator {
 
     private static final Logger LOG = LogManager.getLogger();
 

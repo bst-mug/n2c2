@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-public class CrossValidator {
+public class CrossValidator extends AbstractValidator {
 
     private static final Logger LOG = LogManager.getLogger();
 
