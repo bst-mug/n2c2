@@ -3,7 +3,7 @@ package at.medunigraz.imi.bst.n2c2.validation;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.dataset.Dataset;
+import at.medunigraz.imi.bst.n2c2.model.dataset.CrossValidatedDataset;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,13 +19,13 @@ public class CrossValidator extends AbstractValidator {
     }
 
     public Metrics validate() {
-        return validate(Dataset.DEFAULT_FOLDS);
+        return validate(CrossValidatedDataset.DEFAULT_FOLDS);
     }
 
     public Metrics validate(int k) {
         Metrics metrics = null;
 
-        Dataset dataset = new Dataset(patients);
+        CrossValidatedDataset dataset = new CrossValidatedDataset(patients);
         dataset.splitIntoFolds(k);
 
         for (int i = 0; i < k; i++) {

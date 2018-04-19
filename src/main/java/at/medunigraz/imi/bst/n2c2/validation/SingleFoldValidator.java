@@ -3,6 +3,7 @@ package at.medunigraz.imi.bst.n2c2.validation;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.dataset.CrossValidatedDataset;
 import at.medunigraz.imi.bst.n2c2.model.dataset.Dataset;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +31,7 @@ public class SingleFoldValidator extends AbstractValidator {
 
         // FIXME draft, but working code: split into 10 folds, but do not cross-validate
         // 1 fold is then 10% testSetPercentage
-        Dataset dataset = new Dataset(patients);
+        CrossValidatedDataset dataset = new CrossValidatedDataset(patients);
         dataset.splitIntoFolds(10);
 
         LOG.info("Evaluating with {}% validation set...", testSetPercentage);
