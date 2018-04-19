@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class PatientDAOConceptMapperIntegrationTest {
 
     private static final File SAMPLE = new File(PatientDAOConceptMapperIntegrationTest.class.getResource("/gold-standard/sample.xml").getPath());
-    private static Patient patient;
+    private Patient patient;
 
     public PatientDAOConceptMapperIntegrationTest() throws IOException, SAXException {
         patient = new PatientDAO().fromXML(SAMPLE);
