@@ -155,7 +155,7 @@ public class OfficialEvaluator implements Evaluator {
                                                            288 files found
          */
 
-        // TODO consolidate evaluate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
+        // TODO consolidate validate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
         metrics = new MetricSet();
 
         for (int i = 0; i < output.length; i++) {

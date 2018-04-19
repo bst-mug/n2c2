@@ -30,7 +30,7 @@ public class NNClassifierRunner {
 
         SingleFoldValidator sfv = new SingleFoldValidator(patients, factory, evaluator);
         // FIXME michel 20180416 In a not too distant future, in a galaxy not-so-far away, we will receive a Map<Criterion,MetricSet> object here
-        Map<Criterion, Double> metrics = sfv.evaluate();
+        Map<Criterion, Double> metrics = sfv.validate();
         LOG.info(metrics);
 
         // Writes stats into a CSV file; outdated at the moment

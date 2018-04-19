@@ -21,11 +21,11 @@ public class SingleFoldValidator extends AbstractValidator {
         super(patients, classifierFactory, evaluator);
     }
 
-    public Map<Criterion, Double> evaluate() {
-        return evaluate(10);
+    public Map<Criterion, Double> validate() {
+        return validate(10);
     }
 
-    public Map<Criterion, Double> evaluate(float validationSetPercentage) {
+    public Map<Criterion, Double> validate(float validationSetPercentage) {
         Map<Criterion, Double> metrics = new HashMap<>();
 
         // FIXME split dataset accordingly. maybe use a fixed list Markus will provide
