@@ -26,9 +26,11 @@ import org.deeplearning4j.earlystopping.trainer.IEarlyStoppingTrainer;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.eval.EvaluationBinary;
 import org.deeplearning4j.nn.api.Layer;
+import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.WorkspaceMode;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.GravesBidirectionalLSTM;
@@ -69,10 +71,10 @@ public class BILSTMC3GClassifier implements Classifier {
 	private int miniBatchSize = 10;
 
 	// length for truncated backpropagation through time
-	private int tbpttLength = 50;
+	private int tbpttLength = 100;
 
 	// total number of training epochs
-	private int nEpochs = 35;
+	private int nEpochs = 50;
 
 	// specifies time series length
 	public int truncateLength = 64;
@@ -111,7 +113,7 @@ public class BILSTMC3GClassifier implements Classifier {
 
 		this.patientExamples = examples;
 
-		initializeNetworkBinaryMultiLabel();
+		initializeNetworkBinaryMultiLabelDeep();
 		// initializeNetworkDebug();
 		initializeMonitoring();
 
@@ -193,7 +195,7 @@ public class BILSTMC3GClassifier implements Classifier {
 		// https://deeplearning4j.org/workspaces
 
 		Nd4j.getMemoryManager().setAutoGcWindow(10000);
-		//Nd4j.getMemoryManager().togglePeriodicGc(false);
+		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
 			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
@@ -230,6 +232,137 @@ public class BILSTMC3GClassifier implements Classifier {
 	}
 
 	/**
+	 * SIGMOID activation and XENT loss function for binary multi-label
+	 * classification.
+	 */
+	private void initializeNetworkBinaryMultiLabelDeep() {
+
+		// settings for memory management:
+		// https://deeplearning4j.org/workspaces
+
+		Nd4j.getMemoryManager().setAutoGcWindow(10000);
+		// Nd4j.getMemoryManager().togglePeriodicGc(false);
+
+		try {
+			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		vectorSize = fullSetIteration.vectorSize;
+		truncateLength = fullSetIteration.maxSentences;
+
+		int nOutFF = 150;
+		int lstmLayerSize = 20;
+
+		// seed for reproducibility
+		final int seed = 12345;
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).updater(Updater.ADAGRAD)
+				.regularization(true).l2(1e-5).dropOut(0.5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(0.1).trainingWorkspaceMode(WorkspaceMode.NONE)
+				.inferenceWorkspaceMode(WorkspaceMode.NONE).list()
+				.layer(0,
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
+								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+				.layer(1,
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
+								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+				.layer(2,
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
+								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+				.layer(3,
+						new GravesBidirectionalLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize)
+								.activation(Activation.SOFTSIGN).build())
+				.layer(4,
+						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
+								.build())
+				.layer(5,
+						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
+				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
+
+		// tbptt not working with GravesBidirectionalLSTM
+		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength).tBPTTBackwardLength(tbpttLength)
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+	}
+
+	/**
+	 * SIGMOID activation and XENT loss function for binary multi-label
+	 * classification.
+	 */
+	private void initializeNetworkBinaryMultiLabelDeepTBPTT() {
+
+		// settings for memory management:
+		// https://deeplearning4j.org/workspaces
+
+		Nd4j.getMemoryManager().setAutoGcWindow(10000);
+		// Nd4j.getMemoryManager().togglePeriodicGc(false);
+
+		try {
+			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		vectorSize = fullSetIteration.vectorSize;
+		truncateLength = fullSetIteration.maxSentences;
+
+		int nOutFF = 150;
+		int lstmLayerSize = 20;
+
+		// seed for reproducibility
+		final int seed = 12345;
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).updater(Updater.ADAGRAD)
+				.regularization(true).l2(1e-5).dropOut(0.5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).learningRate(0.1).trainingWorkspaceMode(WorkspaceMode.NONE)
+				.inferenceWorkspaceMode(WorkspaceMode.NONE).list()
+				.layer(0,
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
+								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+				.layer(1,
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
+								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+				.layer(2,
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
+								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+				.layer(3,
+						new GravesLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
+								.build())
+				.layer(4,
+						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
+								.build())
+				.layer(5,
+						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
+				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true)
+				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+				.tBPTTBackwardLength(tbpttLength).build();
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+	}
+
+	/**
 	 * Initialize monitoring.
 	 * 
 	 */
@@ -259,7 +392,7 @@ public class BILSTMC3GClassifier implements Classifier {
 	 * @param validationSplit
 	 * @param testSplit
 	 */
-	private void getSplits(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
+	private void getSplits602020(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
 			List<Patient> testSplit) {
 
 		// TODO generalize
@@ -298,58 +431,156 @@ public class BILSTMC3GClassifier implements Classifier {
 		}
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param examples
+	 * @param trainingSplit
+	 * @param validationSplit
+	 * @param testSplit
+	 */
+	private void getSplits801010(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
+			List<Patient> testSplit) {
+
+		// TODO generalize
+		// --------------------------------------
+		// abdominal 80 split: 77 / 125 - 62 / 100
+		// abdominal 10 split: 77 / 125 - 8 / 13
+		// abdominal 10 split: 77 / 125 - 7 / 12
+		// --------------------------------------
+		// abdominal 100 : 77 / 125 - 77 / 25
+
+		int counterPos = 1;
+		int counterNeg = 1;
+
+		for (Patient patient : examples) {
+			if (patient.getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET)) {
+				if (counterPos > 70) {
+					testSplit.add(patient);
+				} else if (counterPos > 62) {
+					validationSplit.add(patient);
+					counterPos++;
+				} else {
+					trainingSplit.add(patient);
+					counterPos++;
+				}
+			} else {
+				if (counterNeg > 113) {
+					testSplit.add(patient);
+				} else if (counterNeg > 100) {
+					validationSplit.add(patient);
+					counterNeg++;
+				} else {
+					trainingSplit.add(patient);
+					counterNeg++;
+				}
+			}
+		}
+	}
+
 	private void trainWithEarlyStoppingBML(List<Patient> examples) {
 
 		List<Patient> trainingSplit = new ArrayList<Patient>();
 		List<Patient> validationSplit = new ArrayList<Patient>();
 		List<Patient> testSplit = new ArrayList<Patient>();
 
-		// generate splits (60 20 20)
-		getSplits(examples, trainingSplit, validationSplit, testSplit);
+		// generate splits (80 10 10)
+		getSplits801010(examples, trainingSplit, validationSplit, testSplit);
 
 		NGramIterator training;
 		NGramIterator validation;
 		NGramIterator test;
 
 		try {
-			training = new NGramIterator(trainingSplit, miniBatchSize);
-			validation = new NGramIterator(validationSplit, miniBatchSize, training.characterNGram_3,
-					training.char3GramToIdxMap);
-			test = new NGramIterator(testSplit, miniBatchSize, training.characterNGram_3, training.char3GramToIdxMap);
+			training = new NGramIterator(trainingSplit, miniBatchSize, fullSetIteration.characterNGram_3,
+					fullSetIteration.char3GramToIdxMap);
+			validation = new NGramIterator(validationSplit, miniBatchSize, fullSetIteration.characterNGram_3,
+					fullSetIteration.char3GramToIdxMap);
+			test = new NGramIterator(testSplit, miniBatchSize, fullSetIteration.characterNGram_3,
+					fullSetIteration.char3GramToIdxMap);
 
 			// early stopping on validation
 			EarlyStoppingModelSaver<MultiLayerNetwork> saver = new InMemoryModelSaver<>();
 			EarlyStoppingConfiguration<MultiLayerNetwork> esConf = new EarlyStoppingConfiguration.Builder<MultiLayerNetwork>()
-					.epochTerminationConditions(new MaxEpochsTerminationCondition(100),
-							new ScoreImprovementEpochTerminationCondition(5))
+					.epochTerminationConditions(new MaxEpochsTerminationCondition(nEpochs),
+							new ScoreImprovementEpochTerminationCondition(10))
 					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(4, TimeUnit.HOURS),
-							new MaxScoreIterationTerminationCondition(7.5))
+							new MaxScoreIterationTerminationCondition(20))
 					.scoreCalculator(new DataSetLossCalculator(validation, true)).modelSaver(saver).build();
 
 			// conduct early stopping training
 			IEarlyStoppingTrainer trainer = new EarlyStoppingTrainer(esConf, net, training);
 			EarlyStoppingResult result = trainer.fit();
 
+			this.net = (MultiLayerNetwork) result.getBestModel();
+
+			// resetting iterators
+			training.reset();
+			validation.reset();
+			test.reset();
+
+			// ---------------------------------------------
+			// printing out evaluation stats
+			// ---------------------------------------------
+			LOG.info(System.getProperty("line.separator") + "---------------------------------");
 			LOG.info("Termination reason: " + result.getTerminationReason());
 			LOG.info("Termination details: " + result.getTerminationDetails());
 			LOG.info("Total epochs: " + result.getTotalEpochs());
 			LOG.info("Best epoch number: " + result.getBestModelEpoch());
 			LOG.info("Score at best epoch: " + result.getBestModelScore());
+			LOG.info(System.getProperty("line.separator") + "---------------------------------");
 
-			// run evaluation on test data
-			LOG.info("Printing TEST evaluation measurements");
-			Evaluation evaluationTest = net.evaluate(test);
-			LOG.info(evaluationTest.stats());
+			// training
+			EvaluationBinary eb = new EvaluationBinary();
+			while (training.hasNext()) {
+				DataSet t = training.next();
+				INDArray features = t.getFeatureMatrix();
+				INDArray lables = t.getLabels();
+				INDArray inMask = t.getFeaturesMaskArray();
+				INDArray outMask = t.getLabelsMaskArray();
+				INDArray predicted = net.output(features, false, inMask, outMask);
 
-			// run evaluation on validation data
-			LOG.info("Printing VALIDAITON evaluation measurements");
-			Evaluation evaluationValidation = net.evaluate(validation);
-			LOG.info(evaluationValidation.stats());
+				eb.eval(lables, predicted, outMask);
+			}
+			training.reset();
+			LOG.info(System.getProperty("line.separator") + eb.stats());
 
-			// run evaluation on test data
-			LOG.info("Printing TRAINING evaluation measurements");
-			Evaluation evaluationTraining = net.evaluate(training);
-			LOG.info(evaluationTraining.stats());
+			// validation
+			eb = new EvaluationBinary();
+			while (validation.hasNext()) {
+				DataSet t = validation.next();
+				INDArray features = t.getFeatureMatrix();
+				INDArray lables = t.getLabels();
+				INDArray inMask = t.getFeaturesMaskArray();
+				INDArray outMask = t.getLabelsMaskArray();
+				INDArray predicted = net.output(features, false, inMask, outMask);
+
+				eb.eval(lables, predicted, outMask);
+			}
+			validation.reset();
+			LOG.info(System.getProperty("line.separator") + eb.stats());
+
+			// test
+			eb = new EvaluationBinary();
+			while (test.hasNext()) {
+				DataSet t = test.next();
+				INDArray features = t.getFeatureMatrix();
+				INDArray lables = t.getLabels();
+				INDArray inMask = t.getFeaturesMaskArray();
+				INDArray outMask = t.getLabelsMaskArray();
+				INDArray predicted = net.output(features, false, inMask, outMask);
+
+				eb.eval(lables, predicted, outMask);
+			}
+			test.reset();
+			LOG.info(System.getProperty("line.separator") + eb.stats());
+
+			// save model after n epochs
+			File locationToSave = new File("BILSTMC3G_MBL_80_" + result.getTotalEpochs() + ".zip");
+			boolean saveUpdater = true;
+			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
+
+			// persist dictionaries TODO
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -364,7 +595,7 @@ public class BILSTMC3GClassifier implements Classifier {
 		List<Patient> testSplit = new ArrayList<Patient>();
 
 		// generate splits (60 20 20)
-		getSplits(examples, trainingSplit, validationSplit, testSplit);
+		getSplits602020(examples, trainingSplit, validationSplit, testSplit);
 
 		NGramIterator training;
 		NGramIterator validation;
@@ -430,7 +661,7 @@ public class BILSTMC3GClassifier implements Classifier {
 		List<Patient> testSplit = new ArrayList<Patient>();
 
 		// generate splits (60 20 20)
-		getSplits(examples, trainingSplit, validationSplit, testSplit);
+		getSplits602020(examples, trainingSplit, validationSplit, testSplit);
 		combinedSplit.addAll(trainingSplit);
 		combinedSplit.addAll(validationSplit);
 
@@ -591,7 +822,8 @@ public class BILSTMC3GClassifier implements Classifier {
 		// else
 		// train on new list
 
-		trainFullSetBML(examples);
+		// trainFullSetBML(examples);
+		trainWithEarlyStoppingBML(examples);
 	}
 
 	/*
