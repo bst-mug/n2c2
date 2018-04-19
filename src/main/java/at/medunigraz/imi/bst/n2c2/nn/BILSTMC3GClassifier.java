@@ -113,7 +113,7 @@ public class BILSTMC3GClassifier implements Classifier {
 
 		this.patientExamples = examples;
 
-		initializeNetworkBinaryMultiLabelDeepTBPTT();
+		initializeNetworkBinaryMultiLabelDeep();
 		// initializeNetworkDebug();
 		initializeMonitoring();
 
@@ -252,7 +252,8 @@ public class BILSTMC3GClassifier implements Classifier {
 		vectorSize = fullSetIteration.vectorSize;
 		truncateLength = fullSetIteration.maxSentences;
 
-		int nOut = 150;
+		int nOutFF = 150;
+		int lstmLayerSize = 20;
 
 		// seed for reproducibility
 		final int seed = 12345;
@@ -262,27 +263,29 @@ public class BILSTMC3GClassifier implements Classifier {
 				.gradientNormalizationThreshold(1.0).learningRate(0.1).trainingWorkspaceMode(WorkspaceMode.NONE)
 				.inferenceWorkspaceMode(WorkspaceMode.NONE).list()
 				.layer(0,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOut)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
 								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 								.gradientNormalizationThreshold(10).learningRate(0.1).build())
 				.layer(1,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOut).nOut(nOut)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
 								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 								.gradientNormalizationThreshold(10).learningRate(0.1).build())
 				.layer(2,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOut).nOut(nOut)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
+						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
 								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 								.gradientNormalizationThreshold(10).learningRate(0.1).build())
 				.layer(3,
-						new GravesBidirectionalLSTM.Builder().nIn(nOut).nOut(nOut).activation(Activation.SOFTSIGN)
+						new GravesBidirectionalLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize)
+								.activation(Activation.SOFTSIGN).build())
+				.layer(4,
+						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
 								.build())
-				.layer(4, new GravesLSTM.Builder().nIn(nOut).nOut(nOut).activation(Activation.SOFTSIGN).build())
 				.layer(5,
 						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-								.lossFunction(LossFunctions.LossFunction.XENT).nIn(nOut).nOut(13).build())
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
 				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
 				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
 
@@ -340,8 +343,12 @@ public class BILSTMC3GClassifier implements Classifier {
 								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
 								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 								.gradientNormalizationThreshold(10).learningRate(0.1).build())
-				.layer(3, new GravesLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize).activation(Activation.SOFTSIGN).build())
-				.layer(4, new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN).build())
+				.layer(3,
+						new GravesLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
+								.build())
+				.layer(4,
+						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
+								.build())
 				.layer(5,
 						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
 								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
