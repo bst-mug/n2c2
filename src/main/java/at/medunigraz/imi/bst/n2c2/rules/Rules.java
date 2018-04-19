@@ -16,24 +16,26 @@ public class Rules {
 	
 	final public String[] a_CriterionID_abdominal = {"bowel surgery", }; 
 	
-	final public String[] a_CriterionID_major_diabetes = {}; 
+	final public String[] a_CriterionID_major_diabetes = {"retinopathy", "amputation", "kidney damage", "skin condition", 
+			"nephropathy", "neuropathy", "polyneuropathy", "macular degeneration"}; 
 	
 	final public String[] a_CriterionID_advanced_cad = {"cad", "advanced cad", "CAD", "captopril", "lipitor", "Lopressor", 
 			"Lipitor", "ischemic equivalent", "CAD, s/p MI", "nitropatch", "chest  pain", "chest pain", "EKG changes", 
 			"Metoprolol", "Cardia", "Ischemia", "ischemia", "Cozaar", "MI", "anginal  symptoms", "anginal", "Zocor", 
-			"Plavix", "unstable angina", "LISINOPRIL", "nferior STEMI"}; 
+			"Plavix", "unstable angina", "LISINOPRIL", "nferior STEMI", "Atenolol", "Diltiazem", "Zestril", "Mevacor",
+			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste"}; 
 	
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
 	final public String[] a_CriterionID_keto_1year = {}; 
 	
-	final public String[] a_CriterionID_dietsupp_2mos = {"Folate"}; 
+	final public String[] a_CriterionID_dietsupp_2mos = {"Folate", "calcium carbonate", "vitamin d", "vit d", "Vit.D", "vitamine D"}; 
 	
-	final public String[] a_CriterionID_asp_for_mi = {"heparin", "ASA", "aspirin"}; 
+	final public String[] a_CriterionID_asp_for_mi = {"heparin", "ASA", "aspirin", "Pt on asa"}; 
 	
 	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c"}; 
 	
-	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre"}; 
+	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre", "Cr"}; 
 	
 	
 	
