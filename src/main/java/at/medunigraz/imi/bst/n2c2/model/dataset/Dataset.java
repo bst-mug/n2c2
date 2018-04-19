@@ -1,6 +1,7 @@
-package at.medunigraz.imi.bst.n2c2.util;
+package at.medunigraz.imi.bst.n2c2.model.dataset;
 
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import smile.validation.CrossValidation;
 
 import java.util.List;
