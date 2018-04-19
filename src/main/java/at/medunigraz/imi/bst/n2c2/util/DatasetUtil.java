@@ -1,6 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.util;
 
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -57,5 +58,21 @@ public abstract class DatasetUtil {
         }
 
         return patients;
+    }
+
+    /**
+     * Checks whether at least one patient in the given list has no prediction for a given criterion.
+     *
+     * @param test
+     * @param c
+     * @return
+     */
+    public static boolean isFullyPredicted(List<Patient> test, Criterion c) {
+        for (Patient patient : test) {
+            if (!patient.hasEligibility(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

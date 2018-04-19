@@ -35,6 +35,7 @@ public abstract class AbstractValidator implements Validator {
             // FIXME (A) Make neural nets resilient to multiple calls to predict() - maybe check if the patientID was already predicted and just return a cached copy
             // FIXME (B) The current method detects all eligibility criteria are set and stops early.
             // michel 20180416 (B) makes more sense to me
+            // michel 20180419 (B) actually hinders usage of multiple classifiers
 
             Classifier classifier = classifierFactory.getClassifier(c);
 
