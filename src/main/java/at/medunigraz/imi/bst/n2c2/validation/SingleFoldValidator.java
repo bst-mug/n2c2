@@ -17,14 +17,8 @@ public class SingleFoldValidator extends AbstractValidator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private List<Patient> patients;
-    private ClassifierFactory classifierFactory;
-    private Evaluator evaluator;
-
     public SingleFoldValidator(List<Patient> patients, ClassifierFactory classifierFactory, Evaluator evaluator) {
-        this.patients = patients;
-        this.classifierFactory = classifierFactory;
-        this.evaluator = evaluator;
+        super(patients, classifierFactory, evaluator);
     }
 
     public Map<Criterion, Double> evaluate() {
