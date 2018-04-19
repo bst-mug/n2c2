@@ -5,6 +5,7 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.SVMClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
+import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
@@ -32,8 +33,12 @@ public class BestClassifierRunner {
         MetricSet metrics = (MetricSet) cv.evaluate();
         LOG.info(metrics);
 
-        StatsWriter writer = new XMLStatsWriter(statsFile);
-        writer.write(metrics);
-        writer.close();
+        StatsWriter xmlWriter = new XMLStatsWriter(statsFile);
+        xmlWriter.write(metrics);
+        xmlWriter.close();
+
+        StatsWriter csvWriter = new CSVStatsWriter(statsFile);
+        csvWriter.write(metrics);
+        csvWriter.close();
     }
 }
