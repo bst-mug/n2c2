@@ -20,11 +20,11 @@ public class CrossValidator extends AbstractValidator {
         super(patients, classifierFactory, evaluator);
     }
 
-    public Metrics evaluate() {
-        return evaluate(Dataset.DEFAULT_FOLDS);
+    public Metrics validate() {
+        return validate(Dataset.DEFAULT_FOLDS);
     }
 
-    public Metrics evaluate(int k) {
+    public Metrics validate(int k) {
         Metrics metrics = null;
 
         Dataset dataset = new Dataset(patients);

@@ -29,7 +29,7 @@ public class BestClassifierRunner {
         OfficialEvaluator evaluator = new OfficialEvaluator();
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        MetricSet metrics = (MetricSet) cv.evaluate();
+        MetricSet metrics = (MetricSet) cv.validate();
         LOG.info(metrics);
 
         StatsWriter writer = new XMLStatsWriter(statsFile);

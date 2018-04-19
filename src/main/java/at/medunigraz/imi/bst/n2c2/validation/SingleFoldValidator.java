@@ -5,13 +5,12 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.util.Dataset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SingleFoldValidator extends AbstractValidator {
 
@@ -21,12 +20,12 @@ public class SingleFoldValidator extends AbstractValidator {
         super(patients, classifierFactory, evaluator);
     }
 
-    public Map<Criterion, Double> validate() {
+    public Metrics validate() {
         return validate(10);
     }
 
-    public Map<Criterion, Double> validate(float validationSetPercentage) {
-        Map<Criterion, Double> metrics = new HashMap<>();
+    public Metrics validate(float validationSetPercentage) {
+        Metrics metrics = null;
 
         // FIXME split dataset accordingly. maybe use a fixed list Markus will provide
         validationSetPercentage = 10;
@@ -41,12 +40,10 @@ public class SingleFoldValidator extends AbstractValidator {
         List<Patient> test = dataset.getTestSet(0);
         List<Patient> gold = dataset.getGoldSet(0);
 
-        metrics = evaluateFold(train, test, gold);
-
-        return metrics;
+        return evaluateFold(train, test, gold);
     }
 
-    private Map<Criterion, Double> evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
+    private Metrics evaluateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
         for (Criterion c : Criterion.classifiableValues()) {
             LOG.info("Evaluating criterion {}...", c);
             // So far, neural nets classify in a single pass all eligibility criteria
@@ -62,11 +59,6 @@ public class SingleFoldValidator extends AbstractValidator {
 
         evaluator.evaluate(gold, test);
 
-        Map<Criterion, Double> ret = new HashMap<>();
-        for (Criterion c : Criterion.values()) {
-            // FIXME michel 20180416 get a MetricSet object
-            ret.put(c, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(c));
-        }
-        return ret;
+        return evaluator.getMetrics();
     }
 }

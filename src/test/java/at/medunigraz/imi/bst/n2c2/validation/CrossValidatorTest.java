@@ -39,7 +39,7 @@ public class CrossValidatorTest {
         patients.get(4).withCriterion(Criterion.ABDOMINAL, Eligibility.MET);
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        Metrics metrics = cv.evaluate(patients.size());
+        Metrics metrics = cv.validate(patients.size());
 
         // Official evaluation script average per class (2), so expected is 4/5/2.
         assertEquals(0.4, metrics.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
