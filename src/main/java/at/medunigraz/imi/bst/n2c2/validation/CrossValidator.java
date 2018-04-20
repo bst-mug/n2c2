@@ -30,9 +30,12 @@ public class CrossValidator extends AbstractValidator {
 
         for (int i = 0; i < k; i++) {
             LOG.info("Evaluating fold {}/{}...", i + 1, k);
-            List<Patient> train = dataset.getTrainingSet(i);
-            List<Patient> test = dataset.getTestSet(i);
-            List<Patient> gold = dataset.getGoldSet(i);
+
+            dataset.setCurrentFold(i);
+
+            List<Patient> train = dataset.getTrainingSet();
+            List<Patient> test = dataset.getTestSet();
+            List<Patient> gold = dataset.getGoldSet();
 
             Metrics foldMetrics = validateFold(train, test, gold);
 

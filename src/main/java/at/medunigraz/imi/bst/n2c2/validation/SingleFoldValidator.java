@@ -3,7 +3,6 @@ package at.medunigraz.imi.bst.n2c2.validation;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.dataset.CrossValidatedDataset;
 import at.medunigraz.imi.bst.n2c2.model.dataset.SingleFoldValidatedDataset;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
@@ -20,24 +19,12 @@ public class SingleFoldValidator extends AbstractValidator {
     }
 
     public Metrics validate() {
-        return validate(SingleFoldValidatedDataset.DEFAULT_TEST_SET_PORCENTAGE);
-    }
+        SingleFoldValidatedDataset dataset = new SingleFoldValidatedDataset(patients);
+        dataset.split();
 
-    public Metrics validate(float testSetPercentage) {
-        Metrics metrics = null;
-
-        // FIXME split dataset accordingly. maybe use a fixed list Markus will provide
-        testSetPercentage = 10;
-
-        // FIXME draft, but working code: split into 10 folds, but do not cross-validate
-        // 1 fold is then 10% testSetPercentage
-        CrossValidatedDataset dataset = new CrossValidatedDataset(patients);
-        dataset.splitIntoFolds(10);
-
-        LOG.info("Evaluating with {}% validation set...", testSetPercentage);
-        List<Patient> train = dataset.getTrainingSet(0);
-        List<Patient> test = dataset.getTestSet(0);
-        List<Patient> gold = dataset.getGoldSet(0);
+        List<Patient> train = dataset.getTrainingSet();
+        List<Patient> test = dataset.getTestSet();
+        List<Patient> gold = dataset.getGoldSet();
 
         return validateFold(train, test, gold);
     }

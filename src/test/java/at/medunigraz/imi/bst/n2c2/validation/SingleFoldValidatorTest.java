@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class CrossValidatorTest {
+public class SingleFoldValidatorTest {
 
     @Before
     public void SetUp() {
@@ -26,7 +26,7 @@ public class CrossValidatorTest {
     }
 
     @Test
-    public void evaluate() throws FileNotFoundException {
+    public void validate() throws FileNotFoundException {
         ClassifierFactory factory = new BaselineClassifierFactory();
         Evaluator evaluator = new OfficialEvaluator();
 
@@ -34,16 +34,14 @@ public class CrossValidatorTest {
         List<Patient> patients = DatasetUtil.generateEmptyPatients(5);
         patients.get(0).withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET);
         patients.get(1).withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET);
-        patients.get(2).withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET);
+        patients.get(2).withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET);    // Test set if Random(42)
         patients.get(3).withCriterion(Criterion.ABDOMINAL, Eligibility.NOT_MET);
         patients.get(4).withCriterion(Criterion.ABDOMINAL, Eligibility.MET);
 
-        CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        Metrics metrics = cv.validate(patients.size());
+        SingleFoldValidator sfv = new SingleFoldValidator(patients, factory, evaluator);
+        Metrics metrics = sfv.validate();
 
-        // Official evaluation script average per class (2), so expected is 4/5/2.
-        assertEquals(0.4, metrics.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
+        // Official evaluation script average per class (2), so expected is 1/2.
+        assertEquals(0.5, metrics.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
     }
-
-
 }
