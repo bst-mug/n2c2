@@ -5,7 +5,6 @@ public class CriterionData {
 	private String criterionSnippet = null; 
 	
 	private double criterion_value = -1;
-
 	
 
 	public double getCriterion_value() {
@@ -24,10 +23,5 @@ public class CriterionData {
 		this.criterionSnippet = criterionSnippet;
 	}
 
-	
-	
-	
-	
-	
 	
 }
