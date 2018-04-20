@@ -1,7 +1,5 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
-import java.util.Date;
-
 public class CriterionData {
 	
 	private String criterionSnippet = null; 
