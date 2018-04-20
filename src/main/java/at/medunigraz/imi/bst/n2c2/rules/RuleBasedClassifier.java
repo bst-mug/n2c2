@@ -1,8 +1,13 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
+import java.util.List;
+
+import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
-public class RuleBasedClassifier {
+public class RuleBasedClassifier implements Classifier {
 	
 	Rules r = new Rules(); 
 	
@@ -188,6 +193,49 @@ public class RuleBasedClassifier {
 		return cd; 
 		
 	} // End of getCriterionData() 
+
+	
+	protected Criterion criterion;
+	
+	
+	@Deprecated
+	public void train(List<Patient> examples) {
+		
+	}
+
+
+	@Override
+	public Eligibility predict(Patient p) {
+		return null;
+	}
+
+
+	@Override
+	public Eligibility predict(Patient p, Criterion c) {
+		
+		Eligibility eli; 
+		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
+		Rules r = new Rules(); 
+		
+		String[] criterion_drug_abuse = r.a_CriterionID_drug_abuse; 
+		
+		Boolean is_met = rbc.is_criterion_met(p, criterion_drug_abuse, r.getRegex_drug_abuse());
+		
+		if(is_met == true){
+			eli = Eligibility.MET; 	
+		}else{
+			eli = Eligibility.NOT_MET; 
+		}
+		return eli;
+	
+	}
+
+
+	@Override
+	public List<Patient> predict(List<Patient> patientList) {
+		patientList.forEach(p -> p.withCriterion(criterion, predict(p)));
+        return patientList;
+	}
 	
 	
 	
