@@ -40,10 +40,14 @@ public class RuleBasedClassifier implements Classifier {
 		
 	} // End of is_snippet_found() 
 	
-	public Boolean is_criterion_met(Patient patient, String[] criterion_snippets, String[] regex_CriterionID){
-//	public Boolean is_criterion_met(Patient patient, Criterion c){
 	
-		Boolean is_criterion_met = null; 
+	public Boolean is_makes_decision_met(Patient patient){
+		
+		Boolean is_keto1yr_met = null; 
+		
+		String[] criterion_snippets = r.a_CriterionID_makes_decision; 
+		
+		String[] regex_CriterionID = r.getRegex_makes_decision(); 
 		
 		String[] crit_data = is_snippet_found(patient, criterion_snippets);
 		
@@ -65,146 +69,6 @@ public class RuleBasedClassifier implements Classifier {
 				
 				for(int i = 0; i<regex_CriterionID.length; i++){
 					
-					System.out.println("regex criterion ID -- " + regex_CriterionID[i]);
-//					
-//					if(criterion_annotation.contains(criterion_annotation)){
-//						
-//						System.out.println();
-//						
-//					}
-					
-					
-//					if(criterion_annotation.matches(regex_CriterionID[i])){ 
-//						
-//						CriterionValues cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
-//						
-//						double cd_value = cd.getCriterion_value(); 
-//						
-//						System.out.println("criterion value: " + cd_value);
-//						
-//						if(cd_value >= 6.5 && cd_value <= 9.5){
-//							
-//							is_criterion_met = true; 
-//							
-//						}else{
-//							
-//							is_criterion_met = false; 
-//							
-//						}
-//						
-//						break; 
-//						
-//					}else{
-//						
-//						is_criterion_met = false; 
-//						
-//					}
-					
-					
-					//TODO 
-					
-					Criterion[] aCrits = Criterion.classifiableValues(); 
-					
-					Rules r = new Rules(); 
-					
-					Criterion c = null; 
-					
-					for(int j = 0; j<aCrits.length; j++){
-						
-						if(aCrits[j] == c.ABDOMINAL){
-							
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.ADVANCED_CAD){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.ALCOHOL_ABUSE){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.ASP_FOR_MI){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.CREATININE){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.DIETSUPP_2MOS){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.DRUG_ABUSE){
-							
-							
-							
-						}
-						
-						
-						if(aCrits[j] == c.ENGLISH){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.ENGLISH){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.HBA1C){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.KETO_1YR){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.MAJOR_DIABETES){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.MAJOR_DIABETES){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.MAKES_DECISIONS){
-							
-							
-							
-						}
-						
-						if(aCrits[j] == c.MI_6MOS){
-							
-							
-							
-						}
-						
-						
-					}
 					
 					
 				} // End of for loop 
@@ -213,12 +77,167 @@ public class RuleBasedClassifier implements Classifier {
 			
 		}
 		
-		
-		
-		return is_criterion_met; 
+		return is_keto1yr_met; 
 		
 	
-	} // End of is_criterion_met() 
+	} // End of is_keto1yr_met() 
+	
+	
+	
+	
+	public Boolean is_keto1yr_met(Patient patient){
+	
+		Boolean is_keto1yr_met = null; 
+		
+		String[] criterion_snippets = r.a_CriterionID_keto_1year; 
+		
+		String[] regex_CriterionID = r.getRegex_keto_1year(); 
+		
+		String[] crit_data = is_snippet_found(patient, criterion_snippets);
+		
+		if(crit_data[0] == null) {
+			
+			return null; 
+			
+		}else{
+			
+			String criterionID = crit_data[0]; 
+			
+			String criterion_annotation = crit_data[1]; 
+			
+			System.out.println("CriterionID: ... " + criterionID);
+			
+			pattern.setR_criterionID(criterionID); 
+			
+			if(criterion_annotation != null){ 
+				
+				for(int i = 0; i<regex_CriterionID.length; i++){
+					
+					
+					
+				} // End of for loop 
+				
+			} // End of if statement 
+			
+		}
+		
+		return is_keto1yr_met; 
+		
+	
+	} // End of is_keto1yr_met() 
+	
+	
+	
+	public Boolean is_english_met(Patient patient){
+		
+		Boolean is_english_met = null; 
+		
+		String[] criterion_snippets = r.a_CriterionID_english; 
+		
+		String[] regex_CriterionID = r.getRegex_english(); 
+		
+		String[] crit_data = is_snippet_found(patient, criterion_snippets);
+		
+		if(crit_data[0] == null) {
+			
+			return null; 
+			
+		}else{
+			
+			String criterionID = crit_data[0]; 
+			
+			String criterion_annotation = crit_data[1]; 
+			
+			System.out.println("CriterionID: ... " + criterionID);
+			
+			pattern.setR_criterionID(criterionID); 
+			
+			if(criterion_annotation != null){ 
+				
+				for(int i = 0; i<regex_CriterionID.length; i++){
+					
+					
+					
+				} // End of for loop 
+				
+			} // End of if statement 
+			
+		}
+		
+		return is_english_met; 
+		
+	
+	} // End of is_english_met() 
+	
+	
+	
+	public Boolean is_hba1c_met(Patient patient){
+	
+		Boolean is_hba1c_met = null; 
+		
+		Rules r = new Rules(); 
+		
+		String[] criterion_snippets = r.a_CriterionID_hba1c; 
+		
+		String[] regex_CriterionID = r.getRegex_hba1c(); 
+		
+		String[] crit_data = is_snippet_found(patient, criterion_snippets);
+		
+		if(crit_data[0] == null) {
+			
+			return null; 
+			
+		}else{
+			
+			String criterionID = crit_data[0]; 
+			
+			String criterion_annotation = crit_data[1]; 
+			
+			System.out.println("CriterionID: ... " + criterionID);
+			
+			pattern.setR_criterionID(criterionID); 
+			
+			if(criterion_annotation != null){ 
+				
+				for(int i = 0; i<regex_CriterionID.length; i++){
+					
+					if(criterion_annotation.matches(regex_CriterionID[i])){ 
+						
+						CriterionValues cv = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
+						
+						double cv_value = cv.getCriterion_value(); 
+						
+						System.out.println("criterion value: " + cv_value);
+						
+						if(cv_value >= 6.5 && cv_value <= 9.5){
+							
+							is_hba1c_met = true; 
+							
+						}else{
+							
+							is_hba1c_met = false; 
+							
+						}
+						
+						break; 
+						
+					}else{
+						
+						is_hba1c_met = false; 
+						
+					}
+					
+				} // End of for loop 
+				
+			} // End of if statement 
+			
+		}
+		
+		return is_hba1c_met; 
+		
+	
+	} // End of is_hba1c_met() 
+	
 	
 	
 	private String getWantedLineOfData(String text, String[] identifiers){
