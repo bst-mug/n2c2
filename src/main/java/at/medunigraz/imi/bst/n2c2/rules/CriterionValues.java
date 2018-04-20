@@ -1,6 +1,6 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
-public class CriterionData {
+public class CriterionValues {
 	
 	private String criterionSnippet = null; 
 	

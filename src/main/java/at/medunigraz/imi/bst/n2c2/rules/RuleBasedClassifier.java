@@ -69,7 +69,7 @@ public class RuleBasedClassifier implements Classifier {
 					
 					if(criterion_annotation.matches(regex_CriterionID[i])){ 
 						
-						CriterionData cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
+						CriterionValues cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
 						
 						double cd_value = cd.getCriterion_value(); 
 						
@@ -137,9 +137,9 @@ public class RuleBasedClassifier implements Classifier {
 	} // End of getWantedLineOfData() 
 	
 	
-	private CriterionData getCriterionData(String line, String valid_regex, String critID){
+	private CriterionValues getCriterionData(String line, String valid_regex, String critID){
 		
-		CriterionData cd = new CriterionData(); 
+		CriterionValues cd = new CriterionValues(); 
 		
 		String wanted_snippet = null; 
 		
@@ -213,13 +213,34 @@ public class RuleBasedClassifier implements Classifier {
 	@Override
 	public Eligibility predict(Patient p, Criterion c) {
 		
-		Eligibility eli; 
+		Eligibility eli = null; 
 		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
 		Rules r = new Rules(); 
+		
+		
+		
+		
+//		Criterion.classifiableValues() // overall iterate over all of them 
+		
+		// map for ID to regex 
+		
+		
+		
+		
+		
 		
 		String[] criterion_drug_abuse = r.a_CriterionID_drug_abuse; 
 		
 		Boolean is_met = rbc.is_criterion_met(p, criterion_drug_abuse, r.getRegex_drug_abuse());
+		
+		
+		return eli;
+	
+	}
+
+	public Eligibility getEligibilityRules(Boolean is_met){
+		
+		Eligibility eli; 
 		
 		if(is_met == true){
 			eli = Eligibility.MET; 	
@@ -227,9 +248,9 @@ public class RuleBasedClassifier implements Classifier {
 			eli = Eligibility.NOT_MET; 
 		}
 		return eli;
-	
+		
 	}
-
+	
 
 	@Override
 	public List<Patient> predict(List<Patient> patientList) {
