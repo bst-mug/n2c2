@@ -25,9 +25,9 @@ public class RuleBasedClassifierTest {
 		
 		Rules r = new Rules(); 
 		
-		String[] criterion_drug_abuse = r.a_CriterionID_drug_abuse; 
+		String[] criterion_hba1c = r.a_CriterionID_hba1c; 
 		
-		Boolean is_met = rbc.is_criterion_met(pat, criterion_drug_abuse, r.getRegex_drug_abuse());
+		Boolean is_met = rbc.is_criterion_met(pat, criterion_hba1c, r.getRegex_hba1c());
 		
 		assertTrue(is_met == null); 
 		

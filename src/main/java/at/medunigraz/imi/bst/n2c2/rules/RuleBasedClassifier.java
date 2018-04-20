@@ -22,7 +22,7 @@ public class RuleBasedClassifier implements Classifier {
 		
 		for(int i = 0; i<valid_snippets.length; i++){
 			
-			System.out.println("is_snippet_found() --> valid_snippets --> " + valid_snippets[i]);
+			System.out.println("is_snippet_found() --> snippet --> " + valid_snippets[i] + " ... found (true/false) -->  " + fulltext.contains(valid_snippets[i]));
 			
 			if(fulltext.contains(valid_snippets[i])){
 				
@@ -30,7 +30,7 @@ public class RuleBasedClassifier implements Classifier {
 				
 				snippet_annotation[1] = getWantedLineOfData(fulltext, valid_snippets); 
 				
-				System.out.println("is_snippet_found() --> " + snippet_annotation[0] + snippet_annotation[1]);
+				System.out.println("is_snippet_found() --> yes --> " + snippet_annotation[0] + snippet_annotation[1]);
 				
 			}
 			
@@ -40,8 +40,8 @@ public class RuleBasedClassifier implements Classifier {
 		
 	} // End of is_snippet_found() 
 	
-	
 	public Boolean is_criterion_met(Patient patient, String[] criterion_snippets, String[] regex_CriterionID){
+//	public Boolean is_criterion_met(Patient patient, Criterion c){
 	
 		Boolean is_criterion_met = null; 
 		
@@ -66,32 +66,146 @@ public class RuleBasedClassifier implements Classifier {
 				for(int i = 0; i<regex_CriterionID.length; i++){
 					
 					System.out.println("regex criterion ID -- " + regex_CriterionID[i]);
+//					
+//					if(criterion_annotation.contains(criterion_annotation)){
+//						
+//						System.out.println();
+//						
+//					}
 					
-					if(criterion_annotation.matches(regex_CriterionID[i])){ 
+					
+//					if(criterion_annotation.matches(regex_CriterionID[i])){ 
+//						
+//						CriterionValues cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
+//						
+//						double cd_value = cd.getCriterion_value(); 
+//						
+//						System.out.println("criterion value: " + cd_value);
+//						
+//						if(cd_value >= 6.5 && cd_value <= 9.5){
+//							
+//							is_criterion_met = true; 
+//							
+//						}else{
+//							
+//							is_criterion_met = false; 
+//							
+//						}
+//						
+//						break; 
+//						
+//					}else{
+//						
+//						is_criterion_met = false; 
+//						
+//					}
+					
+					
+					//TODO 
+					
+					Criterion[] aCrits = Criterion.classifiableValues(); 
+					
+					Rules r = new Rules(); 
+					
+					Criterion c = null; 
+					
+					for(int j = 0; j<aCrits.length; j++){
 						
-						CriterionValues cd = getCriterionData(criterion_annotation, regex_CriterionID[i], criterionID); 
-						
-						double cd_value = cd.getCriterion_value(); 
-						
-						System.out.println("criterion value: " + cd_value);
-						
-						if(cd_value >= 6.5 && cd_value <= 9.5){
+						if(aCrits[j] == c.ABDOMINAL){
 							
-							is_criterion_met = true; 
 							
-						}else{
 							
-							is_criterion_met = false; 
 							
 						}
 						
-						break; 
+						if(aCrits[j] == c.ADVANCED_CAD){
+							
+							
+							
+						}
 						
-					}else{
+						if(aCrits[j] == c.ALCOHOL_ABUSE){
+							
+							
+							
+						}
 						
-						is_criterion_met = false; 
+						if(aCrits[j] == c.ASP_FOR_MI){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.CREATININE){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.DIETSUPP_2MOS){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.DRUG_ABUSE){
+							
+							
+							
+						}
+						
+						
+						if(aCrits[j] == c.ENGLISH){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.ENGLISH){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.HBA1C){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.KETO_1YR){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.MAJOR_DIABETES){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.MAJOR_DIABETES){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.MAKES_DECISIONS){
+							
+							
+							
+						}
+						
+						if(aCrits[j] == c.MI_6MOS){
+							
+							
+							
+						}
+						
 						
 					}
+					
 					
 				} // End of for loop 
 				
@@ -139,7 +253,7 @@ public class RuleBasedClassifier implements Classifier {
 	
 	private CriterionValues getCriterionData(String line, String valid_regex, String critID){
 		
-		CriterionValues cd = new CriterionValues(); 
+		CriterionValues cv = new CriterionValues(); 
 		
 		String wanted_snippet = null; 
 		
@@ -151,7 +265,7 @@ public class RuleBasedClassifier implements Classifier {
 				
 				wanted_snippet = aLine[i]; 
 				
-				cd.setCriterionSnippet(wanted_snippet);
+				cv.setCriterionSnippet(wanted_snippet);
 				
 				break; 
 				
@@ -167,7 +281,7 @@ public class RuleBasedClassifier implements Classifier {
 				
 				if(aSnippet[j].contains(".")){
 					
-					cd.setCriterion_value(Double.parseDouble(aSnippet[j]));
+					cv.setCriterion_value(Double.parseDouble(aSnippet[j]));
 					
 					break; 
 					
@@ -179,7 +293,7 @@ public class RuleBasedClassifier implements Classifier {
 						aSnippet[j].contains("7")  || aSnippet[j].contains("8") || 
 						aSnippet[j].contains("9")){
 					
-					cd.setCriterion_value(Double.parseDouble(aSnippet[j]));
+					cv.setCriterion_value(Double.parseDouble(aSnippet[j]));
 					
 					break; 
 					
@@ -190,7 +304,7 @@ public class RuleBasedClassifier implements Classifier {
 			
 		}
 		
-		return cd; 
+		return cv; 
 		
 	} // End of getCriterionData() 
 
@@ -205,33 +319,24 @@ public class RuleBasedClassifier implements Classifier {
 
 
 	@Override
-	public Eligibility predict(Patient p) {
-		return null;
-	}
-
-
-	@Override
 	public Eligibility predict(Patient p, Criterion c) {
 		
 		Eligibility eli = null; 
 		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
+		
 		Rules r = new Rules(); 
 		
-		
-		
+			
 		
 //		Criterion.classifiableValues() // overall iterate over all of them 
 		
 		// map for ID to regex 
+			
 		
-		
-		
-		
-		
-		
-		String[] criterion_drug_abuse = r.a_CriterionID_drug_abuse; 
-		
-		Boolean is_met = rbc.is_criterion_met(p, criterion_drug_abuse, r.getRegex_drug_abuse());
+//		
+//		String[] criterion_drug_abuse = r.a_CriterionID_drug_abuse; 
+//		
+//		Boolean is_met = rbc.is_criterion_met(p, criterion_drug_abuse, r.getRegex_drug_abuse());
 		
 		
 		return eli;
@@ -250,13 +355,13 @@ public class RuleBasedClassifier implements Classifier {
 		return eli;
 		
 	}
-	
 
 	@Override
 	public List<Patient> predict(List<Patient> patientList) {
-		patientList.forEach(p -> p.withCriterion(criterion, predict(p)));
-        return patientList;
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 	
 	
 	
