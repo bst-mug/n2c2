@@ -1,18 +1,12 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
 
+import at.medunigraz.imi.bst.n2c2.preprocess.conceptmapper.MetaMapLiteFacade;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.*;
+import java.util.*;
 
 
 public class Patient {
@@ -47,6 +41,18 @@ public class Patient {
     public Eligibility getEligibility(Criterion criterion) {
         return criteria.get(criterion);
     }
+
+	public List<String> getCUIs() {
+		return MetaMapLiteFacade.getInstance().map(getText());
+	}
+
+	public Set<String> getUniqueCUIs() {
+		return MetaMapLiteFacade.getInstance().uniqueMap(getText());
+	}
+
+	public String getAnnotatedText() {
+		return MetaMapLiteFacade.getInstance().annotate(getText());
+	}
     
     /**
      * getAllVisits() returns all the visits of one patient as

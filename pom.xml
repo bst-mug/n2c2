@@ -220,6 +220,16 @@
 			<!-- END added for deeplearning4j -->
 			<!-- ............................ -->
 		</plugins>
+
+		<extensions>
+			<!-- Required for metamaplite, non-FOSS, deployed on a private Maven repository -->
+			<extension>
+				<groupId>org.springframework.build</groupId>
+				<artifactId>aws-maven</artifactId>
+				<version>5.0.0.RELEASE</version>
+			</extension>
+		</extensions>
+
 	</build>
 
 	<!-- BEGIN added for deeplearning4j -->
@@ -387,5 +397,20 @@
         <!--<artifactId>snowball-stemmer</artifactId>-->
         <!--<version>1.3.0.581.1</version>-->
         <!--</dependency>-->
+		<dependency>
+			<!-- MetaMapLite is not FOSS -->
+			<groupId>gov.nih.nlm.nls</groupId>
+			<artifactId>metamaplite</artifactId>
+			<version>3.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
+
+	<repositories>
+		<!-- Private Maven repository used to host MetaMapLite -->
+		<repository>
+			<id>maven.imi.medunigraz.at</id>
+			<name>S3 Maven Repository</name>
+			<url>s3://maven.imi.medunigraz.at/release</url>
+		</repository>
+	</repositories>
 </project>
