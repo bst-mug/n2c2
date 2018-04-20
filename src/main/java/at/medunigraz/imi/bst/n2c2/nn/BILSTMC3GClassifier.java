@@ -1,7 +1,9 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +32,6 @@ import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.WorkspaceMode;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.GravesBidirectionalLSTM;
@@ -74,7 +75,7 @@ public class BILSTMC3GClassifier implements Classifier {
 	private int tbpttLength = 100;
 
 	// total number of training epochs
-	private int nEpochs = 50;
+	private int nEpochs = 500;
 
 	// specifies time series length
 	public int truncateLength = 64;
@@ -254,47 +255,56 @@ public class BILSTMC3GClassifier implements Classifier {
 
 		int nOutFF = 150;
 		int lstmLayerSize = 20;
+		double l2Regulization = 0.01;
+		double adaGradCore = 0.04;
+		double adaGradDense = 0.01;
+		double adaGradGraves = 0.008;
 
 		// seed for reproducibility
 		final int seed = 12345;
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).updater(Updater.ADAGRAD)
-				.regularization(true).l2(1e-5).dropOut(0.5).weightInit(WeightInit.XAVIER)
-				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-				.gradientNormalizationThreshold(1.0).learningRate(0.1).trainingWorkspaceMode(WorkspaceMode.NONE)
-				.inferenceWorkspaceMode(WorkspaceMode.NONE).list()
-				.layer(0,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
-								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-								.gradientNormalizationThreshold(10).learningRate(0.1).build())
-				.layer(1,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
-								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-								.gradientNormalizationThreshold(10).learningRate(0.1).build())
-				.layer(2,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.1).build())
-								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
+				.updater(AdaGrad.builder().learningRate(adaGradCore).build()).regularization(true).l2(l2Regulization)
+				.weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SINGLE)
+				.inferenceWorkspaceMode(WorkspaceMode.SINGLE).list()
+
+				.layer(0, new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
+						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
+						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+						.gradientNormalizationThreshold(10).build())
+
+				.layer(1, new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
+						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+						.gradientNormalizationThreshold(10).build())
+
+				.layer(2, new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
+						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+						.gradientNormalizationThreshold(10).build())
+
 				.layer(3,
 						new GravesBidirectionalLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize)
+								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
 								.activation(Activation.SOFTSIGN).build())
+
 				.layer(4,
-						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
-								.build())
-				.layer(5,
-						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize)
+								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
+								.activation(Activation.SOFTSIGN).build())
+
+				.layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+
 				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
 				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
 
-		// tbptt not working with GravesBidirectionalLSTM
 		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength).tBPTTBackwardLength(tbpttLength)
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
 		this.net.setListeners(new ScoreIterationListener(1));
+
 	}
 
 	/**
@@ -320,38 +330,47 @@ public class BILSTMC3GClassifier implements Classifier {
 
 		int nOutFF = 150;
 		int lstmLayerSize = 20;
+		double l2Regulization = 0.01;
+		double adaGradCore = 0.04;
+		double adaGradDense = 0.01;
+		double adaGradGraves = 0.008;
 
 		// seed for reproducibility
 		final int seed = 12345;
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).updater(Updater.ADAGRAD)
-				.regularization(true).l2(1e-5).dropOut(0.5).weightInit(WeightInit.XAVIER)
-				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-				.gradientNormalizationThreshold(1.0).learningRate(0.1).trainingWorkspaceMode(WorkspaceMode.NONE)
-				.inferenceWorkspaceMode(WorkspaceMode.NONE).list()
-				.layer(0,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
-								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-								.gradientNormalizationThreshold(10).learningRate(0.1).build())
-				.layer(1,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
-								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-								.gradientNormalizationThreshold(10).learningRate(0.1).build())
-				.layer(2,
-						new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
-								.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(0.01).build())
-								.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-								.gradientNormalizationThreshold(10).learningRate(0.1).build())
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
+				.updater(AdaGrad.builder().learningRate(adaGradCore).build()).regularization(true).l2(l2Regulization)
+				.weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
+				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE).list()
+
+				.layer(0, new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
+						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
+						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+						.gradientNormalizationThreshold(10).build())
+
+				.layer(1, new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
+						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+						.gradientNormalizationThreshold(10).build())
+
+				.layer(2, new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
+						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
+						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+						.gradientNormalizationThreshold(10).build())
+
 				.layer(3,
-						new GravesLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
-								.build())
+						new GravesLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize)
+								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
+								.activation(Activation.SOFTSIGN).build())
+
 				.layer(4,
-						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize).activation(Activation.SOFTSIGN)
-								.build())
-				.layer(5,
-						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize)
+								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
+								.activation(Activation.SOFTSIGN).build())
+
+				.layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+
 				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
 				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true)
 				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
@@ -503,8 +522,8 @@ public class BILSTMC3GClassifier implements Classifier {
 			EarlyStoppingModelSaver<MultiLayerNetwork> saver = new InMemoryModelSaver<>();
 			EarlyStoppingConfiguration<MultiLayerNetwork> esConf = new EarlyStoppingConfiguration.Builder<MultiLayerNetwork>()
 					.epochTerminationConditions(new MaxEpochsTerminationCondition(nEpochs),
-							new ScoreImprovementEpochTerminationCondition(10))
-					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(4, TimeUnit.HOURS),
+							new ScoreImprovementEpochTerminationCondition(50))
+					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(8, TimeUnit.HOURS),
 							new MaxScoreIterationTerminationCondition(20))
 					.scoreCalculator(new DataSetLossCalculator(validation, true)).modelSaver(saver).build();
 
@@ -543,6 +562,7 @@ public class BILSTMC3GClassifier implements Classifier {
 				eb.eval(lables, predicted, outMask);
 			}
 			training.reset();
+			LOG.info("TRAINING");
 			LOG.info(System.getProperty("line.separator") + eb.stats());
 
 			// validation
@@ -558,6 +578,7 @@ public class BILSTMC3GClassifier implements Classifier {
 				eb.eval(lables, predicted, outMask);
 			}
 			validation.reset();
+			LOG.info("VALIDATION");
 			LOG.info(System.getProperty("line.separator") + eb.stats());
 
 			// test
@@ -573,6 +594,7 @@ public class BILSTMC3GClassifier implements Classifier {
 				eb.eval(lables, predicted, outMask);
 			}
 			test.reset();
+			LOG.info("TEST");
 			LOG.info(System.getProperty("line.separator") + eb.stats());
 
 			// save model after n epochs
@@ -580,10 +602,24 @@ public class BILSTMC3GClassifier implements Classifier {
 			boolean saveUpdater = true;
 			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
 
-			// persist dictionaries TODO
+			// writing our character n-grams
+			FileOutputStream fos = new FileOutputStream("characterNGram_3");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(fullSetIteration.characterNGram_3);
+			oos.flush();
+			oos.close();
+			fos.close();
+
+			// writing our character n-grams
+			fos = new FileOutputStream("char3GramToIdxMap");
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(fullSetIteration.char3GramToIdxMap);
+			oos.flush();
+			oos.close();
+			fos.close();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
@@ -757,6 +793,22 @@ public class BILSTMC3GClassifier implements Classifier {
 			File locationToSave = new File("N2c2BILSTMC3G_MBL_Full_" + nEpochs + ".zip");
 			boolean saveUpdater = true;
 			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
+
+			// writing our character n-grams
+			FileOutputStream fos = new FileOutputStream("characterNGram_3");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(fullSetIteration.characterNGram_3);
+			oos.flush();
+			oos.close();
+			fos.close();
+
+			// writing our character n-grams
+			fos = new FileOutputStream("characterNGram_3");
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(fullSetIteration.characterNGram_3);
+			oos.flush();
+			oos.close();
+			fos.close();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
