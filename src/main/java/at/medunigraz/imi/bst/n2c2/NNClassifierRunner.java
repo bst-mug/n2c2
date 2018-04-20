@@ -5,7 +5,9 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.NNClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
+import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
+import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
 import org.apache.logging.log4j.LogManager;
@@ -28,13 +30,12 @@ public class NNClassifierRunner {
         Evaluator evaluator = new OfficialEvaluator();
 
         SingleFoldValidator sfv = new SingleFoldValidator(patients, factory, evaluator);
-        // FIXME michel 20180416 In a not too distant future, in a galaxy not-so-far away, we will receive a Map<Criterion,MetricSet> object here
-        Metrics metrics = sfv.validate();
+        MetricSet metrics = (MetricSet) sfv.validate();
         LOG.info(metrics);
 
-        // Writes stats into a CSV file; outdated at the moment
-//        StatsWriter writer = new CSVStatsWriter(statsFile);
-//        writer.write(metrics);
-//        writer.close();
+        // Writes stats into a CSV file
+        StatsWriter writer = new CSVStatsWriter(statsFile);
+        writer.write(metrics);
+        writer.close();
     }
 }
