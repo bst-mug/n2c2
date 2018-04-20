@@ -6,11 +6,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class BaselineClassifierFactoryTest {
+public class MajorityClassifierFactoryTest {
 
     @Test
     public void getClassifier() {
-        BaselineClassifierFactory factory = new BaselineClassifierFactory();
+        MajorityClassifierFactory factory = new MajorityClassifierFactory();
         assertTrue(factory.getClassifier(Criterion.ABDOMINAL) instanceof MajorityClassifier);
     }
 }

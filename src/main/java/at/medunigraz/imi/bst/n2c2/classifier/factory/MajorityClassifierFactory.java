@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaselineClassifierFactory implements ClassifierFactory {
+public class MajorityClassifierFactory implements ClassifierFactory {
 
     private static final Map<Criterion, Classifier> classifierByCriterion = new HashMap<>();
 
