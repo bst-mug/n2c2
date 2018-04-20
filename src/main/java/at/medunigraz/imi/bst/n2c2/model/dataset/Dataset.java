@@ -4,13 +4,35 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 import java.util.List;
 
-public class Dataset {
+public interface Dataset {
 
-    protected List<Patient> patients;
+    void split();
 
-    public Dataset(List<Patient> patientList) {
-        this.patients = patientList;
-    }
+    /**
+     * Returns the training set, WITH annotations.
+     *
+     * @return
+     */
+    List<Patient> getTrainingSet();
 
+    /**
+     * Returns the validation set, WITH annotations.
+     *
+     * @return
+     */
+    List<Patient> getValidationSet();
 
+    /**
+     * Returns the test set WITHOUT annotations.
+     *
+     * @return
+     */
+    List<Patient> getTestSet();
+
+    /**
+     * Returns the test set WITH annotations.
+     *
+     * @return
+     */
+    List<Patient> getGoldSet();
 }
