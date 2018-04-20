@@ -107,7 +107,7 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 
 			ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
 
-			// 0 <ABDOMINAL met="not met" />
+			// <ABDOMINAL met="not met" />
 			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET));
 
 			// <ADVANCED-CAD met="met" />
@@ -237,7 +237,7 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 	 */
 	@Override
 	public int totalOutcomes() {
-		return 2;
+		return 13;
 	}
 
 	/*
@@ -320,7 +320,7 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 	 */
 	@Override
 	public List<String> getLabels() {
-		return Arrays.asList("positive", "negative");
+		return Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m");
 	}
 
 	/*

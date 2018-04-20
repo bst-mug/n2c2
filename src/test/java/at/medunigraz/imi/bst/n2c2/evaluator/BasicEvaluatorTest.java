@@ -30,6 +30,6 @@ public class BasicEvaluatorTest {
 
         evaluator.evaluate(gold, results);
 
-        assertEquals(0.5, evaluator.getAccuracyByCriterion(Criterion.ABDOMINAL), 0.00001);
+        assertEquals(0.5, evaluator.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
     }
 }

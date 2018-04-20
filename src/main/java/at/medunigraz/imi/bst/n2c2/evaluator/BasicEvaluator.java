@@ -2,8 +2,9 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
-import at.medunigraz.imi.bst.n2c2.model.Metrics;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetrics;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,18 +13,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class BasicEvaluator extends AbstractEvaluator {
+@Deprecated
+public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public double getAccuracyByCriterion(Criterion c) {
+    private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
+
+    public double getOfficialRankingMeasureByCriterion(Criterion c) {
         return getMetricsByCriterion(c).getAccuracy();
     }
 
-    private Map<Criterion, Metrics> metricsByCriterion = new HashMap<>();
-
-    public Metrics getMetricsByCriterion(Criterion c) {
+    public BasicMetrics getMetricsByCriterion(Criterion c) {
         return metricsByCriterion.get(c);
     }
 
@@ -36,10 +37,6 @@ public class BasicEvaluator extends AbstractEvaluator {
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
 
         for (Criterion criterion: Criterion.values()) {
-            if (criterion  == Criterion.OVERALL) {
-                continue;
-            }
-
             int tp = 0, fp = 0, tn = 0, fn = 0;
 
             // TODO parallel stream
@@ -63,7 +60,7 @@ public class BasicEvaluator extends AbstractEvaluator {
                 }
             }
 
-            Metrics metrics = new Metrics(tp, fp, tn, fn);
+            BasicMetrics metrics = new BasicMetrics(tp, fp, tn, fn);
 
             overallAccuracy += metrics.getAccuracy();
             count++;
@@ -71,7 +68,12 @@ public class BasicEvaluator extends AbstractEvaluator {
             metricsByCriterion.put(criterion, metrics);
         }
 
-        metricsByCriterion.put(Criterion.OVERALL, new Metrics(overallAccuracy / count));
+        metricsByCriterion.put(Criterion.OVERALL_MACRO, new BasicMetrics(overallAccuracy / count));
+    }
+
+    @Override
+    public Metrics getMetrics() {
+        return metricsByCriterion.get(Criterion.OVERALL_MACRO);
     }
 
     private enum Match {
@@ -79,7 +81,7 @@ public class BasicEvaluator extends AbstractEvaluator {
     }
 
     private Match comparePatients(Patient gold, Patient actual, Criterion criterion) {
-        if (Eligibility.values().length != 2) {
+        if (Eligibility.classifiableValues().length != 2) {
             throw new UnsupportedOperationException("Multi-class comparison is not supported.");
         }
 

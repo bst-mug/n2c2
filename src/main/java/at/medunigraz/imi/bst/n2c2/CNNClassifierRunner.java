@@ -38,7 +38,7 @@ public class CNNClassifierRunner {
 		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
 		CNNClassifier classifier = new CNNClassifier(patients, wordVectorData);
-		classifier.train(patients);
+		// classifier.train(patients);
 
 		LOG.info("Finished training");
 	}

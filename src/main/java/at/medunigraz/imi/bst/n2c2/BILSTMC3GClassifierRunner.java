@@ -8,10 +8,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.nn.BILSTMClassifier;
+import at.medunigraz.imi.bst.n2c2.nn.BILSTMC3GClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
-public class BILSTMClassifierRunner {
+public class BILSTMC3GClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -21,12 +21,11 @@ public class BILSTMClassifierRunner {
 		String wordVectorData = "";
 
 		// check arguments
-		if (args.length < 2) {
-			System.out.println("Mssing input information wordvectors or processing files");
+		if (args.length < 1) {
+			System.out.println("Mssing input information for files");
 			System.exit(0);
 		} else {
 			patientData = args[0];
-			wordVectorData = args[1];
 		}
 
 		// set port for monitoring
@@ -37,7 +36,7 @@ public class BILSTMClassifierRunner {
 		File sampleDirectory = new File(patientData);
 		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
-		BILSTMClassifier classifier = new BILSTMClassifier(patients, wordVectorData);
+		BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(patients);
 		classifier.train(patients);
 
 		LOG.info("Finished training");

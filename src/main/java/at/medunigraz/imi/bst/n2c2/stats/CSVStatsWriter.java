@@ -1,10 +1,13 @@
 package at.medunigraz.imi.bst.n2c2.stats;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
 import com.opencsv.CSVWriter;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 public class CSVStatsWriter extends AbstractStatsWriter {
     private CSVWriter writer;
@@ -20,7 +23,12 @@ public class CSVStatsWriter extends AbstractStatsWriter {
     }
 
     protected void writeHeader() {
-        writer.writeNext(new String[]{GROUPED_BY, METRIC_NAME});
+        List<String> metricNames = MetricSet.getMetricNames();
+
+        metricNames.add(0, GROUPED_BY);
+        String[] header = metricNames.toArray(new String[metricNames.size()]);
+
+        writer.writeNext(header);
         try {
             flush();
         } catch (IOException e) {
@@ -28,11 +36,24 @@ public class CSVStatsWriter extends AbstractStatsWriter {
         }
     }
 
+    public void write(MetricSet metrics) {
+        for (Criterion c : Criterion.values()) {
+            // Keys might not properly ordered
+            Map<String, Double> metricsMap = metrics.getMetrics(c);
 
-    @Override
-    public void write(Criterion c, Double accuracy) {
-        String[] entries = new String[]{c.name(), String.valueOf(accuracy)};
-        writer.writeNext(entries);
+            // Criterion + values
+            String[] entries = new String[1 + metricsMap.size()];
+            entries[0] = c.name();
+
+            // This is properly ordered
+            List<String> metricNames = MetricSet.getMetricNames();
+            int i = 0;
+            for (String metricName : metricNames) {
+                entries[++i] = String.valueOf(metricsMap.get(metricName));
+            }
+
+            writer.writeNext(entries);
+        }
     }
 
     @Override

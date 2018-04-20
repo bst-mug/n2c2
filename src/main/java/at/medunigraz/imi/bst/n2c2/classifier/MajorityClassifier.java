@@ -18,7 +18,7 @@ public class MajorityClassifier extends CriterionBasedClassifier {
     }
 
     private void reset() {
-        for (Eligibility e : Eligibility.values()) {
+        for (Eligibility e : Eligibility.classifiableValues()) {
             countPerEligibility.put(e, 0);
         }
     }

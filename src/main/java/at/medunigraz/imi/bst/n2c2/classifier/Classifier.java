@@ -10,9 +10,6 @@ public interface Classifier {
 
     void train(List<Patient> examples);
 
-    @Deprecated
-    Eligibility predict(Patient p);
-
     Eligibility predict(Patient p, Criterion c);
 
     List<Patient> predict(List<Patient> patientList);
