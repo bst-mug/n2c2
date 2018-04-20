@@ -3,16 +3,8 @@ package at.medunigraz.imi.bst.n2c2.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.*;
+import java.util.*;
 
 
 public class Patient {
@@ -47,6 +39,10 @@ public class Patient {
     public Eligibility getEligibility(Criterion criterion) {
         return criteria.get(criterion);
     }
+
+	public boolean hasEligibility(Criterion criterion) {
+		return criteria.containsKey(criterion);
+	}
     
     /**
      * getAllVisits() returns all the visits of one patient as

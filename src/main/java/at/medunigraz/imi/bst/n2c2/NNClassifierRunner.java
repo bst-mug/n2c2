@@ -4,8 +4,8 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.NNClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class NNClassifierRunner {
 
@@ -30,7 +29,7 @@ public class NNClassifierRunner {
 
         SingleFoldValidator sfv = new SingleFoldValidator(patients, factory, evaluator);
         // FIXME michel 20180416 In a not too distant future, in a galaxy not-so-far away, we will receive a Map<Criterion,MetricSet> object here
-        Map<Criterion, Double> metrics = sfv.evaluate();
+        Metrics metrics = sfv.validate();
         LOG.info(metrics);
 
         // Writes stats into a CSV file; outdated at the moment

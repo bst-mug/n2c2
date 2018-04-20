@@ -38,7 +38,7 @@ public class SVMCostOptimizer {
 
             ClassifierFactory factory = new SVMClassifierFactory(cost);
             CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-            Metrics metrics = cv.evaluate();
+            Metrics metrics = cv.validate();
 
             for (Criterion c : Criterion.values()) {
                 double value = metrics.getOfficialRankingMeasureByCriterion(c);
