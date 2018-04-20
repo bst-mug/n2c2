@@ -341,17 +341,12 @@ public class RuleBasedClassifier implements Classifier {
 	public Eligibility predict(Patient p, Criterion c) {
 		
 		Eligibility eli = null; 
-		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
 		
-		Rules r = new Rules(); 
-		
-			
-		
-//		Criterion.classifiableValues() // overall iterate over all of them 
-		
-		// map for ID to regex 
-			
-		
+//		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
+//		
+//		Rules r = new Rules(); 
+//		
+//		Criterion.classifiableValues() // overall iterate over all of them // map for ID to regex 
 //		
 //		String[] criterion_drug_abuse = r.a_CriterionID_drug_abuse; 
 //		
