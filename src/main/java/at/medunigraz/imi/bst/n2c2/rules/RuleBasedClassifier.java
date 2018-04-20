@@ -1,6 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
@@ -9,9 +11,20 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class RuleBasedClassifier implements Classifier {
 	
+	
+
+	
+	private static Map<Criterion, Classifiable> name = new HashMap<>(); 
+	static {
+		name.put(Criterion.HBA1C, new HbA1c());
+		// FIXME 
+	}
+	
 	Rules r = new Rules(); 
 	
 	Patterns pattern = new Patterns(); 
+	
+	//TODO - 13 different classes to implement 
 	
 	
 	private String[] is_snippet_found(Patient p, String[] valid_snippets){
@@ -40,6 +53,7 @@ public class RuleBasedClassifier implements Classifier {
 		
 	} // End of is_snippet_found() 
 	
+	// TODO -- moves to is_met 
 	
 	public Boolean is_makes_decision_met(Patient patient){
 		
@@ -340,11 +354,20 @@ public class RuleBasedClassifier implements Classifier {
 	@Override
 	public Eligibility predict(Patient p, Criterion c) {
 		
-		Eligibility eli = null; 
+//		Eligibility eli = null;
+		
+		Rules r = new Rules(); 
+		
+		String[] markers = r.getMarkers(c); // -- move to their own class 
+		
+		
+		return name.get(c).is_met(p);
+		
+		
 		
 //		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
 //		
-//		Rules r = new Rules(); 
+//		
 //		
 //		Criterion.classifiableValues() // overall iterate over all of them // map for ID to regex 
 //		
@@ -352,8 +375,6 @@ public class RuleBasedClassifier implements Classifier {
 //		
 //		Boolean is_met = rbc.is_criterion_met(p, criterion_drug_abuse, r.getRegex_drug_abuse());
 		
-		
-		return eli;
 	
 	}
 

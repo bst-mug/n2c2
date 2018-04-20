@@ -1,5 +1,10 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+
 public class Rules {
 
 
@@ -15,7 +20,7 @@ public class Rules {
 	
 	final public String[] a_CriterionID_makes_decision = {"alert",  "aware", "Lives alone", "lives alone"}; 
 	
-	final public String[] a_CriterionID_abdominal = {"bowel surgery", "Polypectomy", "POLYPECTOMY", "Resection"}; 
+	final static public String[] a_CriterionID_abdominal = {"bowel surgery", "Polypectomy", "POLYPECTOMY", "Resection"}; 
 	
 	final public String[] a_CriterionID_major_diabetes = {"retinopathy", "amputation", "kidney damage", "skin condition", 
 			"nephropathy", "neuropathy", "polyneuropathy", "macular degeneration"}; 
@@ -26,7 +31,7 @@ public class Rules {
 			"Plavix", "unstable angina", "LISINOPRIL", "nferior STEMI", "Atenolol", "Diltiazem", "Zestril", "Mevacor",
 			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste", "amlodipine", "IMI", "isinorpill", "Toprol-XL", "Toprol",
 			"enalapril", "Lasix", "HCTZ", "Hctz", "HYDROCHLOROTHIAZIDE", "ATORVASTATIN", "ATENOLOL", "Enalapril Maleate", 
-			"inferior ischemia", }; 
+			"inferior ischemia"}; 
 	
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
@@ -40,6 +45,19 @@ public class Rules {
 	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"}; 
 	
 	final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre", "Cr", "CRE", "CREA"}; 
+	
+	private static Map<Criterion, String[]> markersPerCriterion = new HashMap<>();
+	static {
+		markersPerCriterion.put(Criterion.ABDOMINAL, a_CriterionID_abdominal);
+		// FIXME add the others
+	}
+	
+	// TODO for all of them 
+	// TODO 
+	
+	public String[] getMarkers(Criterion c) {
+		return markersPerCriterion.get(c);
+	}
 	
 	
 	
