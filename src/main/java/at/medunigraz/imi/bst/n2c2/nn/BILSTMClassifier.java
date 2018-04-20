@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
@@ -68,7 +69,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * @author Markus
  *
  */
-public class BILSTMClassifier implements Classifier {
+public class BILSTMClassifier extends PatientBasedClassifier {
 
 	// size of mini-batch for training
 	private int miniBatchSize = 10;
@@ -684,22 +685,6 @@ public class BILSTMClassifier implements Classifier {
 		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
 
 		return eligibility;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(java.util.List)
-	 */
-	@Override
-	public List<Patient> predict(List<Patient> patientList) {
-		patientList.forEach((k) -> {
-			criterionIndex.forEach((c, v) -> {
-				k.withCriterion(c, this.predict(k, c));
-			});
-		});
-		return patientList;
 	}
 
 	/**

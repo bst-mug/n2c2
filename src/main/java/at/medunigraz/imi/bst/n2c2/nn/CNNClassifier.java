@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
@@ -62,7 +63,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * @author Markus
  *
  */
-public class CNNClassifier implements Classifier {
+public class CNNClassifier extends PatientBasedClassifier {
 
 	// size of mini-batch for training
 	private int miniBatchSize = 32;
@@ -414,8 +415,4 @@ public class CNNClassifier implements Classifier {
 		return null;
 	}
 
-	@Override
-	public List<Patient> predict(List<Patient> patientList) {
-		return null;
-	}
 }
