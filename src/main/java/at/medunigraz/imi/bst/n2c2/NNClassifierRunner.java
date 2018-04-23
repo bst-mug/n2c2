@@ -17,6 +17,7 @@ import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
 import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
+import at.medunigraz.imi.bst.n2c2.validation.NNSingleFoldValidator;
 import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
 
 public class NNClassifierRunner {
@@ -35,7 +36,7 @@ public class NNClassifierRunner {
 		ClassifierFactory factory = new NNClassifierFactory();
 		Evaluator evaluator = new OfficialEvaluator();
 
-		SingleFoldValidator sfv = new SingleFoldValidator(patients, factory, evaluator);
+		SingleFoldValidator sfv = new NNSingleFoldValidator(patients, factory, evaluator);
 		MetricSet metrics = (MetricSet) sfv.validate();
 		LOG.info(metrics);
 

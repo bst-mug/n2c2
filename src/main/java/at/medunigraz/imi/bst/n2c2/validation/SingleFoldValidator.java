@@ -21,7 +21,7 @@ public class SingleFoldValidator extends AbstractValidator {
 
 	public Metrics validate() {
 		SingleFoldValidatedDataset dataset = new SingleFoldValidatedDataset(patients);
-		dataset.split(0.9, 0, 0.1);
+		dataset.split();
 
 		List<Patient> train = dataset.getTrainingSet();
 		List<Patient> test = dataset.getTestSet();
