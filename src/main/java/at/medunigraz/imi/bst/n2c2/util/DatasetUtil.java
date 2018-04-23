@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class DatasetUtil {
+public final class DatasetUtil {
 
     private static final Logger LOG = LogManager.getLogger();
 
