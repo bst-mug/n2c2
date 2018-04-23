@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -21,7 +22,7 @@ public class RuleBasedClassifierTest {
 		File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
 		Patient pat = new PatientDAO().fromXML(sample);
 		
-		RuleBasedClassifier rbc = new RuleBasedClassifier(); 
+		RuleBasedClassifier rbc = new RuleBasedClassifier(Criterion.ABDOMINAL);
 		
 		Rules r = new Rules(); 
 		

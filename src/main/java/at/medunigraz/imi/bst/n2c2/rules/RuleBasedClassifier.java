@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
+import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
-public class RuleBasedClassifier implements Classifier {
+public class RuleBasedClassifier extends CriterionBasedClassifier {
 	
 	
 
@@ -22,8 +23,12 @@ public class RuleBasedClassifier implements Classifier {
 	
 	Rules r = new Rules(); 
 	
-	Patterns pattern = new Patterns(); 
-	
+	Patterns pattern = new Patterns();
+
+	public RuleBasedClassifier(Criterion c) {
+		super(c);
+	}
+
 	//TODO - 13 different classes to implement 
 	
 	
@@ -352,16 +357,16 @@ public class RuleBasedClassifier implements Classifier {
 
 
 	@Override
-	public Eligibility predict(Patient p, Criterion c) {
+	public Eligibility predict(Patient p) {
 		
 //		Eligibility eli = null;
 		
 		Rules r = new Rules(); 
 		
-		String[] markers = r.getMarkers(c); // -- move to their own class 
+		String[] markers = r.getMarkers(criterion); // -- move to their own class
 		
 		
-		return name.get(c).is_met(p);
+		return name.get(criterion).is_met(p);
 		
 		
 		
@@ -389,12 +394,6 @@ public class RuleBasedClassifier implements Classifier {
 		}
 		return eli;
 		
-	}
-
-	@Override
-	public List<Patient> predict(List<Patient> patientList) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	
