@@ -4,18 +4,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.rules.criteria.Classifiable;
+import at.medunigraz.imi.bst.n2c2.rules.criteria.HbA1c;
 
 public class RuleBasedClassifier extends CriterionBasedClassifier {
 	
 	
 
 	
-	private static Map<Criterion, Classifiable> name = new HashMap<>(); 
+	private static Map<Criterion, Classifiable> name = new HashMap<>();
 	static {
 		name.put(Criterion.HBA1C, new HbA1c());
 		// FIXME 
