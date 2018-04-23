@@ -1,17 +1,19 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
@@ -51,15 +53,17 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.nd4j.linalg.learning.config.AdaGrad;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
+import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.dataset.SingleFoldValidatedDataset;
 
 /**
  * BI-LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
@@ -76,7 +80,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	private int tbpttLength = 100;
 
 	// total number of training epochs
-	private int nEpochs = 500;
+	private int nEpochs = 100;
 
 	// specifies time series length
 	public int truncateLength = 64;
@@ -92,13 +96,17 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	// criterion index
 	private Map<Criterion, Integer> criterionIndex = new HashMap<Criterion, Integer>();
 
-	public NGramIterator fullSetIteration;
+	public NGramIterator fullSetIterator;
+
+	private int trainCounter = 0;
+
+	private boolean trained = false;
 
 	private static final Logger LOG = LogManager.getLogger();
 
 	public BILSTMC3GClassifier() {
-		throw new org.apache.commons.lang.NotImplementedException(
-				"BILSTMClassifier empty constructor is not implemented!");
+
+		initializeCriterionIndex();
 	}
 
 	public BILSTMC3GClassifier(String pathToWordVectors, String modelName) {
@@ -161,13 +169,13 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		vectorSize = fullSetIteration.vectorSize;
-		truncateLength = fullSetIteration.maxSentences;
+		vectorSize = fullSetIterator.vectorSize;
+		truncateLength = fullSetIterator.maxSentences;
 
 		// seed for reproducibility
 		final int seed = 12345;
@@ -200,13 +208,13 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		vectorSize = fullSetIteration.vectorSize;
-		truncateLength = fullSetIteration.maxSentences;
+		vectorSize = fullSetIterator.vectorSize;
+		truncateLength = fullSetIterator.maxSentences;
 
 		// seed for reproducibility
 		final int seed = 12345;
@@ -246,16 +254,16 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		vectorSize = fullSetIteration.vectorSize;
-		truncateLength = fullSetIteration.maxSentences;
+		vectorSize = fullSetIterator.vectorSize;
+		truncateLength = fullSetIterator.maxSentences;
 
 		int nOutFF = 150;
-		int lstmLayerSize = 20;
+		int lstmLayerSize = 128;
 		double l2Regulization = 0.01;
 		double adaGradCore = 0.04;
 		double adaGradDense = 0.01;
@@ -321,16 +329,16 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIteration = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		vectorSize = fullSetIteration.vectorSize;
-		truncateLength = fullSetIteration.maxSentences;
+		vectorSize = fullSetIterator.vectorSize;
+		truncateLength = fullSetIterator.maxSentences;
 
 		int nOutFF = 150;
-		int lstmLayerSize = 20;
+		int lstmLayerSize = 128;
 		double l2Regulization = 0.01;
 		double adaGradCore = 0.04;
 		double adaGradDense = 0.01;
@@ -390,7 +398,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// setting monitor
 		UIServer uiServer = UIServer.getInstance();
 
-		// Configure where the network information (gradients, score vs. time
+		// configure where the network information (gradients, score vs. time
 		// etc) is to be stored. Here: store in memory.
 		// Alternative: new FileStatsStorage(File), for saving and loading later
 		StatsStorage statsStorage = new InMemoryStatsStorage();
@@ -399,132 +407,37 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// of the StatsStorage to be visualized
 		uiServer.attach(statsStorage);
 
-		// Then add the StatsListener to collect this information from the
+		// then add the StatsListener to collect this information from the
 		// network, as it trains
 		net.setListeners(new StatsListener(statsStorage));
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param examples
-	 * @param trainingSplit
-	 * @param validationSplit
-	 * @param testSplit
-	 */
-	private void getSplits602020(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
-			List<Patient> testSplit) {
-
-		// TODO generalize
-		// --------------------------------------
-		// abdominal 60 split: 77 / 125 - 46 / 75
-		// abdominal 20 split: 77 / 125 - 16 / 25
-		// abdominal 20 split: 77 / 125 - 15 / 25
-		// --------------------------------------
-		// abdominal 100 : 77 / 125 - 77 / 25
-
-		int counterPos = 1;
-		int counterNeg = 1;
-
-		for (Patient patient : examples) {
-			if (patient.getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET)) {
-				if (counterPos > 62) {
-					testSplit.add(patient);
-				} else if (counterPos > 46) {
-					validationSplit.add(patient);
-					counterPos++;
-				} else {
-					trainingSplit.add(patient);
-					counterPos++;
-				}
-			} else {
-				if (counterNeg > 100) {
-					testSplit.add(patient);
-				} else if (counterNeg > 75) {
-					validationSplit.add(patient);
-					counterNeg++;
-				} else {
-					trainingSplit.add(patient);
-					counterNeg++;
-				}
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param examples
-	 * @param trainingSplit
-	 * @param validationSplit
-	 * @param testSplit
-	 */
-	private void getSplits801010(List<Patient> examples, List<Patient> trainingSplit, List<Patient> validationSplit,
-			List<Patient> testSplit) {
-
-		// TODO generalize
-		// --------------------------------------
-		// abdominal 80 split: 77 / 125 - 62 / 100
-		// abdominal 10 split: 77 / 125 - 8 / 13
-		// abdominal 10 split: 77 / 125 - 7 / 12
-		// --------------------------------------
-		// abdominal 100 : 77 / 125 - 77 / 25
-
-		int counterPos = 1;
-		int counterNeg = 1;
-
-		for (Patient patient : examples) {
-			if (patient.getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET)) {
-				if (counterPos > 70) {
-					testSplit.add(patient);
-				} else if (counterPos > 62) {
-					validationSplit.add(patient);
-					counterPos++;
-				} else {
-					trainingSplit.add(patient);
-					counterPos++;
-				}
-			} else {
-				if (counterNeg > 113) {
-					testSplit.add(patient);
-				} else if (counterNeg > 100) {
-					validationSplit.add(patient);
-					counterNeg++;
-				} else {
-					trainingSplit.add(patient);
-					counterNeg++;
-				}
-			}
-		}
-	}
-
-	private void trainWithEarlyStoppingBML(List<Patient> examples) {
+	private void trainWithEarlyStoppingBML() {
 
 		List<Patient> trainingSplit = new ArrayList<Patient>();
 		List<Patient> validationSplit = new ArrayList<Patient>();
-		List<Patient> testSplit = new ArrayList<Patient>();
 
-		// generate splits (80 10 10)
-		getSplits801010(examples, trainingSplit, validationSplit, testSplit);
+		SingleFoldValidatedDataset dataset = new SingleFoldValidatedDataset(this.patientExamples);
+		dataset.split(0.9, 0.1, 0);
+
+		trainingSplit = dataset.getTrainingSet();
+		validationSplit = dataset.getValidationSet();
 
 		NGramIterator training;
 		NGramIterator validation;
-		NGramIterator test;
 
 		try {
-			training = new NGramIterator(trainingSplit, miniBatchSize, fullSetIteration.characterNGram_3,
-					fullSetIteration.char3GramToIdxMap);
-			validation = new NGramIterator(validationSplit, miniBatchSize, fullSetIteration.characterNGram_3,
-					fullSetIteration.char3GramToIdxMap);
-			test = new NGramIterator(testSplit, miniBatchSize, fullSetIteration.characterNGram_3,
-					fullSetIteration.char3GramToIdxMap);
+			training = new NGramIterator(trainingSplit, miniBatchSize, fullSetIterator.characterNGram_3,
+					fullSetIterator.char3GramToIdxMap);
+			validation = new NGramIterator(validationSplit, miniBatchSize, fullSetIterator.characterNGram_3,
+					fullSetIterator.char3GramToIdxMap);
 
 			// early stopping on validation
 			EarlyStoppingModelSaver<MultiLayerNetwork> saver = new InMemoryModelSaver<>();
 			EarlyStoppingConfiguration<MultiLayerNetwork> esConf = new EarlyStoppingConfiguration.Builder<MultiLayerNetwork>()
 					.epochTerminationConditions(new MaxEpochsTerminationCondition(nEpochs),
-							new ScoreImprovementEpochTerminationCondition(50))
-					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(8, TimeUnit.HOURS),
+							new ScoreImprovementEpochTerminationCondition(10))
+					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(4, TimeUnit.HOURS),
 							new MaxScoreIterationTerminationCondition(20))
 					.scoreCalculator(new DataSetLossCalculator(validation, true)).modelSaver(saver).build();
 
@@ -532,95 +445,116 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			IEarlyStoppingTrainer trainer = new EarlyStoppingTrainer(esConf, net, training);
 			EarlyStoppingResult result = trainer.fit();
 
+			// set back current model to best model
 			this.net = (MultiLayerNetwork) result.getBestModel();
 
-			// resetting iterators
-			training.reset();
-			validation.reset();
-			test.reset();
+			// log evaluation statistics
+			this.logEvaluationStats(training, validation, result);
 
-			// ---------------------------------------------
-			// printing out evaluation stats
-			// ---------------------------------------------
-			LOG.info(System.getProperty("line.separator") + "---------------------------------");
-			LOG.info("Termination reason: " + result.getTerminationReason());
-			LOG.info("Termination details: " + result.getTerminationDetails());
-			LOG.info("Total epochs: " + result.getTotalEpochs());
-			LOG.info("Best epoch number: " + result.getBestModelEpoch());
-			LOG.info("Score at best epoch: " + result.getBestModelScore());
-			LOG.info(System.getProperty("line.separator") + "---------------------------------");
+			// save model and parameters for reloading
+			this.saveModel(result);
 
-			// training
-			EvaluationBinary eb = new EvaluationBinary();
-			while (training.hasNext()) {
-				DataSet t = training.next();
-				INDArray features = t.getFeatureMatrix();
-				INDArray lables = t.getLabels();
-				INDArray inMask = t.getFeaturesMaskArray();
-				INDArray outMask = t.getLabelsMaskArray();
-				INDArray predicted = net.output(features, false, inMask, outMask);
+			trainCounter++;
+			trained = true;
 
-				eb.eval(lables, predicted, outMask);
-			}
-			training.reset();
-			LOG.info("TRAINING");
-			LOG.info(System.getProperty("line.separator") + eb.stats());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-			// validation
-			eb = new EvaluationBinary();
-			while (validation.hasNext()) {
-				DataSet t = validation.next();
-				INDArray features = t.getFeatureMatrix();
-				INDArray lables = t.getLabels();
-				INDArray inMask = t.getFeaturesMaskArray();
-				INDArray outMask = t.getLabelsMaskArray();
-				INDArray predicted = net.output(features, false, inMask, outMask);
+	private void logEvaluationStats(NGramIterator training, NGramIterator validation, EarlyStoppingResult result) {
+		// resetting iterators
+		training.reset();
+		validation.reset();
 
-				eb.eval(lables, predicted, outMask);
-			}
-			validation.reset();
-			LOG.info("VALIDATION");
-			LOG.info(System.getProperty("line.separator") + eb.stats());
+		// ---------------------------------------------
+		// printing out evaluation stats
+		// ---------------------------------------------
+		LOG.info(System.getProperty("line.separator") + "---------------------------------");
+		LOG.info("Termination reason: " + result.getTerminationReason());
+		LOG.info("Termination details: " + result.getTerminationDetails());
+		LOG.info("Total epochs: " + result.getTotalEpochs());
+		LOG.info("Best epoch number: " + result.getBestModelEpoch());
+		LOG.info("Score at best epoch: " + result.getBestModelScore());
+		LOG.info(System.getProperty("line.separator") + "---------------------------------");
 
-			// test
-			eb = new EvaluationBinary();
-			while (test.hasNext()) {
-				DataSet t = test.next();
-				INDArray features = t.getFeatureMatrix();
-				INDArray lables = t.getLabels();
-				INDArray inMask = t.getFeaturesMaskArray();
-				INDArray outMask = t.getLabelsMaskArray();
-				INDArray predicted = net.output(features, false, inMask, outMask);
+		// training
+		EvaluationBinary eb = new EvaluationBinary();
+		while (training.hasNext()) {
+			DataSet t = training.next();
+			INDArray features = t.getFeatureMatrix();
+			INDArray lables = t.getLabels();
+			INDArray inMask = t.getFeaturesMaskArray();
+			INDArray outMask = t.getLabelsMaskArray();
+			INDArray predicted = net.output(features, false, inMask, outMask);
 
-				eb.eval(lables, predicted, outMask);
-			}
-			test.reset();
-			LOG.info("TEST");
-			LOG.info(System.getProperty("line.separator") + eb.stats());
+			eb.eval(lables, predicted, outMask);
+		}
+		training.reset();
+		LOG.info("TRAINING");
+		LOG.info(System.getProperty("line.separator") + eb.stats());
 
-			// save model after n epochs
-			File locationToSave = new File("BILSTMC3G_MBL_80_" + result.getTotalEpochs() + ".zip");
+		// validation
+		eb = new EvaluationBinary();
+		while (validation.hasNext()) {
+			DataSet t = validation.next();
+			INDArray features = t.getFeatureMatrix();
+			INDArray lables = t.getLabels();
+			INDArray inMask = t.getFeaturesMaskArray();
+			INDArray outMask = t.getLabelsMaskArray();
+			INDArray predicted = net.output(features, false, inMask, outMask);
+
+			eb.eval(lables, predicted, outMask);
+		}
+		validation.reset();
+		LOG.info("VALIDATION");
+		LOG.info(System.getProperty("line.separator") + eb.stats());
+	}
+
+	/**
+	 * Save model plus parameters.
+	 * 
+	 * @param result
+	 */
+	private void saveModel(EarlyStoppingResult result) {
+
+		// save model after n epochs
+		try {
+
+			File locationToSave = new File("BILSTMC3G_MBL_" + trainCounter + ".zip");
 			boolean saveUpdater = true;
 			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
 
 			// writing our character n-grams
-			FileOutputStream fos = new FileOutputStream("characterNGram_3");
+			FileOutputStream fos = new FileOutputStream("characterNGram_3_" + trainCounter);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIteration.characterNGram_3);
+			oos.writeObject(fullSetIterator.characterNGram_3);
 			oos.flush();
 			oos.close();
 			fos.close();
 
 			// writing our character n-grams
-			fos = new FileOutputStream("char3GramToIdxMap");
+			fos = new FileOutputStream("char3GramToIdxMap_" + trainCounter);
 			oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIteration.char3GramToIdxMap);
+			oos.writeObject(fullSetIterator.char3GramToIdxMap);
 			oos.flush();
 			oos.close();
 			fos.close();
 
-		} catch (IOException e) {
+			try {
+				Properties props = new Properties();
+				props.setProperty("BILSTMC3G_MBL.bestModelEpoch." + trainCounter,
+						new Integer(result.getBestModelEpoch()).toString());
+				File f = new File("BILSTMC3G_MBL_" + trainCounter + ".properties");
+				OutputStream out = new FileOutputStream(f);
+				props.store(out, "Best model at epoch");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -632,7 +566,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		List<Patient> testSplit = new ArrayList<Patient>();
 
 		// generate splits (60 20 20)
-		getSplits602020(examples, trainingSplit, validationSplit, testSplit);
+		// getSplits602020(examples, trainingSplit, validationSplit, testSplit);
 
 		NGramIterator training;
 		NGramIterator validation;
@@ -698,7 +632,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		List<Patient> testSplit = new ArrayList<Patient>();
 
 		// generate splits (60 20 20)
-		getSplits602020(examples, trainingSplit, validationSplit, testSplit);
+		// getSplits602020(examples, trainingSplit, validationSplit, testSplit);
 		combinedSplit.addAll(trainingSplit);
 		combinedSplit.addAll(validationSplit);
 
@@ -730,15 +664,15 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 			for (int i = 0; i < nEpochs; i++) {
 
-				net.fit(fullSetIteration);
-				fullSetIteration.reset();
+				net.fit(fullSetIterator);
+				fullSetIterator.reset();
 
 				LOG.info("Epoch " + i + " complete.");
 				LOG.info("Starting FULL SET evaluation:");
 
 				EvaluationBinary eb = new EvaluationBinary();
-				while (fullSetIteration.hasNext()) {
-					DataSet t = fullSetIteration.next();
+				while (fullSetIterator.hasNext()) {
+					DataSet t = fullSetIterator.next();
 					INDArray features = t.getFeatureMatrix();
 					INDArray lables = t.getLabels();
 					INDArray inMask = t.getFeaturesMaskArray();
@@ -747,7 +681,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 					eb.eval(lables, predicted, outMask);
 				}
-				fullSetIteration.reset();
+				fullSetIterator.reset();
 				LOG.info(eb.stats());
 
 				// net.fit(combined);
@@ -798,7 +732,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			// writing our character n-grams
 			FileOutputStream fos = new FileOutputStream("characterNGram_3");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIteration.characterNGram_3);
+			oos.writeObject(fullSetIterator.characterNGram_3);
 			oos.flush();
 			oos.close();
 			fos.close();
@@ -806,7 +740,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			// writing our character n-grams
 			fos = new FileOutputStream("characterNGram_3");
 			oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIteration.characterNGram_3);
+			oos.writeObject(fullSetIterator.characterNGram_3);
 			oos.flush();
 			oos.close();
 			fos.close();
@@ -859,24 +793,40 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	 */
 	private INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
 
-		// TODO
-		return null;
+		int maxSentences = 0;
+
+		List<String> sentences = DataUtilities.getSentences(reviewContents);
+		maxSentences = sentences.size() > maxSentences ? sentences.size() : maxSentences;
+
+		int outputLength = Math.max(maxLength, maxSentences);
+		INDArray features = Nd4j.create(1, vectorSize, outputLength);
+
+		for (int j = 0; j < sentences.size() && j < outputLength; j++) {
+			String sentence = sentences.get(j);
+			INDArray vector = fullSetIterator.getChar3GramVectorToSentence(sentence);
+			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
+					vector);
+		}
+		return features;
 	}
 
 	@Override
 	public void train(List<Patient> examples) {
-		// if (examples == predefined list) // 2 lists: 1 for 100% (?); 1 for
-		// 60% (size?)
-		// do not train;
-		// try to load the model from a file;
-		// if (file does not exist)
-		// retrain()
 
-		// else
-		// train on new list
+		if (trained == false) {
+			this.patientExamples = examples;
 
-		// trainFullSetBML(examples);
-		trainWithEarlyStoppingBML(examples);
+			initializeNetworkBinaryMultiLabelDeep();
+			initializeMonitoring();
+
+			LOG.info("Minibatchsize  :\t" + miniBatchSize);
+			LOG.info("tbptt length   :\t" + tbpttLength);
+			LOG.info("Epochs         :\t" + nEpochs);
+			LOG.info("Truncate length:\t" + truncateLength);
+
+			// trained = true
+			trainWithEarlyStoppingBML();
+		}
 	}
 
 	/*
@@ -903,11 +853,19 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
 
 		LOG.info("\n\n-------------------------------");
-		LOG.info("Patient narrative: \n" + patientNarrative);
-		LOG.info("\n\nProbabilities at last time step for {}", c.name());
+		LOG.info("Patient: " + p.getID());
+		LOG.info("Probabilities at last time step for {}", c.name());
 		LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
 		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
 
 		return eligibility;
+	}
+
+	public boolean isTrained() {
+		return trained;
+	}
+
+	public void setTrained(boolean trained) {
+		this.trained = trained;
 	}
 }

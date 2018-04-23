@@ -52,6 +52,13 @@ public class NGramIterator implements DataSetIterator {
 	DataUtilities utilities = new DataUtilities();
 
 	/**
+	 * Default constructor.
+	 * 
+	 */
+	public NGramIterator() {
+	}
+
+	/**
 	 * 
 	 * 
 	 * @param patients
@@ -186,9 +193,9 @@ public class NGramIterator implements DataSetIterator {
 		// truncate if sequence is longer than maxSentences
 		if (maxLength > maxSentences)
 			maxLength = maxSentences;
-		
-		INDArray features = Nd4j.create(new int[]{patientBatch.size(), vectorSize, maxLength}, 'f');
-		INDArray labels = Nd4j.create(new int[]{patientBatch.size(), 13, maxLength}, 'f');
+
+		INDArray features = Nd4j.create(new int[] { patientBatch.size(), vectorSize, maxLength }, 'f');
+		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), 13, maxLength }, 'f');
 
 		INDArray featuresMask = Nd4j.zeros(patientBatch.size(), maxLength);
 		INDArray labelsMask = Nd4j.zeros(patientBatch.size(), maxLength);
@@ -234,7 +241,7 @@ public class NGramIterator implements DataSetIterator {
 	 *            Sentence which gets vector representation.
 	 * @return
 	 */
-	private INDArray getChar3GramVectorToSentence(String sentence) {
+	public INDArray getChar3GramVectorToSentence(String sentence) {
 
 		INDArray featureVector = Nd4j.zeros(vectorSize);
 		try {
