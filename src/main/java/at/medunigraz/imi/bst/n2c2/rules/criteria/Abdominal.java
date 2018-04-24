@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Abdominal implements Classifiable {
+public class Abdominal extends BaseClassifiable {
 
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
     static {
@@ -18,15 +18,6 @@ public class Abdominal implements Classifiable {
 
     @Override
     public Eligibility is_met(Patient p) {
-        return findAnyPattern(p.getText()) ? Eligibility.MET : Eligibility.NOT_MET;
-    }
-
-    private boolean findAnyPattern(String text) {
-        for (Pattern positiveMarker : POSITIVE_MARKERS) {
-            if (positiveMarker.matcher(text).find()) {
-                return true;
-            }
-        }
-        return false;
+        return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }
