@@ -3,6 +3,7 @@ package at.medunigraz.imi.bst.n2c2;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +29,10 @@ public class NNBestClassifierRunner {
 		final File xmlStatsFile = new File("stats/best.xml");
 		final File csvStatsFile = new File("stats/best.csv");
 
+		// set port for monitoring neural networks
+		Properties props = System.getProperties();
+		props.setProperty("org.deeplearning4j.ui.port", "9001");
+		
 		List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
 		ClassifierFactory factory = new NNClassifierFactory();
 		OfficialEvaluator evaluator = new OfficialEvaluator();

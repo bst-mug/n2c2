@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -511,6 +510,48 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		LOG.info(System.getProperty("line.separator") + eb.stats());
 	}
 
+	private void saveModel(int epoch) {
+
+		// save model after n epochs
+		try {
+
+			File locationToSave = new File("BILSTMC3G_MBL_" + trainCounter + ".zip");
+			boolean saveUpdater = true;
+			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
+
+			// writing our character n-grams
+			FileOutputStream fos = new FileOutputStream("characterNGram_3_" + trainCounter);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(fullSetIterator.characterNGram_3);
+			oos.flush();
+			oos.close();
+			fos.close();
+
+			// writing our character n-grams
+			fos = new FileOutputStream("char3GramToIdxMap_" + trainCounter);
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(fullSetIterator.char3GramToIdxMap);
+			oos.flush();
+			oos.close();
+			fos.close();
+
+			try {
+				Properties props = new Properties();
+				props.setProperty("BILSTMC3G_MBL.bestModelEpoch." + trainCounter, new Integer(epoch).toString());
+				File f = new File("BILSTMC3G_MBL_" + trainCounter + ".properties");
+				OutputStream out = new FileOutputStream(f);
+				props.store(out, "Best model at epoch");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Save model plus parameters.
 	 * 
@@ -624,25 +665,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	 * @param examples
 	 *            Patient training examples.
 	 */
-	private void trainFullSetBML(List<Patient> examples) {
-
-		List<Patient> trainingSplit = new ArrayList<Patient>();
-		List<Patient> validationSplit = new ArrayList<Patient>();
-		List<Patient> combinedSplit = new ArrayList<Patient>();
-		List<Patient> testSplit = new ArrayList<Patient>();
-
-		// generate splits (60 20 20)
-		// getSplits602020(examples, trainingSplit, validationSplit, testSplit);
-		combinedSplit.addAll(trainingSplit);
-		combinedSplit.addAll(validationSplit);
-
-		NGramIterator training;
-		NGramIterator validation;
-		NGramIterator combined;
-		NGramIterator test;
-		NGramIterator fullSet;
-
-		Random rng = new Random(12345);
+	private void trainFullSetBML() {
 
 		// print the number of parameters in the network (and for each layer)
 		Layer[] layers = net.getLayers();
@@ -654,132 +677,36 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		}
 		LOG.info("Total number of network parameters: " + totalNumParams);
 
-		try {
+		int epochCounter = 0;
 
-			// combined = new NGramIterator(combinedSplit, miniBatchSize);
-			// test = new NGramIterator(testSplit, miniBatchSize,
-			// combined.characterNGram_3, combined.char3GramToIdxMap);
-			// fullSet = new NGramIterator(examples, miniBatchSize,
-			// combined.characterNGram_3, combined.char3GramToIdxMap);
+		EvaluationBinary eb = new EvaluationBinary();
+		do {
 
-			for (int i = 0; i < nEpochs; i++) {
+			net.fit(fullSetIterator);
+			fullSetIterator.reset();
 
-				net.fit(fullSetIterator);
-				fullSetIterator.reset();
+			LOG.info("Epoch " + epochCounter++ + " complete.");
+			LOG.info("Starting FULL SET evaluation:");
 
-				LOG.info("Epoch " + i + " complete.");
-				LOG.info("Starting FULL SET evaluation:");
+			while (fullSetIterator.hasNext()) {
+				DataSet t = fullSetIterator.next();
+				INDArray features = t.getFeatureMatrix();
+				INDArray lables = t.getLabels();
+				INDArray inMask = t.getFeaturesMaskArray();
+				INDArray outMask = t.getLabelsMaskArray();
+				INDArray predicted = net.output(features, false, inMask, outMask);
 
-				EvaluationBinary eb = new EvaluationBinary();
-				while (fullSetIterator.hasNext()) {
-					DataSet t = fullSetIterator.next();
-					INDArray features = t.getFeatureMatrix();
-					INDArray lables = t.getLabels();
-					INDArray inMask = t.getFeaturesMaskArray();
-					INDArray outMask = t.getLabelsMaskArray();
-					INDArray predicted = net.output(features, false, inMask, outMask);
-
-					eb.eval(lables, predicted, outMask);
-				}
-				fullSetIterator.reset();
-				LOG.info(eb.stats());
-
-				// net.fit(combined);
-				// combined.reset();
-				//
-				// LOG.info("Epoch " + i + " complete.");
-				// LOG.info("Starting COMBINED (TRAINING + VALIDATION)
-				// evaluation:");
-				//
-				// EvaluationBinary eb = new EvaluationBinary();
-				// while (combined.hasNext()) {
-				// DataSet t = combined.next();
-				// INDArray features = t.getFeatureMatrix();
-				// INDArray lables = t.getLabels();
-				// INDArray inMask = t.getFeaturesMaskArray();
-				// INDArray outMask = t.getLabelsMaskArray();
-				// INDArray predicted = net.output(features, false, inMask,
-				// outMask);
-				//
-				// eb.eval(lables, predicted, outMask);
-				// }
-				// combined.reset();
-				// LOG.info(System.getProperty("line.separator") + eb.stats());
-				//
-				// LOG.info("Starting TEST evaluation:");
-				// // run evaluation on test data
-				// eb = new EvaluationBinary();
-				// while (test.hasNext()) {
-				// DataSet t = test.next();
-				// INDArray features = t.getFeatureMatrix();
-				// INDArray lables = t.getLabels();
-				// INDArray inMask = t.getFeaturesMaskArray();
-				// INDArray outMask = t.getLabelsMaskArray();
-				// INDArray predicted = net.output(features, false, inMask,
-				// outMask);
-				//
-				// eb.eval(lables, predicted, outMask);
-				// }
-				// test.reset();
-				// LOG.info(System.getProperty("line.separator") + eb.stats());
+				eb.eval(lables, predicted, outMask);
 			}
+			fullSetIterator.reset();
+			LOG.info(eb.stats());
+		} while (eb.averageAccuracy() < 1.0);
 
-			// save model after n epochs
-			File locationToSave = new File("N2c2BILSTMC3G_MBL_Full_" + nEpochs + ".zip");
-			boolean saveUpdater = true;
-			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
+		// save model and parameters for reloading
+		this.saveModel(epochCounter);
 
-			// writing our character n-grams
-			FileOutputStream fos = new FileOutputStream("characterNGram_3");
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIterator.characterNGram_3);
-			oos.flush();
-			oos.close();
-			fos.close();
-
-			// writing our character n-grams
-			fos = new FileOutputStream("characterNGram_3");
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIterator.characterNGram_3);
-			oos.flush();
-			oos.close();
-			fos.close();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void trainFullSet(List<Patient> examples) {
-		// Print the number of parameters in the network (and for each layer)
-		Layer[] layers = net.getLayers();
-		int totalNumParams = 0;
-		for (int i = 0; i < layers.length; i++) {
-			int nParams = layers[i].numParams();
-			LOG.info("Number of parameters in layer " + i + ": " + nParams);
-			totalNumParams += nParams;
-		}
-		LOG.info("Total number of network parameters: " + totalNumParams);
-
-		// start training
-		try {
-			NGramIterator train = new NGramIterator(examples, miniBatchSize);
-
-			LOG.info("Starting training");
-			for (int i = 0; i < nEpochs; i++) {
-				net.fit(train);
-				train.reset();
-
-				LOG.info("Epoch " + i + " complete. Starting evaluation:");
-
-				// run evaluation on training data (change to test data)
-				Evaluation evaluation = net.evaluate(train);
-				LOG.info(evaluation.stats());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		trainCounter++;
+		trained = true;
 	}
 
 	/**
@@ -825,7 +752,8 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			LOG.info("Truncate length:\t" + truncateLength);
 
 			// trained = true
-			trainWithEarlyStoppingBML();
+			// trainWithEarlyStoppingBML();
+			trainFullSetBML();
 		}
 	}
 
