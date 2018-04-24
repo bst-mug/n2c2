@@ -7,7 +7,7 @@ public class HbA1c implements Classifiable {
 
 	@Override
 	public  Eligibility is_met(Patient p) {
-		return null;
+		return Eligibility.NOT_MET;
 		// TODO Auto-generated method stub
 		
 	}
