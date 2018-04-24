@@ -9,7 +9,8 @@ public class Rules {
 
 
 	Patterns p = new Patterns(); 
-	
+
+	@Deprecated // Moved to DrugAbuse class
 	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs", "cocaine", "beer", "6 pack"}; 
 	// TODO - nothing in sample file --- see how it is stated in the other files 
 	
