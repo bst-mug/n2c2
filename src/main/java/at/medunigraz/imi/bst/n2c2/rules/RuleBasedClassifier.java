@@ -4,10 +4,7 @@ import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.rules.criteria.Abdominal;
-import at.medunigraz.imi.bst.n2c2.rules.criteria.Classifiable;
-import at.medunigraz.imi.bst.n2c2.rules.criteria.Dietsupp2mos;
-import at.medunigraz.imi.bst.n2c2.rules.criteria.HbA1c;
+import at.medunigraz.imi.bst.n2c2.rules.criteria.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +19,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 	static {
 		name.put(Criterion.HBA1C, new HbA1c());
         name.put(Criterion.ABDOMINAL, new Abdominal());
+        name.put(Criterion.CREATININE, new Creatinine());
         name.put(Criterion.DIETSUPP_2MOS, new Dietsupp2mos());
 		// FIXME 
 	}
