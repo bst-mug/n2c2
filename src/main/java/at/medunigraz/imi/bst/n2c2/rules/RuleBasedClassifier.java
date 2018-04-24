@@ -8,6 +8,7 @@ import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.rules.criteria.Abdominal;
 import at.medunigraz.imi.bst.n2c2.rules.criteria.Classifiable;
 import at.medunigraz.imi.bst.n2c2.rules.criteria.HbA1c;
 
@@ -19,6 +20,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 	private static Map<Criterion, Classifiable> name = new HashMap<>();
 	static {
 		name.put(Criterion.HBA1C, new HbA1c());
+        name.put(Criterion.ABDOMINAL, new Abdominal());
 		// FIXME 
 	}
 	
@@ -345,10 +347,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 		
 		return cv; 
 		
-	} // End of getCriterionData() 
-
-	
-	protected Criterion criterion;
+	} // End of getCriterionData()
 	
 	
 	@Deprecated
