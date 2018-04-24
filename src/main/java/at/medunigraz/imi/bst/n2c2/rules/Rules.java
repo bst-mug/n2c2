@@ -1,9 +1,9 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
 
 public class Rules {
 
@@ -36,8 +36,9 @@ public class Rules {
 	
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
-	final public String[] a_CriterionID_keto_1year = {"keto", "ketoacidosis"}; 
-	
+	final public String[] a_CriterionID_keto_1year = {"keto", "ketoacidosis"};
+
+	@Deprecated // Moved to Dietsupp2mos class
 	final public String[] a_CriterionID_dietsupp_2mos = {"Folate", "calcium carbonate", "vitamin d", "vit d", "Vit.D", 
 			"vitamine D", "iron supplements", "multivitamins", "supplement"}; 
 	

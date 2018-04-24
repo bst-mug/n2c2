@@ -1,16 +1,17 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.rules.criteria.Abdominal;
 import at.medunigraz.imi.bst.n2c2.rules.criteria.Classifiable;
+import at.medunigraz.imi.bst.n2c2.rules.criteria.Dietsupp2mos;
 import at.medunigraz.imi.bst.n2c2.rules.criteria.HbA1c;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RuleBasedClassifier extends CriterionBasedClassifier {
 	
@@ -21,6 +22,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 	static {
 		name.put(Criterion.HBA1C, new HbA1c());
         name.put(Criterion.ABDOMINAL, new Abdominal());
+        name.put(Criterion.DIETSUPP_2MOS, new Dietsupp2mos());
 		// FIXME 
 	}
 	
@@ -230,16 +232,8 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 						double cv_value = cv.getCriterion_value(); 
 						
 						System.out.println("criterion value: " + cv_value);
-						
-						if(cv_value >= 6.5 && cv_value <= 9.5){
-							
-							is_hba1c_met = true; 
-							
-						}else{
-							
-							is_hba1c_met = false; 
-							
-						}
+
+                        is_hba1c_met = cv_value >= 6.5 && cv_value <= 9.5;
 						
 						break; 
 						
