@@ -34,7 +34,8 @@ public class Rules {
 			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste", "amlodipine", "IMI", "isinorpill", "Toprol-XL", "Toprol",
 			"enalapril", "Lasix", "HCTZ", "Hctz", "HYDROCHLOROTHIAZIDE", "ATORVASTATIN", "ATENOLOL", "Enalapril Maleate", 
 			"inferior ischemia"}; 
-	
+
+	@Deprecated // Moved to MI6Mos class
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
 	final public String[] a_CriterionID_keto_1year = {"keto", "ketoacidosis"};

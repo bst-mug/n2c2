@@ -24,6 +24,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
         name.put(Criterion.CREATININE, new Creatinine());
         name.put(Criterion.DIETSUPP_2MOS, new Dietsupp2mos());
         name.put(Criterion.MAJOR_DIABETES, new MajorDiabetes());
+        name.put(Criterion.MI_6MOS, new MI6Mos());
 		// FIXME 
 	}
 	
