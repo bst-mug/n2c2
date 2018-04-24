@@ -41,7 +41,7 @@ public class RuleBasedClassifierTest {
         Patient p = new PatientDAO().fromXML(SAMPLE);
 
         assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.ABDOMINAL).predict(p)));
-//        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ADVANCED_CAD).predict(p)));
+        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ADVANCED_CAD).predict(p)));
 //        assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.ALCOHOL_ABUSE).predict(p)));
         assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ASP_FOR_MI).predict(p)));
         assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.CREATININE).predict(p)));
