@@ -43,7 +43,7 @@ public class RuleBasedClassifierTest {
         assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.ABDOMINAL).predict(p)));
 //        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ADVANCED_CAD).predict(p)));
 //        assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.ALCOHOL_ABUSE).predict(p)));
-//        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ASP_FOR_MI).predict(p)));
+        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ASP_FOR_MI).predict(p)));
         assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.CREATININE).predict(p)));
         assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.DIETSUPP_2MOS).predict(p)));
 //        assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.DRUG_ABUSE).predict(p)));

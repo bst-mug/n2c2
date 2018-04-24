@@ -19,6 +19,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 	static {
 		name.put(Criterion.HBA1C, new HbA1c());
         name.put(Criterion.ABDOMINAL, new Abdominal());
+        name.put(Criterion.ASP_FOR_MI, new AspForMi());
         name.put(Criterion.CREATININE, new Creatinine());
         name.put(Criterion.DIETSUPP_2MOS, new Dietsupp2mos());
         name.put(Criterion.MAJOR_DIABETES, new MajorDiabetes());

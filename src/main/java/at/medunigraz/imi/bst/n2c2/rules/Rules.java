@@ -42,7 +42,8 @@ public class Rules {
 	@Deprecated // Moved to Dietsupp2mos class
 	final public String[] a_CriterionID_dietsupp_2mos = {"Folate", "calcium carbonate", "vitamin d", "vit d", "Vit.D", 
 			"vitamine D", "iron supplements", "multivitamins", "supplement"}; 
-	
+
+	@Deprecated // Moved to AspForMi class
 	final public String[] a_CriterionID_asp_for_mi = {"heparin", "ASA", "aspirin", "Pt on asa"}; 
 	
 	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"}; 
