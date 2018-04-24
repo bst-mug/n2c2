@@ -22,7 +22,8 @@ public class Rules {
 
 	@Deprecated //Moved to Abdominal class
 	final static public String[] a_CriterionID_abdominal = {"bowel surgery", "Polypectomy", "POLYPECTOMY", "Resection"};
-	
+
+	@Deprecated // Moved to MajorDiabetes class
 	final public String[] a_CriterionID_major_diabetes = {"retinopathy", "amputation", "kidney damage", "skin condition", 
 			"nephropathy", "neuropathy", "polyneuropathy", "macular degeneration"}; 
 	

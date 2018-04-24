@@ -50,7 +50,7 @@ public class RuleBasedClassifierTest {
 //        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.ENGLISH).predict(p)));
 //        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.HBA1C).predict(p)));
 //        assertEquals(Eligibility.NOT_MET, (new RuleBasedClassifier(Criterion.KETO_1YR).predict(p)));
-//        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.MAJOR_DIABETES).predict(p)));
+        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.MAJOR_DIABETES).predict(p)));
 //        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.MAKES_DECISIONS).predict(p)));
 //        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.MI_6MOS).predict(p)));
     }
