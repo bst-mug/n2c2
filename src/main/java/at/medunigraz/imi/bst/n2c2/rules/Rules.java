@@ -1,15 +1,16 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
 
 public class Rules {
 
 
 	Patterns p = new Patterns(); 
-	
+
+	@Deprecated // Moved to DrugAbuse class
 	final public String[] a_CriterionID_drug_abuse = {"drug", "drugs", "cocaine", "beer", "6 pack"}; 
 	// TODO - nothing in sample file --- see how it is stated in the other files 
 	
@@ -19,9 +20,11 @@ public class Rules {
 			"credit manager", "set designer"}; 
 	
 	final public String[] a_CriterionID_makes_decision = {"alert",  "aware", "Lives alone", "lives alone"}; 
-	
-	final static public String[] a_CriterionID_abdominal = {"bowel surgery", "Polypectomy", "POLYPECTOMY", "Resection"}; 
-	
+
+	@Deprecated //Moved to Abdominal class
+	final static public String[] a_CriterionID_abdominal = {"bowel surgery", "Polypectomy", "POLYPECTOMY", "Resection"};
+
+	@Deprecated // Moved to MajorDiabetes class
 	final public String[] a_CriterionID_major_diabetes = {"retinopathy", "amputation", "kidney damage", "skin condition", 
 			"nephropathy", "neuropathy", "polyneuropathy", "macular degeneration"}; 
 	
@@ -32,14 +35,17 @@ public class Rules {
 			"lovastatin", "Lovastatin", "nitropaste", "Nitropaste", "amlodipine", "IMI", "isinorpill", "Toprol-XL", "Toprol",
 			"enalapril", "Lasix", "HCTZ", "Hctz", "HYDROCHLOROTHIAZIDE", "ATORVASTATIN", "ATENOLOL", "Enalapril Maleate", 
 			"inferior ischemia"}; 
-	
+
+	@Deprecated // Moved to MI6Mos class
 	final public String[] a_CriterionID_MI_6mos = {"NSTEMI", "inferior STEMI"}; 
 	
-	final public String[] a_CriterionID_keto_1year = {"keto", "ketoacidosis"}; 
-	
+	final public String[] a_CriterionID_keto_1year = {"keto", "ketoacidosis"};
+
+	@Deprecated // Moved to Dietsupp2mos class
 	final public String[] a_CriterionID_dietsupp_2mos = {"Folate", "calcium carbonate", "vitamin d", "vit d", "Vit.D", 
 			"vitamine D", "iron supplements", "multivitamins", "supplement"}; 
-	
+
+	@Deprecated // Moved to AspForMi class
 	final public String[] a_CriterionID_asp_for_mi = {"heparin", "ASA", "aspirin", "Pt on asa"}; 
 	
 	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"}; 

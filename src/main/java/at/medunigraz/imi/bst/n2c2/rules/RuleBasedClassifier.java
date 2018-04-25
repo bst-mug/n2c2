@@ -1,29 +1,45 @@
 package at.medunigraz.imi.bst.n2c2.rules;
 
+import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.model.Eligibility;
+import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.rules.criteria.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.Eligibility;
-import at.medunigraz.imi.bst.n2c2.model.Patient;
-
-public class RuleBasedClassifier implements Classifier {
+public class RuleBasedClassifier extends CriterionBasedClassifier {
 	
 	
 
 	
-	private static Map<Criterion, Classifiable> name = new HashMap<>(); 
+	private static final Map<Criterion, Classifiable> name = new HashMap<>();
 	static {
-		name.put(Criterion.HBA1C, new HbA1c());
-		// FIXME 
+        name.put(Criterion.ABDOMINAL, new Abdominal());
+        name.put(Criterion.ADVANCED_CAD, new AdvancedCAD());
+        name.put(Criterion.ALCOHOL_ABUSE, new AlcoholAbuse());
+        name.put(Criterion.ASP_FOR_MI, new AspForMi());
+        name.put(Criterion.CREATININE, new Creatinine());
+        name.put(Criterion.DIETSUPP_2MOS, new Dietsupp2mos());
+        name.put(Criterion.DRUG_ABUSE, new DrugAbuse());
+        name.put(Criterion.ENGLISH, new English());
+        name.put(Criterion.HBA1C, new HbA1c());
+        name.put(Criterion.KETO_1YR, new Keto1Yr());
+        name.put(Criterion.MAJOR_DIABETES, new MajorDiabetes());
+        name.put(Criterion.MAKES_DECISIONS, new MakesDecisions());
+        name.put(Criterion.MI_6MOS, new MI6Mos());
 	}
 	
 	Rules r = new Rules(); 
 	
-	Patterns pattern = new Patterns(); 
-	
+	Patterns pattern = new Patterns();
+
+	public RuleBasedClassifier(Criterion c) {
+		super(c);
+	}
+
 	//TODO - 13 different classes to implement 
 	
 	
@@ -53,7 +69,7 @@ public class RuleBasedClassifier implements Classifier {
 		
 	} // End of is_snippet_found() 
 	
-	// TODO -- moves to is_met 
+	// TODO -- moves to isMet
 	
 	public Boolean is_makes_decision_met(Patient patient){
 		
@@ -222,16 +238,8 @@ public class RuleBasedClassifier implements Classifier {
 						double cv_value = cv.getCriterion_value(); 
 						
 						System.out.println("criterion value: " + cv_value);
-						
-						if(cv_value >= 6.5 && cv_value <= 9.5){
-							
-							is_hba1c_met = true; 
-							
-						}else{
-							
-							is_hba1c_met = false; 
-							
-						}
+
+                        is_hba1c_met = cv_value >= 6.5 && cv_value <= 9.5;
 						
 						break; 
 						
@@ -339,10 +347,7 @@ public class RuleBasedClassifier implements Classifier {
 		
 		return cv; 
 		
-	} // End of getCriterionData() 
-
-	
-	protected Criterion criterion;
+	} // End of getCriterionData()
 	
 	
 	@Deprecated
@@ -352,16 +357,16 @@ public class RuleBasedClassifier implements Classifier {
 
 
 	@Override
-	public Eligibility predict(Patient p, Criterion c) {
+	public Eligibility predict(Patient p) {
 		
 //		Eligibility eli = null;
 		
 		Rules r = new Rules(); 
 		
-		String[] markers = r.getMarkers(c); // -- move to their own class 
+		String[] markers = r.getMarkers(criterion); // -- move to their own class
 		
 		
-		return name.get(c).is_met(p);
+		return name.get(criterion).isMet(p);
 		
 		
 		
@@ -389,12 +394,6 @@ public class RuleBasedClassifier implements Classifier {
 		}
 		return eli;
 		
-	}
-
-	@Override
-	public List<Patient> predict(List<Patient> patientList) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	
