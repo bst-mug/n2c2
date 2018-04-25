@@ -17,7 +17,7 @@ public class AspForMi extends BaseClassifiable {
     }
 
     @Override
-    public Eligibility is_met(Patient p) {
+    public Eligibility isMet(Patient p) {
         return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }

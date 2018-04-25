@@ -6,7 +6,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 public class Keto1Yr extends BaseClassifiable {
 
     @Override
-    public Eligibility is_met(Patient p) {
+    public Eligibility isMet(Patient p) {
         return Eligibility.NOT_MET;
     }
 }

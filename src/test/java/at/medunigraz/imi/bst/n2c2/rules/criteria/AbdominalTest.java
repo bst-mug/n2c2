@@ -12,6 +12,6 @@ public class AbdominalTest {
     public void is_met() {
         Patient p = new Patient().withText("Had a bowel surgery last year.");
 
-        assertEquals(Eligibility.MET, (new Abdominal().is_met(p)));
+        assertEquals(Eligibility.MET, (new Abdominal().isMet(p)));
     }
 }

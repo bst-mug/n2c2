@@ -69,7 +69,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 		
 	} // End of is_snippet_found() 
 	
-	// TODO -- moves to is_met 
+	// TODO -- moves to isMet
 	
 	public Boolean is_makes_decision_met(Patient patient){
 		
@@ -366,7 +366,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 		String[] markers = r.getMarkers(criterion); // -- move to their own class
 		
 		
-		return name.get(criterion).is_met(p);
+		return name.get(criterion).isMet(p);
 		
 		
 		

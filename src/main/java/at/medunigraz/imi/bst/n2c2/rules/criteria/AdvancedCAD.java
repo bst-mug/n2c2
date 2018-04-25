@@ -57,7 +57,7 @@ public class AdvancedCAD extends BaseClassifiable {
     }
 
     @Override
-    public Eligibility is_met(Patient p) {
+    public Eligibility isMet(Patient p) {
         // TODO According to the guidelines, we should check for *two or more* of the criteria.
         // Check if it improves overall metrics though.
         return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;

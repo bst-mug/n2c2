@@ -6,7 +6,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 public class MakesDecisions extends BaseClassifiable {
 
     @Override
-    public Eligibility is_met(Patient p) {
+    public Eligibility isMet(Patient p) {
         return Eligibility.MET;
     }
 }
