@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class AbdominalTest {
 
     @Test
-    public void is_met() {
+    public void isMet() {
         Patient p = new Patient().withText("Had a bowel surgery last year.");
 
         assertEquals(Eligibility.MET, (new Abdominal().isMet(p)));
