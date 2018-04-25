@@ -13,7 +13,7 @@ public class RuleBasedClassifierFactory implements ClassifierFactory {
     private static final Map<Criterion, Classifier> classifierByCriterion = new HashMap<>();
 
     static {
-        Arrays.stream(Criterion.values()).forEach(c -> classifierByCriterion.put(c, new RuleBasedClassifier(c)));
+        Arrays.stream(Criterion.classifiableValues()).forEach(c -> classifierByCriterion.put(c, new RuleBasedClassifier(c)));
     }
 
     @Override

@@ -30,7 +30,7 @@ public class SVMClassifierFactory implements ClassifierFactory {
     }
 
     public SVMClassifierFactory(double cost) {
-        Arrays.stream(Criterion.values()).forEach(c -> classifierByCriterion.put(c, new SVMClassifier(c, cost)));
+        Arrays.stream(Criterion.classifiableValues()).forEach(c -> classifierByCriterion.put(c, new SVMClassifier(c, cost)));
     }
 
     @Override

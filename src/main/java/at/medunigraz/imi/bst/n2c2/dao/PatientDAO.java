@@ -79,7 +79,7 @@ public class PatientDAO {
         Element tagsElement = doc.createElement(TAGS_NAME);
         rootElement.appendChild(tagsElement);
 
-        for (Criterion c : Criterion.values()) {
+        for (Criterion c : Criterion.classifiableValues()) {
             Eligibility e = patient.getEligibility(c);
 
             // Patient has no eligibility criterion set, should be found only during testing

@@ -36,7 +36,7 @@ public class BasicEvaluator implements Evaluator {
         // Map of results by patient id for comparison
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
 
-        for (Criterion criterion: Criterion.values()) {
+        for (Criterion criterion : Criterion.classifiableValues()) {
             int tp = 0, fp = 0, tn = 0, fn = 0;
 
             // TODO parallel stream
