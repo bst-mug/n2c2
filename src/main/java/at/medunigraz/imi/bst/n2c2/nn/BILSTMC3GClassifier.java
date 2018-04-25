@@ -682,6 +682,8 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		EvaluationBinary eb = new EvaluationBinary();
 		do {
 
+			EvaluationBinary ebepoch = new EvaluationBinary();
+			
 			net.fit(fullSetIterator);
 			fullSetIterator.reset();
 
@@ -696,11 +698,14 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 				INDArray outMask = t.getLabelsMaskArray();
 				INDArray predicted = net.output(features, false, inMask, outMask);
 
-				eb.eval(lables, predicted, outMask);
+				ebepoch.eval(lables, predicted, outMask);
+				eb = ebepoch;
 			}
+
 			fullSetIterator.reset();
-			LOG.info(eb.stats());
-		} while (eb.averageAccuracy() < 1.0);
+			LOG.info(System.getProperty("line.separator") + ebepoch.stats());
+
+		} while (eb.averageAccuracy() < 0.95);
 
 		// save model and parameters for reloading
 		this.saveModel(epochCounter);
