@@ -30,6 +30,7 @@ import org.deeplearning4j.eval.EvaluationBinary;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.nn.api.Layer;
+import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -260,7 +261,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		// Set up network configuration
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)
 				.updater(Adam.builder().learningRate(2e-2).build()).l2(1e-5).weightInit(WeightInit.XAVIER)
@@ -271,7 +272,12 @@ public class LSTMClassifier extends PatientBasedClassifier {
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
 								.lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
-				.pretrain(false).backprop(true).build();
+				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
+
+		// for truncated backpropagation over time
+		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+		// .tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
@@ -593,7 +599,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	public void train(List<Patient> examples) {
 		if (trained == false) {
 			this.patientExamples = examples;
-			
+
 			initializeTruncateLength();
 			initializeNetworkBinaryMultiLabelDebug();
 			initializeMonitoring();
