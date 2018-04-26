@@ -21,10 +21,9 @@ public class SingleFoldValidatedDataset extends AbstractDataset {
         // We accept any of the following patterns (or variations thereof):
         // 0.8 + 0.0 + 0.2 = 1.0
         // 0.6 + 0.2 + 0.2 = 1.0
-        // 1.0 + 0.0 + 1.0 = 2.0    // Test on training data
         Double sum = training + validation + test;
-        // TODO additional sanity checks
-        if (sum > 2.0) {
+        // Delta to the sum should be less than 0.0.1
+        if (Math.abs(sum - 1.0) > 0.01) {
             throw new UnsupportedOperationException("Invalid split ratios.");
         }
         LOG.info("Splitting into {}/{}/{} splits...", training, validation, test);
@@ -35,9 +34,7 @@ public class SingleFoldValidatedDataset extends AbstractDataset {
         int validationSize = (int) (datasetSize * validation);
         int testSize = datasetSize - trainingSize - validationSize;
 
-        // Could be larger than datasetSize if testing on training data
-        int poolSize = trainingSize + validationSize + testSize;
-        int[] chosen = DatasetUtil.getRandomIndices(poolSize, datasetSize);
+        int[] chosen = DatasetUtil.getRandomIndices(datasetSize, datasetSize);
 
         patientsPerSplit = new HashMap<>();
         patientsPerSplit.put(SplitType.TRAINING, DatasetUtil.slice(patients, chosen, 0, trainingSize));
