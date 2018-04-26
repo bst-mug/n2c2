@@ -53,6 +53,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.nd4j.linalg.learning.config.AdaGrad;
+import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
@@ -243,6 +244,34 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		// for truncated backpropagation over time
 		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
 		// .tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
+
+		this.net = new MultiLayerNetwork(conf);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+	}
+
+	private void initializeNetworkBinaryMultiLabelDebug() {
+
+		Nd4j.getMemoryManager().setAutoGcWindow(10000); // https://deeplearning4j.org/workspaces
+
+		try {
+			fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// Set up network configuration
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)
+				.updater(Adam.builder().learningRate(2e-2).build()).l2(1e-5).weightInit(WeightInit.XAVIER)
+				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
+				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE) // https://deeplearning4j.org/workspaces
+				.list().layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.TANH).build())
+				.layer(1,
+						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
+				.pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
@@ -564,8 +593,9 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	public void train(List<Patient> examples) {
 		if (trained == false) {
 			this.patientExamples = examples;
-
-			initializeNetworkBinaryMultiLabel();
+			
+			initializeTruncateLength();
+			initializeNetworkBinaryMultiLabelDebug();
 			initializeMonitoring();
 
 			LOG.info("Minibatchsize  :\t" + miniBatchSize);
