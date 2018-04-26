@@ -1,12 +1,12 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
@@ -52,7 +52,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
+import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -105,7 +105,7 @@ public class CNNClassifier extends PatientBasedClassifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetworkDebug();
+		initializeNetwork();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -122,7 +122,7 @@ public class CNNClassifier extends PatientBasedClassifier {
 
 		initializeTokenizer();
 		initializeTruncateLength();
-		initializeNetworkDebug();
+		initializeNetwork();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -140,7 +140,7 @@ public class CNNClassifier extends PatientBasedClassifier {
 	/**
 	 * Debugging network.
 	 */
-	private void initializeNetworkDebug() {
+	private void initializeNetwork() {
 
 		// https://deeplearning4j.org/workspaces
 		Nd4j.getMemoryManager().setAutoGcWindow(5000);
@@ -174,6 +174,57 @@ public class CNNClassifier extends PatientBasedClassifier {
 				.addLayer("out",
 						new OutputLayer.Builder().lossFunction(LossFunctions.LossFunction.MCXENT)
 								.activation(Activation.SOFTMAX).nIn(3 * cnnLayerFeatureMaps).nOut(2).build(),
+						"globalPool")
+				.setOutputs("out").build();
+
+		this.net = new ComputationGraph(config);
+		this.net.init();
+		this.net.setListeners(new ScoreIterationListener(1));
+
+		LOG.info("Number of parameters by layer:");
+		for (Layer l : net.getLayers()) {
+			LOG.info("\t" + l.conf().getLayer().getLayerName() + "\t" + l.numParams());
+		}
+
+	}
+
+	/**
+	 * Debugging network.
+	 */
+	private void initializeNetworkBML() {
+
+		// https://deeplearning4j.org/workspaces
+		Nd4j.getMemoryManager().setAutoGcWindow(5000);
+		// Nd4j.getMemoryManager().togglePeriodicGc(false);
+
+		// number of feature maps / channels / depth for each CNN layer
+		int cnnLayerFeatureMaps = 100;
+		PoolingType globalPoolingType = PoolingType.MAX;
+
+		ComputationGraphConfiguration config = new NeuralNetConfiguration.Builder()
+				.trainingWorkspaceMode(WorkspaceMode.SINGLE).inferenceWorkspaceMode(WorkspaceMode.SINGLE)
+				.weightInit(WeightInit.RELU).activation(Activation.LEAKYRELU)
+				.updater(Adam.builder().learningRate(0.01).build()).convolutionMode(ConvolutionMode.Same).l2(0.0001)
+				.trainingWorkspaceMode(WorkspaceMode.SEPARATE).inferenceWorkspaceMode(WorkspaceMode.SEPARATE)
+				.graphBuilder().addInputs("input")
+				.addLayer("cnn3",
+						new ConvolutionLayer.Builder().kernelSize(3, vectorSize).stride(1, vectorSize).nIn(1)
+								.nOut(cnnLayerFeatureMaps).build(),
+						"input")
+				.addLayer("cnn4",
+						new ConvolutionLayer.Builder().kernelSize(4, vectorSize).stride(1, vectorSize).nIn(1)
+								.nOut(cnnLayerFeatureMaps).build(),
+						"input")
+				.addLayer("cnn5",
+						new ConvolutionLayer.Builder().kernelSize(5, vectorSize).stride(1, vectorSize).nIn(1)
+								.nOut(cnnLayerFeatureMaps).build(),
+						"input")
+				.addVertex("merge", new MergeVertex(), "cnn3", "cnn4", "cnn5")
+				.addLayer("globalPool",
+						new GlobalPoolingLayer.Builder().poolingType(globalPoolingType).dropOut(0.5).build(), "merge")
+				.addLayer("out",
+						new OutputLayer.Builder().lossFunction(LossFunctions.LossFunction.XENT)
+								.activation(Activation.SIGMOID).nIn(3 * cnnLayerFeatureMaps).nOut(13).build(),
 						"globalPool")
 				.setOutputs("out").build();
 
@@ -353,15 +404,11 @@ public class CNNClassifier extends PatientBasedClassifier {
 		combinedSplit.addAll(trainingSplit);
 		combinedSplit.addAll(validationSplit);
 
-		DataSetIterator training;
-		DataSetIterator validation;
 		DataSetIterator combined;
 		DataSetIterator test;
 
 		Random rng = new Random(12345);
 
-		training = getDataSetIterator(trainingSplit, wordVectors, miniBatchSize, truncateLength, rng);
-		validation = getDataSetIterator(validationSplit, wordVectors, miniBatchSize, truncateLength, rng);
 		combined = getDataSetIterator(combinedSplit, wordVectors, miniBatchSize, truncateLength, rng);
 		test = getDataSetIterator(testSplit, wordVectors, miniBatchSize, truncateLength, rng);
 
@@ -381,6 +428,60 @@ public class CNNClassifier extends PatientBasedClassifier {
 			LOG.info(evaluationTest.stats());
 			test.reset();
 		}
+	}
+
+	private void trainFullSetBML(List<Patient> examples) {
+
+		List<Patient> trainingSplit = new ArrayList<Patient>();
+		List<Patient> validationSplit = new ArrayList<Patient>();
+		List<Patient> combinedSplit = new ArrayList<Patient>();
+		List<Patient> testSplit = new ArrayList<Patient>();
+
+		// generate splits (60 20 20)
+		getSplits(examples, trainingSplit, validationSplit, testSplit);
+		combinedSplit.addAll(trainingSplit);
+		combinedSplit.addAll(validationSplit);
+
+		DataSetIterator combined;
+		DataSetIterator test;
+
+		Random rng = new Random(12345);
+
+		combined = getDataSetIteratorBML(combinedSplit, wordVectors, miniBatchSize, truncateLength, rng);
+		test = getDataSetIteratorBML(testSplit, wordVectors, miniBatchSize, truncateLength, rng);
+
+		for (int i = 0; i < nEpochs; i++) {
+			net.fit(combined);
+			combined.reset();
+			LOG.info("Epoch " + i + " complete.");
+			LOG.info("Starting TRAINING evaluation:");
+
+			// run evaluation on combined data
+			Evaluation evaluationCombined = net.evaluate(combined);
+			LOG.info(evaluationCombined.stats());
+
+			LOG.info("Starting TEST evaluation:");
+			// run evaluation on test data
+			Evaluation evaluationTest = net.evaluate(test);
+			LOG.info(evaluationTest.stats());
+			test.reset();
+		}
+	}
+
+	private static DataSetIterator getDataSetIteratorBML(List<Patient> patients, WordVectors wordVectors,
+			int minibatchSize, int maxSentenceLength, Random rng) {
+
+		// TODO: LabelAwareListSentenceIterator, BML for one sentence
+		
+		N2c2PatientIteratorBML iterator = null;
+		try {
+			iterator = new N2c2PatientIteratorBML(patients, wordVectors, minibatchSize, maxSentenceLength);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return iterator;
 	}
 
 	private static DataSetIterator getDataSetIterator(List<Patient> patients, WordVectors wordVectors,
