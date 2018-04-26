@@ -30,7 +30,6 @@ import org.deeplearning4j.eval.EvaluationBinary;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.nn.api.Layer;
-import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -272,8 +271,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
 								.lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
-				.backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
-				.tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
+				.pretrain(false).backprop(true).build();
 
 		// for truncated backpropagation over time
 		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
