@@ -16,7 +16,7 @@ import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
-public class BILSTMClassifierTest {
+public class LSTMClassifierTest {
 
 	@Ignore
 	public void train() {

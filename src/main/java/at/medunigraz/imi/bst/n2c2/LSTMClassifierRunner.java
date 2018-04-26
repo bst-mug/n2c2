@@ -11,7 +11,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.LSTMClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
-public class BILSTMClassifierRunner {
+public class LSTMClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
 
