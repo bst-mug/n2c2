@@ -25,7 +25,7 @@ public class NNBestClassifierRunner {
 	private static final Logger LOG = LogManager.getLogger();
 
 	public static void main(String[] args) throws IOException {
-		final File dataFolder = new File("Z:/n2c2/data/samplesTraining");
+		final File dataFolder = new File("C:/DataN2c2/samplesTraining");
 		final File xmlStatsFile = new File("stats/best.xml");
 		final File csvStatsFile = new File("stats/best.csv");
 

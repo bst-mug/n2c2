@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.nn.BILSTMClassifier;
+import at.medunigraz.imi.bst.n2c2.nn.LSTMClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
 public class BILSTMClassifierRunner {
@@ -37,7 +37,7 @@ public class BILSTMClassifierRunner {
 		File sampleDirectory = new File(patientData);
 		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
-		BILSTMClassifier classifier = new BILSTMClassifier(patients, wordVectorData);
+		LSTMClassifier classifier = new LSTMClassifier(patients, wordVectorData);
 		classifier.train(patients);
 
 		LOG.info("Finished training");

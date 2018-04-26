@@ -33,7 +33,7 @@ public class BILSTMClassifierTest {
 				patients.add(new PatientDAO().fromXML(patientSample));
 			}
 
-			BILSTMClassifier classifier = new BILSTMClassifier(patients);
+			LSTMClassifier classifier = new LSTMClassifier(patients);
 			classifier.train(patients);
 
 		} catch (IOException e) {
@@ -49,7 +49,7 @@ public class BILSTMClassifierTest {
 	public void initializeNetworkFromFile() {
 
 		String modelName = "N2c2BILSTM_MBL_Full_50.zip";
-		BILSTMClassifier classifier = new BILSTMClassifier();
+		LSTMClassifier classifier = new LSTMClassifier();
 		classifier.initializeNetworkFromFile(modelName);
 
 		assertEquals(true, true);
@@ -72,7 +72,7 @@ public class BILSTMClassifierTest {
 				patients.add(new PatientDAO().fromXML(patientSample));
 
 			}
-			BILSTMClassifier classifier = new BILSTMClassifier(pathToWordVectors, modelName);
+			LSTMClassifier classifier = new LSTMClassifier(pathToWordVectors, modelName);
 			classifier.predict(patients.get(0), Criterion.ABDOMINAL);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -99,7 +99,7 @@ public class BILSTMClassifierTest {
 				patients.add(new PatientDAO().fromXML(patientSample));
 
 			}
-			BILSTMClassifier classifier = new BILSTMClassifier(pathToWordVectors, modelName);
+			LSTMClassifier classifier = new LSTMClassifier(pathToWordVectors, modelName);
 			classifier.predict(patients);
 		} catch (IOException e) {
 			e.printStackTrace();

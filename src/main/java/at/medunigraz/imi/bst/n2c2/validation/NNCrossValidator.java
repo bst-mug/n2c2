@@ -11,7 +11,7 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.dataset.CrossValidatedDataset;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
-import at.medunigraz.imi.bst.n2c2.nn.BILSTMC3GClassifier;
+import at.medunigraz.imi.bst.n2c2.nn.LSTMClassifier;
 
 public class NNCrossValidator extends CrossValidator {
 
@@ -51,7 +51,7 @@ public class NNCrossValidator extends CrossValidator {
 			}
 
 			// reset after fold
-			((BILSTMC3GClassifier) classifierFactory.getClassifier(Criterion.classifiableValues()[0]))
+			((LSTMClassifier) classifierFactory.getClassifier(Criterion.classifiableValues()[0]))
 					.setTrained(false);
 		}
 

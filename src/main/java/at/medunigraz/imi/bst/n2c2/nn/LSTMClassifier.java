@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,20 +27,21 @@ import org.deeplearning4j.earlystopping.termination.ScoreImprovementEpochTermina
 import org.deeplearning4j.earlystopping.trainer.EarlyStoppingTrainer;
 import org.deeplearning4j.earlystopping.trainer.IEarlyStoppingTrainer;
 import org.deeplearning4j.eval.EvaluationBinary;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.nn.api.Layer;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.WorkspaceMode;
-import org.deeplearning4j.nn.conf.layers.DenseLayer;
-import org.deeplearning4j.nn.conf.layers.GravesBidirectionalLSTM;
 import org.deeplearning4j.nn.conf.layers.GravesLSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
-import org.deeplearning4j.nn.conf.preprocessor.FeedForwardToRnnPreProcessor;
-import org.deeplearning4j.nn.conf.preprocessor.RnnToFeedForwardPreProcessor;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
+import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
+import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
@@ -62,71 +62,113 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.dataset.SingleFoldValidatedDataset;
 
 /**
- * BI-LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
+ * LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
  * 
  * @author Markus
  *
  */
-public class BILSTMC3GClassifier extends PatientBasedClassifier {
+public class LSTMClassifier extends PatientBasedClassifier {
 
 	// size of mini-batch for training
 	private int miniBatchSize = 10;
 
 	// length for truncated backpropagation through time
-	private int tbpttLength = 100;
+	private int tbpttLength = 50;
 
 	// total number of training epochs
-	private int nEpochs = 100;
+	private int nEpochs = 50;
 
 	// specifies time series length
-	public int truncateLength = 64;
+	private int truncateLength = 64;
 
-	public int vectorSize;
+	// Google word vector size
+	int vectorSize = 300;
+
+	// accessing Google word vectors
+	private WordVectors wordVectors;
 
 	// training data
 	private List<Patient> patientExamples;
 
+	// tokenizer logic
+	private TokenizerFactory tokenizerFactory;
+
 	// multi layer network
 	private MultiLayerNetwork net;
+
+	// location of precalculated vectors
+	private String wordVectorsPath = "C:/DataN2c2/google/GoogleNews-vectors-negative300.bin.gz";
 
 	// criterion index
 	private Map<Criterion, Integer> criterionIndex = new HashMap<Criterion, Integer>();
 
-	public NGramIterator fullSetIterator;
+	// iterator over full training set
+	public N2c2PatientIteratorBML fullSetIterator;
 
+	// training counter
 	private int trainCounter = 0;
 
+	// is network trained
 	private boolean trained = false;
 
+	// logging
 	private static final Logger LOG = LogManager.getLogger();
 
-	public BILSTMC3GClassifier() {
+	public LSTMClassifier() {
 
+		initializeTokenizer();
 		initializeCriterionIndex();
 	}
 
-	public BILSTMC3GClassifier(String pathToWordVectors, String modelName) {
+	public LSTMClassifier(String pathToWordVectors, String modelName) {
 
+		this.wordVectorsPath = pathToWordVectors;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
+
+		initializeTokenizer();
 		initializeCriterionIndex();
 
 		// TODO load from persisted variable via properties file
-		this.truncateLength = 0;
+		this.truncateLength = 5305;
 		this.initializeNetworkFromFile(modelName);
 
 	}
 
-	public BILSTMC3GClassifier(List<Patient> examples) {
+	public LSTMClassifier(List<Patient> examples, String pathToWordVectors) {
 
 		this.patientExamples = examples;
+		this.wordVectorsPath = pathToWordVectors;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
 
-		initializeNetworkBinaryMultiLabelDeep();
-		// initializeNetworkDebug();
+		initializeTokenizer();
+		initializeCriterionIndex();
+		initializeTruncateLength();
+		initializeNetworkBinaryMultiLabel();
 		initializeMonitoring();
 
 		LOG.info("Minibatchsize  :\t" + miniBatchSize);
 		LOG.info("tbptt length   :\t" + tbpttLength);
 		LOG.info("Epochs         :\t" + nEpochs);
-		LOG.info("Truncate length:\t" + truncateLength);
+		LOG.info("Truncate lenght:\t" + truncateLength);
+		LOG.info("Vector size    :\t" + vectorSize);
+	}
+
+	public LSTMClassifier(List<Patient> examples) {
+
+		this.patientExamples = examples;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
+
+		initializeTokenizer();
+		initializeCriterionIndex();
+		initializeTruncateLength();
+		initializeNetworkBinaryMultiLabel();
+		initializeMonitoring();
+
+		LOG.info("Minibatchsize  :\t" + miniBatchSize);
+		LOG.info("tbptt length   :\t" + tbpttLength);
+		LOG.info("Epochs         :\t" + nEpochs);
+		LOG.info("Truncate lenght:\t" + truncateLength);
+		LOG.info("Vector size    :\t" + vectorSize);
 	}
 
 	private void initializeCriterionIndex() {
@@ -145,6 +187,11 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		this.criterionIndex.put(Criterion.MI_6MOS, 12);
 	}
 
+	private void initializeTokenizer() {
+		tokenizerFactory = new DefaultTokenizerFactory();
+		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+	}
+
 	public void initializeNetworkFromFile(String modelFile) {
 		try {
 			File networkFile = new File(getClass().getResource("/models/" + modelFile).getPath());
@@ -158,28 +205,22 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	 * SIGMOID activation and XENT loss function for binary multi-label
 	 * classification.
 	 */
-	private void initializeNetworkBinaryMultiLabelDeep() {
+	private void initializeNetworkBinaryMultiLabel() {
 
-		// settings for memory management:
 		// https://deeplearning4j.org/workspaces
-
 		Nd4j.getMemoryManager().setAutoGcWindow(10000);
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		vectorSize = fullSetIterator.vectorSize;
-		truncateLength = fullSetIterator.maxSentences;
 
-		int nOutFF = 150;
 		int lstmLayerSize = 128;
 		double l2Regulization = 0.01;
 		double adaGradCore = 0.04;
-		double adaGradDense = 0.01;
 		double adaGradGraves = 0.008;
 
 		// seed for reproducibility
@@ -187,46 +228,24 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
 				.updater(AdaGrad.builder().learningRate(adaGradCore).build()).regularization(true).l2(l2Regulization)
 				.weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SINGLE)
-				.inferenceWorkspaceMode(WorkspaceMode.SINGLE).list()
-
-				.layer(0, new DenseLayer.Builder().activation(Activation.RELU).nIn(vectorSize).nOut(nOutFF)
-						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
-						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-						.gradientNormalizationThreshold(10).build())
-
-				.layer(1, new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
-						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
-						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-						.gradientNormalizationThreshold(10).build())
-
-				.layer(2, new DenseLayer.Builder().activation(Activation.RELU).nIn(nOutFF).nOut(nOutFF)
-						.weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(adaGradDense).build())
-						.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-						.gradientNormalizationThreshold(10).build())
-
-				.layer(3,
-						new GravesBidirectionalLSTM.Builder().nIn(nOutFF).nOut(lstmLayerSize)
+				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
+				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE).list()
+				.layer(0,
+						new GravesLSTM.Builder().nIn(vectorSize).nOut(lstmLayerSize)
 								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
 								.activation(Activation.SOFTSIGN).build())
+				.layer(1,
+						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
+				.pretrain(false).backprop(true).build();
 
-				.layer(4,
-						new GravesLSTM.Builder().nIn(lstmLayerSize).nOut(lstmLayerSize)
-								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
-								.activation(Activation.SOFTSIGN).build())
-
-				.layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
-
-				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
-				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
-
-		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength).tBPTTBackwardLength(tbpttLength)
+		// for truncated backpropagation over time
+		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
+		// .tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
 
 		this.net = new MultiLayerNetwork(conf);
 		this.net.init();
 		this.net.setListeners(new ScoreIterationListener(1));
-
 	}
 
 	/**
@@ -237,7 +256,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// setting monitor
 		UIServer uiServer = UIServer.getInstance();
 
-		// configure where the network information (gradients, score vs. time
+		// Configure where the network information (gradients, score vs. time
 		// etc) is to be stored. Here: store in memory.
 		// Alternative: new FileStatsStorage(File), for saving and loading later
 		StatsStorage statsStorage = new InMemoryStatsStorage();
@@ -246,11 +265,42 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// of the StatsStorage to be visualized
 		uiServer.attach(statsStorage);
 
-		// then add the StatsListener to collect this information from the
+		// Then add the StatsListener to collect this information from the
 		// network, as it trains
 		net.setListeners(new StatsListener(statsStorage));
 	}
 
+	/**
+	 * Get longest token sequence of all patients with respect to existing word
+	 * vector out of Google corpus.
+	 * 
+	 */
+	private void initializeTruncateLength() {
+
+		List<List<String>> allTokens = new ArrayList<>(patientExamples.size());
+		int maxLength = 0;
+		for (Patient patient : patientExamples) {
+			String narrative = patient.getText();
+			String cleaned = narrative.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
+			List<String> tokens = tokenizerFactory.create(cleaned).getTokens();
+			List<String> tokensFiltered = new ArrayList<>();
+			for (String token : tokens) {
+				if (wordVectors.hasWord(token)) {
+					tokensFiltered.add(token);
+				} else {
+					LOG.info("Word2vec representation missing:\t" + token);
+				}
+			}
+			allTokens.add(tokensFiltered);
+			maxLength = Math.max(maxLength, tokensFiltered.size());
+		}
+		this.truncateLength = maxLength;
+	}
+
+	/**
+	 * Train with early stopping.
+	 * 
+	 */
 	private void trainWithEarlyStoppingBML() {
 
 		List<Patient> trainingSplit = new ArrayList<Patient>();
@@ -262,14 +312,12 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		trainingSplit = dataset.getTrainingSet();
 		validationSplit = dataset.getValidationSet();
 
-		NGramIterator training;
-		NGramIterator validation;
+		N2c2PatientIteratorBML training;
+		N2c2PatientIteratorBML validation;
 
 		try {
-			training = new NGramIterator(trainingSplit, miniBatchSize, fullSetIterator.characterNGram_3,
-					fullSetIterator.char3GramToIdxMap);
-			validation = new NGramIterator(validationSplit, miniBatchSize, fullSetIterator.characterNGram_3,
-					fullSetIterator.char3GramToIdxMap);
+			training = new N2c2PatientIteratorBML(trainingSplit, wordVectors, miniBatchSize, truncateLength);
+			validation = new N2c2PatientIteratorBML(validationSplit, wordVectors, miniBatchSize, truncateLength);
 
 			// early stopping on validation
 			EarlyStoppingModelSaver<MultiLayerNetwork> saver = new InMemoryModelSaver<>();
@@ -357,7 +405,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	}
 
 	/**
-	 * Save model plus parameters.
+	 * Save model with properties to separate files.
 	 * 
 	 * @param result
 	 */
@@ -366,33 +414,16 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		// save model after n epochs
 		try {
 
-			File locationToSave = new File("BILSTMC3G_MBL_" + trainCounter + ".zip");
+			File locationToSave = new File("LSTMW2V_MBL_" + trainCounter + ".zip");
 			boolean saveUpdater = true;
 			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
 
-			// writing our character n-grams
-			FileOutputStream fos = new FileOutputStream("characterNGram_3_" + trainCounter);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIterator.characterNGram_3);
-			oos.flush();
-			oos.close();
-			fos.close();
-
-			// writing our character n-grams
-			fos = new FileOutputStream("char3GramToIdxMap_" + trainCounter);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIterator.char3GramToIdxMap);
-			oos.flush();
-			oos.close();
-			fos.close();
-
 			try {
 				Properties props = new Properties();
-				props.setProperty("BILSTMC3G_MBL.bestModelEpoch." + trainCounter,
+				props.setProperty("LSTMW2V_MBL.bestModelEpoch." + trainCounter,
 						new Integer(result.getBestModelEpoch()).toString());
-				props.setProperty("BILSTMC3G_MBL.truncateLength." + trainCounter,
-						new Integer(truncateLength).toString());
-				File f = new File("BILSTMC3G_MBL_" + trainCounter + ".properties");
+				props.setProperty("LSTMW2V_MBL.truncateLength." + trainCounter, new Integer(truncateLength).toString());
+				File f = new File("LSTMW2V_MBL_" + trainCounter + ".properties");
 				OutputStream out = new FileOutputStream(f);
 				props.store(out, "Best model at epoch");
 			} catch (Exception e) {
@@ -406,37 +437,25 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		}
 	}
 
+	/**
+	 * Save model with properties to separate files.
+	 * 
+	 * @param epoch
+	 */
 	private void saveModel(int epoch) {
 
 		// save model after n epochs
 		try {
 
-			File locationToSave = new File("BILSTMC3G_MBL_" + trainCounter + ".zip");
+			File locationToSave = new File("LSTMW2V_MBL_" + trainCounter + ".zip");
 			boolean saveUpdater = true;
 			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
 
-			// writing our character n-grams
-			FileOutputStream fos = new FileOutputStream("characterNGram_3_" + trainCounter);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIterator.characterNGram_3);
-			oos.flush();
-			oos.close();
-			fos.close();
-
-			// writing our character n-grams
-			fos = new FileOutputStream("char3GramToIdxMap_" + trainCounter);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(fullSetIterator.char3GramToIdxMap);
-			oos.flush();
-			oos.close();
-			fos.close();
-
 			try {
 				Properties props = new Properties();
-				props.setProperty("BILSTMC3G_MBL.bestModelEpoch." + trainCounter, new Integer(epoch).toString());
-				props.setProperty("BILSTMC3G_MBL.truncateLength." + trainCounter,
-						new Integer(truncateLength).toString());
-				File f = new File("BILSTMC3G_MBL_" + trainCounter + ".properties");
+				props.setProperty("LSTMW2V_MBL.bestModelEpoch." + trainCounter, new Integer(epoch).toString());
+				props.setProperty("LSTMW2V_MBL.truncateLength." + trainCounter, new Integer(truncateLength).toString());
+				File f = new File("LSTMW2V_MBL_" + trainCounter + ".properties");
 				OutputStream out = new FileOutputStream(f);
 				props.store(out, "Best model at epoch");
 			} catch (Exception e) {
@@ -461,24 +480,37 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	 */
 	private INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
 
-		int maxSentences = 0;
+		List<String> tokens = tokenizerFactory.create(reviewContents).getTokens();
+		List<String> tokensFiltered = new ArrayList<>();
+		for (String t : tokens) {
+			if (wordVectors.hasWord(t))
+				tokensFiltered.add(t);
+		}
+		int outputLength = Math.max(maxLength, tokensFiltered.size());
 
-		List<String> sentences = DataUtilities.getSentences(reviewContents);
-		maxSentences = sentences.size() > maxSentences ? sentences.size() : maxSentences;
-
-		int outputLength = Math.max(maxLength, maxSentences);
 		INDArray features = Nd4j.create(1, vectorSize, outputLength);
 
-		for (int j = 0; j < sentences.size() && j < outputLength; j++) {
-			String sentence = sentences.get(j);
-			INDArray vector = fullSetIterator.getChar3GramVectorToSentence(sentence);
+		for (int j = 0; j < tokens.size() && j < maxLength; j++) {
+			String token = tokens.get(j);
+			INDArray vector = wordVectors.getWordVectorMatrix(token);
 			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
 					vector);
 		}
 		return features;
 	}
 
-	private void logEvaluationStats(NGramIterator training, NGramIterator validation, EarlyStoppingResult result) {
+	/**
+	 * Log evaluation statistics.
+	 * 
+	 * @param training
+	 *            Taining iterator
+	 * @param validation
+	 *            Validation iterator
+	 * @param result
+	 *            EarlyStoppingResult
+	 */
+	private void logEvaluationStats(N2c2PatientIteratorBML training, N2c2PatientIteratorBML validation,
+			EarlyStoppingResult result) {
 		// resetting iterators
 		training.reset();
 		validation.reset();
@@ -529,11 +561,10 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	@Override
 	public void train(List<Patient> examples) {
-
 		if (trained == false) {
 			this.patientExamples = examples;
 
-			initializeNetworkBinaryMultiLabelDeep();
+			initializeNetworkBinaryMultiLabel();
 			initializeMonitoring();
 
 			LOG.info("Minibatchsize  :\t" + miniBatchSize);
@@ -570,8 +601,8 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
 
 		LOG.info("\n\n-------------------------------");
-		LOG.info("Patient: " + p.getID());
-		LOG.info("Probabilities at last time step for {}", c.name());
+		LOG.info("Patient narrative: \n" + patientNarrative);
+		LOG.info("\n\nProbabilities at last time step for {}", c.name());
 		LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
 		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
 
