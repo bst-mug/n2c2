@@ -30,6 +30,12 @@ public class BasicEvaluatorTest {
 
         evaluator.evaluate(gold, results);
 
-        assertEquals(0.5, evaluator.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
+        assertEquals(0.5, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
+
+        // 0.5 / 13 criteria = 0.03846
+        assertEquals(0.03846, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MACRO), 0.00001);
+
+        // Same as Criterion.ABDOMINAL
+        assertEquals(0.5, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MICRO), 0.00001);
     }
 }

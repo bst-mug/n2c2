@@ -3,12 +3,12 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetricSet;
 import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetrics;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,20 +18,13 @@ public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
-
-    public double getOfficialRankingMeasureByCriterion(Criterion c) {
-        return getMetricsByCriterion(c).getAccuracy();
-    }
-
-    public BasicMetrics getMetricsByCriterion(Criterion c) {
-        return metricsByCriterion.get(c);
-    }
+    private BasicMetricSet metricSet = new BasicMetricSet();
 
     @Override
     public void evaluate(List<Patient> gold, List<Patient> results) {
         int count = 0;
         double overallAccuracy = 0;
+        BasicMetrics metrics = null;
 
         // Map of results by patient id for comparison
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
@@ -60,20 +53,28 @@ public class BasicEvaluator implements Evaluator {
                 }
             }
 
-            BasicMetrics metrics = new BasicMetrics(tp, fp, tn, fn);
+            BasicMetrics criterionMetrics = new BasicMetrics(tp, fp, tn, fn);
 
-            overallAccuracy += metrics.getAccuracy();
+            metricSet.withBasicMetrics(criterion, criterionMetrics);
+
+            // First initialization
+            if (metrics == null) {
+                metrics = criterionMetrics;
+            } else {
+                metrics.add(criterionMetrics);
+            }
+
+            overallAccuracy += criterionMetrics.getAccuracy();
             count++;
-
-            metricsByCriterion.put(criterion, metrics);
         }
 
-        metricsByCriterion.put(Criterion.OVERALL_MACRO, new BasicMetrics(overallAccuracy / count));
+        metricSet.withBasicMetrics(Criterion.OVERALL_MACRO, new BasicMetrics(overallAccuracy / count));
+        metricSet.withBasicMetrics(Criterion.OVERALL_MICRO, metrics);
     }
 
     @Override
     public Metrics getMetrics() {
-        return metricsByCriterion.get(Criterion.OVERALL_MACRO);
+        return metricSet;
     }
 
     private enum Match {

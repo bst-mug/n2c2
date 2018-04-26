@@ -1,9 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.model.metrics;
 
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
-
 @Deprecated
-public class BasicMetrics implements Metrics {
+public class BasicMetrics {
 
     private int tp, fp, tn, fn;
 
@@ -84,23 +82,12 @@ public class BasicMetrics implements Metrics {
         return fn;
     }
 
-    @Override
-    public double getOfficialRankingMeasure() {
-        return getAccuracy();
+    public double getTruePositives() {
+        return tp;
     }
 
-    @Override
-    public double getOfficialRankingMeasureByCriterion(Criterion c) {
-        return getAccuracy();
-    }
-
-    @Override
-    public void add(Metrics addend) {
-        if (!(addend instanceof BasicMetrics)) {
-            throw new UnsupportedOperationException("Can only add metrics of the same type.");
-        }
-
-        add((BasicMetrics) addend);
+    public double getTrueNegatives() {
+        return tn;
     }
 
     public void add(BasicMetrics addend) {
@@ -114,7 +101,6 @@ public class BasicMetrics implements Metrics {
         this.a += addend.a;
     }
 
-    @Override
     public void divideBy(double divisor) {
         this.tp /= divisor;
         this.fp /= divisor;
