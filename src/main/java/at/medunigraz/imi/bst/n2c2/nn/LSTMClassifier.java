@@ -116,6 +116,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 
 	public LSTMClassifier() {
 
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
 		initializeTokenizer();
 		initializeCriterionIndex();
 	}
@@ -236,7 +237,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 								.activation(Activation.SOFTSIGN).build())
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-								.lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
+								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
 				.pretrain(false).backprop(true).build();
 
 		// for truncated backpropagation over time
@@ -601,8 +602,8 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
 
 		LOG.info("\n\n-------------------------------");
-		LOG.info("Patient narrative: \n" + patientNarrative);
-		LOG.info("\n\nProbabilities at last time step for {}", c.name());
+		LOG.info("Patient: " + p.getID());
+		LOG.info("Probabilities at last time step for {}", c.name());
 		LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
 		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
 

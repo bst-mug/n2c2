@@ -320,7 +320,8 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 	 */
 	@Override
 	public List<String> getLabels() {
-		return Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m");
+		return Arrays.asList("ABDOMINAL", "ADVANCED-CAD", "ALCOHOL-ABUSE", "ASP-FOR-MI", "CREATININE", "DIETSUPP-2MOS",
+				"DRUG-ABUSE", "ENGLISH", "HBA1C", "KETO-1YR", "MAJOR-DIABETES", "MAKES-DECISIONS", "MI-6MOS");
 	}
 
 	/*
