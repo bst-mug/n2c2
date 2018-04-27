@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Deprecated
 public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -22,9 +21,11 @@ public class BasicEvaluator implements Evaluator {
 
     @Override
     public void evaluate(List<Patient> gold, List<Patient> results) {
-        int count = 0;
-        double overallAccuracy = 0;
-        BasicMetrics metrics = null;
+        // TODO consolidate validate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
+        metricSet = new BasicMetricSet();
+
+        BasicMetrics metrics = new BasicMetrics(0);
+        BasicMetrics macroMetrics = new BasicMetrics(0);
 
         // Map of results by patient id for comparison
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
@@ -50,6 +51,9 @@ public class BasicEvaluator implements Evaluator {
                     case FN:
                         fn++;
                         break;
+                    case UNKNOWN:
+                        LOG.warn("Unknown match between gold patient {} and actual patient {} when comparing criterion {}.", g.getID(), actual.getID(), criterion);
+                        break;
                 }
             }
 
@@ -57,18 +61,15 @@ public class BasicEvaluator implements Evaluator {
 
             metricSet.withBasicMetrics(criterion, criterionMetrics);
 
-            // First initialization
-            if (metrics == null) {
-                metrics = criterionMetrics;
-            } else {
-                metrics.add(criterionMetrics);
-            }
-
-            overallAccuracy += criterionMetrics.getAccuracy();
-            count++;
+            metrics.add(criterionMetrics);
+            macroMetrics.add(criterionMetrics);
         }
 
-        metricSet.withBasicMetrics(Criterion.OVERALL_MACRO, new BasicMetrics(overallAccuracy / count));
+        // Micro-averaged metrics depend on lazy calculation of accuracy.
+        // Conversely, macro-averaged metrics should be calculated now.
+        macroMetrics.getAccuracy();
+
+        metricSet.withBasicMetrics(Criterion.OVERALL_MACRO, macroMetrics);
         metricSet.withBasicMetrics(Criterion.OVERALL_MICRO, metrics);
     }
 

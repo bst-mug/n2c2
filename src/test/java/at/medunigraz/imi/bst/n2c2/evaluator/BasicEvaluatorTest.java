@@ -3,6 +3,7 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetricSet;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,12 +31,14 @@ public class BasicEvaluatorTest {
 
         evaluator.evaluate(gold, results);
 
-        assertEquals(0.5, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
+        BasicMetricSet metricSet = (BasicMetricSet) evaluator.getMetrics();
 
-        // 0.5 / 13 criteria = 0.03846
-        assertEquals(0.03846, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MACRO), 0.00001);
+        assertEquals(0.5, metricSet.getOfficialRankingMeasureByCriterion(Criterion.ABDOMINAL), 0.00001);
+
+        // We do not macro-average over criteria
+        assertEquals(0.5, metricSet.getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MACRO), 0.00001);
 
         // Same as Criterion.ABDOMINAL
-        assertEquals(0.5, evaluator.getMetrics().getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MICRO), 0.00001);
+        assertEquals(0.5, metricSet.getOfficialRankingMeasureByCriterion(Criterion.OVERALL_MICRO), 0.00001);
     }
 }

@@ -2,9 +2,10 @@ package at.medunigraz.imi.bst.n2c2;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.SVMClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
@@ -28,11 +29,12 @@ public class BestClassifierRunner {
 
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         ClassifierFactory factory = new SVMClassifierFactory();
-        OfficialEvaluator evaluator = new OfficialEvaluator();
+
+        Evaluator evaluator = new OfficialEvaluator();
+        //Evaluator evaluator = new BasicEvaluator();
 
         CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        MetricSet metrics = (MetricSet) cv.validate();
-        LOG.info(metrics);
+        Metrics metrics = cv.validate();
 
         StatsWriter xmlWriter = new XMLStatsWriter(xmlStatsFile);
         xmlWriter.write(metrics);

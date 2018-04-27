@@ -2,14 +2,16 @@ package at.medunigraz.imi.bst.n2c2;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.RuleBasedClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
+import at.medunigraz.imi.bst.n2c2.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,11 +30,14 @@ public class RuleBasedClassifierRunner {
 
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         ClassifierFactory factory = new RuleBasedClassifierFactory();
-        OfficialEvaluator evaluator = new OfficialEvaluator();
 
-        CrossValidator cv = new CrossValidator(patients, factory, evaluator);
-        MetricSet metrics = (MetricSet) cv.validate();
-        LOG.info(metrics);
+        Evaluator evaluator = new OfficialEvaluator();
+        //Evaluator evaluator = new BasicEvaluator();
+
+        //Validator cv = new SingleFoldValidator(patients, factory, evaluator);
+        Validator cv = new CrossValidator(patients, factory, evaluator);
+
+        Metrics metrics = cv.validate();
 
         StatsWriter xmlWriter = new XMLStatsWriter(xmlStatsFile);
         xmlWriter.write(metrics);

@@ -11,6 +11,4 @@ public abstract class AbstractStatsWriter implements StatsWriter {
     public AbstractStatsWriter(OutputStream output) {
         this.output = output;
     }
-
-    protected abstract void writeHeader();
 }

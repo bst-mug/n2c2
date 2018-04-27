@@ -15,7 +15,7 @@ public class BasicMetricSet implements Metrics {
     private static final String TN = "tn";
     private static final String FN = "fn";
 
-    private static final Map<Criterion, BasicMetrics> metricsPerCriterion = new HashMap<>();
+    private Map<Criterion, BasicMetrics> metricsPerCriterion = new HashMap<>();
 
     public BasicMetricSet() {
         // TODO lazy initialization
@@ -24,7 +24,7 @@ public class BasicMetricSet implements Metrics {
         }
     }
 
-    public static List<String> getMetricNames() {
+    public List<String> getMetricNames() {
         List<String> ret = new ArrayList<>();
 
         ret.add(ACCURACY);
@@ -57,7 +57,7 @@ public class BasicMetricSet implements Metrics {
 
     @Override
     public double getOfficialRankingMeasure() {
-        return metricsPerCriterion.get(Criterion.OVERALL_MACRO).getAccuracy();
+        return metricsPerCriterion.get(Criterion.OVERALL_MICRO).getAccuracy();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class BasicMetricSet implements Metrics {
 
     public void add(BasicMetricSet addend) {
         for (Criterion c : Criterion.values()) {
-            metricsPerCriterion.get(c).add(metricsPerCriterion.get(c));
+            metricsPerCriterion.get(c).add(addend.metricsPerCriterion.get(c));
         }
 
     }
