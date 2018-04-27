@@ -1,4 +1,4 @@
-package at.medunigraz.imi.bst.n2c2.rules.criteria;
+spackage at.medunigraz.imi.bst.n2c2.rules.criteria;
 
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -29,8 +29,8 @@ public class Dietsupp2mos extends BaseClassifiable {
 
 alpha, beta, etc. can be in greek as well
 categories separated by underlines
-if in braces, acronym of the previous
-if there is an s in the end, it can be removed
+if in parentheses, it is an acronym of the previous
+if there is an 's' in the end, it can be removed
 _______________________________
 Fructo-oligosaccharides
 Galacto-oligosaccharides 
