@@ -3,35 +3,29 @@ package at.medunigraz.imi.bst.n2c2.evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetricSet;
 import at.medunigraz.imi.bst.n2c2.model.metrics.BasicMetrics;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Deprecated
 public class BasicEvaluator implements Evaluator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private Map<Criterion, BasicMetrics> metricsByCriterion = new HashMap<>();
-
-    public double getOfficialRankingMeasureByCriterion(Criterion c) {
-        return getMetricsByCriterion(c).getAccuracy();
-    }
-
-    public BasicMetrics getMetricsByCriterion(Criterion c) {
-        return metricsByCriterion.get(c);
-    }
+    private BasicMetricSet metricSet = new BasicMetricSet();
 
     @Override
     public void evaluate(List<Patient> gold, List<Patient> results) {
-        int count = 0;
-        double overallAccuracy = 0;
+        // TODO consolidate validate and getMetrics() into a single method and drop deprecated methods so this is a pure function.
+        metricSet = new BasicMetricSet();
+
+        BasicMetrics metrics = new BasicMetrics(0);
+        BasicMetrics macroMetrics = new BasicMetrics(0);
 
         // Map of results by patient id for comparison
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
@@ -57,23 +51,31 @@ public class BasicEvaluator implements Evaluator {
                     case FN:
                         fn++;
                         break;
+                    case UNKNOWN:
+                        LOG.warn("Unknown match between gold patient {} and actual patient {} when comparing criterion {}.", g.getID(), actual.getID(), criterion);
+                        break;
                 }
             }
 
-            BasicMetrics metrics = new BasicMetrics(tp, fp, tn, fn);
+            BasicMetrics criterionMetrics = new BasicMetrics(tp, fp, tn, fn);
 
-            overallAccuracy += metrics.getAccuracy();
-            count++;
+            metricSet.withBasicMetrics(criterion, criterionMetrics);
 
-            metricsByCriterion.put(criterion, metrics);
+            metrics.add(criterionMetrics);
+            macroMetrics.add(criterionMetrics);
         }
 
-        metricsByCriterion.put(Criterion.OVERALL_MACRO, new BasicMetrics(overallAccuracy / count));
+        // Micro-averaged metrics depend on lazy calculation of accuracy.
+        // Conversely, macro-averaged metrics should be calculated now.
+        macroMetrics.getAccuracy();
+
+        metricSet.withBasicMetrics(Criterion.OVERALL_MACRO, macroMetrics);
+        metricSet.withBasicMetrics(Criterion.OVERALL_MICRO, metrics);
     }
 
     @Override
     public Metrics getMetrics() {
-        return metricsByCriterion.get(Criterion.OVERALL_MACRO);
+        return metricSet;
     }
 
     private enum Match {

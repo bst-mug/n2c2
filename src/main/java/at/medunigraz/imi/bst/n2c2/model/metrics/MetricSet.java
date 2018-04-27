@@ -35,7 +35,7 @@ public class MetricSet implements Metrics {
         }
     }
 
-    public static List<String> getMetricNames() {
+    public List<String> getMetricNames() {
         List<String> ret = new ArrayList<>();
 
         ret.add(PRECISION_MET);

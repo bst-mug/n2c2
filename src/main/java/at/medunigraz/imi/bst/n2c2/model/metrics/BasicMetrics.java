@@ -1,11 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.model.metrics;
 
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
+public class BasicMetrics {
 
-@Deprecated
-public class BasicMetrics implements Metrics {
-
-    private int tp, fp, tn, fn;
+    private double tp, fp, tn, fn;
 
     private double p, r, a;
 
@@ -40,7 +37,7 @@ public class BasicMetrics implements Metrics {
             if (tp == 0) {
                 return p;
             }
-            p = tp / (double) (tp + fp);
+            p = tp / (tp + fp);
         }
         return p;
     }
@@ -50,19 +47,23 @@ public class BasicMetrics implements Metrics {
             if (tp == 0) {
                 return p;
             }
-            r = tp / (double) (tp + fn);
+            r = tp / (tp + fn);
         }
         return r;
     }
 
     public double getAccuracy() {
         if (a == 0) {
-            if (tp + tn == 0) {
-                return a;
-            }
-            a = (tp + tn) / (double) (tp + tn + fp + fn);
+            a = calculateAccuracy();
         }
         return a;
+    }
+
+    public double calculateAccuracy() {
+        if (tp + tn == 0) {
+            return 0;
+        }
+        return (tp + tn) / (tp + tn + fp + fn);
     }
 
     public double getSensitivity() {
@@ -73,7 +74,7 @@ public class BasicMetrics implements Metrics {
         if (tn == 0) {
             return 0;
         }
-        return tn / (double) (fp + tn);
+        return tn / (fp + tn);
     }
 
     public double getFalsePositives() {
@@ -84,23 +85,12 @@ public class BasicMetrics implements Metrics {
         return fn;
     }
 
-    @Override
-    public double getOfficialRankingMeasure() {
-        return getAccuracy();
+    public double getTruePositives() {
+        return tp;
     }
 
-    @Override
-    public double getOfficialRankingMeasureByCriterion(Criterion c) {
-        return getAccuracy();
-    }
-
-    @Override
-    public void add(Metrics addend) {
-        if (!(addend instanceof BasicMetrics)) {
-            throw new UnsupportedOperationException("Can only add metrics of the same type.");
-        }
-
-        add((BasicMetrics) addend);
+    public double getTrueNegatives() {
+        return tn;
     }
 
     public void add(BasicMetrics addend) {
@@ -114,12 +104,11 @@ public class BasicMetrics implements Metrics {
         this.a += addend.a;
     }
 
-    @Override
     public void divideBy(double divisor) {
-        this.tp /= divisor;
-        this.fp /= divisor;
-        this.tn /= divisor;
-        this.fn /= divisor;
+//        this.tp /= divisor;
+//        this.fp /= divisor;
+//        this.tn /= divisor;
+//        this.fn /= divisor;
 
         this.p /= divisor;
         this.r /= divisor;
