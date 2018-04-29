@@ -141,4 +141,19 @@ public final class DatasetUtil {
 
         return patients;
     }
+
+    /**
+     * Find a patient from a given list using its id.
+     *
+     * @param id
+     * @param patients
+     * @return the patient found or null if it's not found.
+     */
+    public static Patient findById(String id, List<Patient> patients) {
+        for (Patient p : patients) {
+            if (p.getID().equals(id))
+                return p;
+        }
+        return null;
+    }
 }
