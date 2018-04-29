@@ -1,7 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.stats;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.metrics.MetricSet;
+import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import com.opencsv.CSVWriter;
 
 import java.io.*;
@@ -15,15 +15,14 @@ public class CSVStatsWriter extends AbstractStatsWriter {
     public CSVStatsWriter(OutputStream output) {
         super(output);
         writer = new CSVWriter(new OutputStreamWriter(output, Charset.forName("UTF-8")));
-        writeHeader();
     }
 
     public CSVStatsWriter(File outputFile) throws IOException {
         this(new FileOutputStream(outputFile));
     }
 
-    protected void writeHeader() {
-        List<String> metricNames = MetricSet.getMetricNames();
+    protected void writeHeader(Metrics metrics) {
+        List<String> metricNames = metrics.getMetricNames();
 
         metricNames.add(0, GROUPED_BY);
         String[] header = metricNames.toArray(new String[metricNames.size()]);
@@ -36,7 +35,9 @@ public class CSVStatsWriter extends AbstractStatsWriter {
         }
     }
 
-    public void write(MetricSet metrics) {
+    public void write(Metrics metrics) {
+        writeHeader(metrics);
+
         for (Criterion c : Criterion.values()) {
             // Keys might not properly ordered
             Map<String, Double> metricsMap = metrics.getMetrics(c);
@@ -46,7 +47,7 @@ public class CSVStatsWriter extends AbstractStatsWriter {
             entries[0] = c.name();
 
             // This is properly ordered
-            List<String> metricNames = MetricSet.getMetricNames();
+            List<String> metricNames = metrics.getMetricNames();
             int i = 0;
             for (String metricName : metricNames) {
                 entries[++i] = String.valueOf(metricsMap.get(metricName));
