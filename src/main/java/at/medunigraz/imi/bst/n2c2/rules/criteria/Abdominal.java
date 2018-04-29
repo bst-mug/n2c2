@@ -12,19 +12,21 @@ public class Abdominal extends BaseClassifiable {
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
     static {
         POSITIVE_MARKERS.add(Pattern.compile("bowel surgery", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("splenectomy", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("intestine resection", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("intestinal resection", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("bowel resection", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("hysterectomy", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("liver transplant", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("pancreatectomy", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("liver surgery", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("gastric resection", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("gastrectomy", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("hepatectomy", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("intestinal resection", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("transperitoneal *ctomy", Pattern.CASE_INSENSITIVE)); 
+        POSITIVE_MARKERS.add(Pattern.compile("polypectomy", Pattern.CASE_INSENSITIVE)); // Disabled by @kasac
+        POSITIVE_MARKERS.add(Pattern.compile("resection", Pattern.CASE_INSENSITIVE));   // Disabled by @kasac
+//        POSITIVE_MARKERS.add(Pattern.compile("splenectomy", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("intestine resection", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("intestinal resection", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("bowel resection", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("hysterectomy", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("liver transplant", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("pancreatectomy", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("liver surgery", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("gastric resection", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("gastrectomy", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("hepatectomy", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("intestinal resection", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("transperitoneal *ctomy", Pattern.CASE_INSENSITIVE));
         // does the above line detect the following ngram 'transperitoneal laparoscopic radical nephrectomy'?
     }
 
