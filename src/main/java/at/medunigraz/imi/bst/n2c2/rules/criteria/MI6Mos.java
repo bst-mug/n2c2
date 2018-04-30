@@ -10,13 +10,15 @@ import java.util.regex.Pattern;
 public class MI6Mos extends BaseClassifiable {
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
 
+    private static final int PAST_MONTHS = 6;
+
     static {
-        POSITIVE_MARKERS.add(Pattern.compile("stemi", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("imi", Pattern.CASE_INSENSITIVE));     // TODO check for false positives
+        POSITIVE_MARKERS.add(Pattern.compile("STEMI"));
+        //POSITIVE_MARKERS.add(Pattern.compile("IMI"));
     }
 
     @Override
     public Eligibility isMet(Patient p) {
-        return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
+        return findAnyPatternInRecentPast(p, POSITIVE_MARKERS, PAST_MONTHS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }
