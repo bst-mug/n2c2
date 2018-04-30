@@ -2,8 +2,8 @@ package at.medunigraz.imi.bst.n2c2;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.RuleBasedClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
-import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
@@ -31,8 +31,8 @@ public class RuleBasedClassifierRunner {
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         ClassifierFactory factory = new RuleBasedClassifierFactory();
 
-        Evaluator evaluator = new OfficialEvaluator();
-        //Evaluator evaluator = new BasicEvaluator();
+        //Evaluator evaluator = new OfficialEvaluator();
+        Evaluator evaluator = new BasicEvaluator();
 
         //Validator cv = new SingleFoldValidator(patients, factory, evaluator);
         Validator cv = new CrossValidator(patients, factory, evaluator);
