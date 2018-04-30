@@ -25,6 +25,11 @@ public class Abdominal extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("gastric resection", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("gastrectomy", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("hepatectomy", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("appendectomy", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("colostomy", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("cholecystectomy", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("colectomy", Pattern.CASE_INSENSITIVE));
+//        POSITIVE_MARKERS.add(Pattern.compile("tracheostomy", Pattern.CASE_INSENSITIVE));
 
         POSITIVE_MARKERS.add(Pattern.compile("nephrectomy", Pattern.CASE_INSENSITIVE));
 //        POSITIVE_MARKERS.add(Pattern.compile("transperitoneal *ctomy", Pattern.CASE_INSENSITIVE));
