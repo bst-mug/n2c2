@@ -16,7 +16,12 @@ public class Dietsupp2mos extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("folate", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("calcium carbonate", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("supplement", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("multivitamin", Pattern.CASE_INSENSITIVE));
+
+        //POSITIVE_MARKERS.add(Pattern.compile("multivitamin", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("vitamin", Pattern.CASE_INSENSITIVE));
+
+        POSITIVE_MARKERS.add(Pattern.compile("gluconate", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("iron", Pattern.CASE_INSENSITIVE));
     }
 
     @Override
