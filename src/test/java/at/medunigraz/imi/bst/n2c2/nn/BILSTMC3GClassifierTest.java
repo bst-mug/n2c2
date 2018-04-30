@@ -13,7 +13,9 @@ import org.junit.Ignore;
 import org.xml.sax.SAXException;
 
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
 public class BILSTMC3GClassifierTest {
 
@@ -32,7 +34,7 @@ public class BILSTMC3GClassifierTest {
 				patients.add(new PatientDAO().fromXML(patientSample));
 			}
 
-			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(patients);
+			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier();
 			classifier.train(patients);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -40,6 +42,87 @@ public class BILSTMC3GClassifierTest {
 			e.printStackTrace();
 		}
 
+		assertEquals(true, true);
+	}
+
+	@Ignore
+	public void predictAndOverwrite() {
+		// read in patients
+		File sampleDirectory = new File("Z:/n2c2/data/samplesTraining");
+		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
+				TrueFileFilter.INSTANCE);
+
+		String modelPath = "Z:/n2c2/data/models/";
+		String pathTrainingBDT = "Z:/n2c2/data/samplesTrainingBDT/";
+
+		List<Patient> patients;
+		try {
+			patients = new ArrayList<Patient>();
+			for (File patientSample : sampleFiles) {
+				patients.add(new PatientDAO().fromXML(patientSample));
+
+			}
+			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(modelPath);
+			patients.forEach(p -> classifier.predictAndOverwrite(p, pathTrainingBDT));
+
+			classifier.predict(patients.get(0), Criterion.ABDOMINAL);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+		assertEquals(true, true);
+	}
+
+	@Ignore
+	public void predictCriterion() {
+		// read in patients
+		File sampleDirectory = new File("Z:/n2c2/data/samplesTraining");
+		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
+				TrueFileFilter.INSTANCE);
+
+		String modelPath = "Z:/n2c2/data/models/";
+
+		List<Patient> patients;
+		try {
+			patients = new ArrayList<Patient>();
+			for (File patientSample : sampleFiles) {
+				patients.add(new PatientDAO().fromXML(patientSample));
+
+			}
+			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(modelPath);
+			classifier.predict(patients.get(0), Criterion.ABDOMINAL);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+		assertEquals(true, true);
+	}
+
+	@Ignore
+	public void predictPatients() {
+		// read in patients
+		File sampleDirectory = new File("Z:/n2c2/data/samplesTraining");
+		List<File> sampleFiles = (List<File>) FileUtils.listFiles(sampleDirectory, TrueFileFilter.INSTANCE,
+				TrueFileFilter.INSTANCE);
+
+		String modelPath = "Z:/n2c2/data/models/";
+
+		List<Patient> patients;
+		try {
+			patients = new ArrayList<Patient>();
+			for (File patientSample : sampleFiles) {
+				patients.add(new PatientDAO().fromXML(patientSample));
+
+			}
+			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(modelPath);
+			classifier.predict(DatasetUtil.stripTags(patients));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
 		assertEquals(true, true);
 	}
 }

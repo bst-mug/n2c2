@@ -1,9 +1,12 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ import org.nd4j.linalg.learning.config.AdaGrad;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
+import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -105,13 +109,10 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		initializeCriterionIndex();
 	}
 
-	public BILSTMC3GClassifier(String pathToWordVectors, String modelName) {
+	public BILSTMC3GClassifier(String pathToModel) {
 
 		initializeCriterionIndex();
-
-		// TODO load from persisted variable via properties file
-		this.truncateLength = 0;
-		this.initializeNetworkFromFile(modelName);
+		this.initializeNetworkFromFile(pathToModel);
 
 	}
 
@@ -119,6 +120,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 		this.patientExamples = examples;
 
+		initializeCriterionIndex();
 		initializeNetworkBinaryMultiLabelDeep();
 		// initializeNetworkDebug();
 		initializeMonitoring();
@@ -145,11 +147,48 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		this.criterionIndex.put(Criterion.MI_6MOS, 12);
 	}
 
-	public void initializeNetworkFromFile(String modelFile) {
+	public void initializeNetworkFromFile(String pathToModel) {
+
+		// settings for memory management:
+		// https://deeplearning4j.org/workspaces
+
+		Nd4j.getMemoryManager().setAutoGcWindow(10000);
+		// Nd4j.getMemoryManager().togglePeriodicGc(false);
+
+		// instantiating generator
+		fullSetIterator = new NGramIterator();
+
 		try {
-			File networkFile = new File(getClass().getResource("/models/" + modelFile).getPath());
+
+			// load a properties file
+			Properties prop = new Properties();
+			InputStream input = new FileInputStream(pathToModel + "BILSTMC3G_MBL_0.properties");
+
+			prop.load(input);
+			this.truncateLength = Integer.parseInt(prop.getProperty("BILSTMC3G_MBL.truncateLength.0"));
+
+			// read char 3-grams and index
+			FileInputStream fis = new FileInputStream(pathToModel + "characterNGram_3_0");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			ArrayList<String> characterNGram_3 = (ArrayList<String>) ois.readObject();
+
+			fullSetIterator.characterNGram_3 = characterNGram_3;
+			fullSetIterator.vectorSize = characterNGram_3.size();
+			this.vectorSize = fullSetIterator.vectorSize;
+
+			// read char 3-grams index
+			fis = new FileInputStream(pathToModel + "char3GramToIdxMap_0");
+			ois = new ObjectInputStream(fis);
+			Map<String, Integer> char3GramToIdxMap_0 = (HashMap<String, Integer>) ois.readObject();
+			fullSetIterator.char3GramToIdxMap = char3GramToIdxMap_0;
+
+			File networkFile = new File(pathToModel + "BILSTMC3G_MBL_0.zip");
 			this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
+
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -576,6 +615,40 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
 
 		return eligibility;
+	}
+
+	public void predictAndOverwrite(Patient p, String pathToWrite) {
+
+		String patientNarrative = p.getText();
+		p.withText("");
+
+		INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
+		INDArray networkOutput = net.output(features);
+
+		int timeSeriesLength = networkOutput.size(2);
+		INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(),
+				NDArrayIndex.point(timeSeriesLength - 1));
+
+		criterionIndex.forEach((c, idx) -> {
+			double probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
+			Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
+
+			p.withText(p.getText() + probabilityForCriterion + " ");
+
+			LOG.info("\n\n-------------------------------");
+			LOG.info("Patient: " + p.getID());
+			LOG.info("Probabilities at last time step for {}", c.name());
+			LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
+			LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
+		});
+		p.withText(p.getText().trim());
+
+		try {
+			new PatientDAO().toXML(p, new File(pathToWrite + p.getID()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public boolean isTrained() {

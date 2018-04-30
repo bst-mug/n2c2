@@ -22,7 +22,7 @@ public class BILSTMC3GClassifierRunner {
 
 		// check arguments
 		if (args.length < 1) {
-			System.out.println("Mssing input information for files");
+			System.out.println("Missing input information for files");
 			System.exit(0);
 		} else {
 			patientData = args[0];
@@ -36,7 +36,7 @@ public class BILSTMC3GClassifierRunner {
 		File sampleDirectory = new File(patientData);
 		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
-		BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(patients);
+		BILSTMC3GClassifier classifier = new BILSTMC3GClassifier();
 		classifier.train(patients);
 
 		LOG.info("Finished training");
