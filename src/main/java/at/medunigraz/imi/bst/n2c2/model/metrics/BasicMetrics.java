@@ -105,10 +105,10 @@ public class BasicMetrics {
     }
 
     public void divideBy(double divisor) {
-//        this.tp /= divisor;
-//        this.fp /= divisor;
-//        this.tn /= divisor;
-//        this.fn /= divisor;
+        this.tp /= divisor;
+        this.fp /= divisor;
+        this.tn /= divisor;
+        this.fn /= divisor;
 
         this.p /= divisor;
         this.r /= divisor;
