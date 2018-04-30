@@ -17,49 +17,73 @@ public class AdvancedCAD extends BaseClassifiable {
 //            "enalapril", "Lasix", "HCTZ", "Hctz", "HYDROCHLOROTHIAZIDE", "ATORVASTATIN", "ATENOLOL", "Enalapril Maleate",
 //            "inferior ischemia"};
 
-    private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
+    private static final int MIN_MARKERS = 2;
+    private static final int MIN_MEDICATIONS = 2;
+
+    private static final List<Pattern> DRUG_MARKERS = new ArrayList<>();
+    private static final List<Pattern> MI_MARKERS = new ArrayList<>();
+    private static final List<Pattern> ANGINA_MARKERS = new ArrayList<>();
+    private static final List<Pattern> ISCHEMIA_MARKERS = new ArrayList<>();
+
     static {
-        // From the annotated samples
-        POSITIVE_MARKERS.add(Pattern.compile("cad", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("captopril", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("lipitor", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("lopressor", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("nitropatch", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("chest pain", Pattern.CASE_INSENSITIVE));  // TODO test with \p{javaWhitespace}
-        //POSITIVE_MARKERS.add(Pattern.compile("EKG changes", Pattern.CASE_INSENSITIVE));   // Really?
-        POSITIVE_MARKERS.add(Pattern.compile("metoprolol", Pattern.CASE_INSENSITIVE));
-        //POSITIVE_MARKERS.add(Pattern.compile("cardia", Pattern.CASE_INSENSITIVE));    // TODO test it
-        POSITIVE_MARKERS.add(Pattern.compile("ischemia", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
-        POSITIVE_MARKERS.add(Pattern.compile("cozaar", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("mi", Pattern.CASE_INSENSITIVE));  // TODO check for fp
-        POSITIVE_MARKERS.add(Pattern.compile("anginal", Pattern.CASE_INSENSITIVE)); // TODO test angin.*
-        POSITIVE_MARKERS.add(Pattern.compile("zocor", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("plavix", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("unstable angina", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("lisinopril", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("stemi", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("diltiazem", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("zestril", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("mevacor", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("lovastatin", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("nitropaste", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("amlodipine", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("imi", Pattern.CASE_INSENSITIVE));     // TODO check for false positives
-        POSITIVE_MARKERS.add(Pattern.compile("isinorpill", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("toprol", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("enalapril", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("lasix", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("hctz", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("hydrochlorothiazide", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("atorvastatin", Pattern.CASE_INSENSITIVE));    // TODO maybe match on *statin?
-        POSITIVE_MARKERS.add(Pattern.compile("atenolol", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("enalapril maleate", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("captopril", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("lipitor", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("lopressor", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("nitropatch", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("enalapril", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("lasix", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("hctz", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("hydrochlorothiazide", Pattern.CASE_INSENSITIVE)); // TODO also spelled as "HYDROCLOROTH"
+        DRUG_MARKERS.add(Pattern.compile("atorvastatin", Pattern.CASE_INSENSITIVE));    // TODO maybe match on *statin?
+        DRUG_MARKERS.add(Pattern.compile("atenolol", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("enalapril maleate", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("diltiazem", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("zestril", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("mevacor", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("lovastatin", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("nitropaste", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("amlodipine", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("cozaar", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("zocor", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("plavix", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("metoprolol", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("lisinopril", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("isinorpill", Pattern.CASE_INSENSITIVE));
+        DRUG_MARKERS.add(Pattern.compile("toprol", Pattern.CASE_INSENSITIVE));  // Matches also metoprolol above
+        //DRUG_MARKERS.add(Pattern.compile("cardia", Pattern.CASE_INSENSITIVE));    // TODO test it
     }
+
+    static {
+        //MI_MARKERS.add(Pattern.compile("CAD"));
+        MI_MARKERS.add(Pattern.compile("STEMI"));
+        //        MI_MARKERS.add(Pattern.compile("MI"));  // TODO check for fp
+        MI_MARKERS.add(Pattern.compile("IMI"));     // TODO check for false positives
+    }
+
+    static {
+        DRUG_MARKERS.add(Pattern.compile("anginal", Pattern.CASE_INSENSITIVE)); // TODO test angin.*
+        //ANGINA_MARKERS.add(Pattern.compile("chest pain", Pattern.CASE_INSENSITIVE));  // Leads to many fp due to negations
+        ANGINA_MARKERS.add(Pattern.compile("unstable angina", Pattern.CASE_INSENSITIVE));
+        ANGINA_MARKERS.add(Pattern.compile("current angina", Pattern.CASE_INSENSITIVE));      // FIXME any angina?
+        //ANGINA_MARKERS.add(Pattern.compile("EKG changes", Pattern.CASE_INSENSITIVE));   // Really?
+    }
+
+    static {
+        ISCHEMIA_MARKERS.add(Pattern.compile("ischemia", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
+        //ISCHEMIA_MARKERS.add(Pattern.compile("dyspnea", Pattern.CASE_INSENSITIVE));    // TODO test it
+    }
+
+
 
     @Override
     public Eligibility isMet(Patient p) {
-        // TODO According to the guidelines, we should check for *two or more* of the criteria.
-        // Check if it improves overall metrics though.
-        return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
+        int countAdvanced = 0;
+        
+        countAdvanced += countPatterns(p.getText(), DRUG_MARKERS) >= MIN_MEDICATIONS ? 1 : 0;
+        countAdvanced += findAnyPattern(p.getText(), MI_MARKERS) ? 1 : 0;
+        countAdvanced += findAnyPattern(p.getText(), ANGINA_MARKERS) ? 1 : 0;
+        countAdvanced += findAnyPattern(p.getText(), ISCHEMIA_MARKERS) ? 1 : 0;
+
+        return countAdvanced >= MIN_MARKERS ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }

@@ -14,13 +14,18 @@ public abstract class BaseClassifiable implements Classifiable {
     private static final Logger LOG = LogManager.getLogger();
 
     protected final boolean findAnyPattern(String text, List<Pattern> markers) {
+        return countPatterns(text, markers) >= 1;
+    }
+
+    protected final int countPatterns(String text, List<Pattern> markers) {
+        int count = 0;
         for (Pattern positiveMarker : markers) {
             if (positiveMarker.matcher(text).find()) {
                 LOG.debug("'{}' fired.", positiveMarker);
-                return true;
+                count++;
             }
         }
-        return false;
+        return count;
     }
 
     protected final boolean findAnyPatternInRecentPast(Patient patient, List<Pattern> markers, int months) {
