@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 public class Dietsupp2mos extends BaseClassifiable {
 
+    private static final int PAST_MONTHS = 2;
+
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
 
     static {
@@ -26,7 +28,7 @@ public class Dietsupp2mos extends BaseClassifiable {
 
     @Override
     public Eligibility isMet(Patient p) {
-        return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
+        return findAnyPatternInRecentPast(p, POSITIVE_MARKERS, PAST_MONTHS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }
 

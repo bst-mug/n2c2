@@ -1,8 +1,11 @@
 package at.medunigraz.imi.bst.n2c2.rules.criteria;
 
+import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.PatientVisits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -17,6 +20,18 @@ public abstract class BaseClassifiable implements Classifiable {
                 return true;
             }
         }
+        return false;
+    }
+
+    protected final boolean findAnyPatternInRecentPast(Patient patient, List<Pattern> markers, int months) {
+        ArrayList<PatientVisits> visits = patient.getMultipleVisits(months);
+        for (PatientVisits visit : visits) {
+            String text = visit.getVisit_text();
+            if (findAnyPattern(text, markers)) {
+                return true;
+            }
+        }
+
         return false;
     }
 }
