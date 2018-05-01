@@ -12,12 +12,14 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import weka.classifiers.Classifier;
+import weka.classifiers.functions.LibSVM;
 import weka.classifiers.meta.AdaBoostM1;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.SelectedTag;
 
 public class BDTClassifier extends CriterionBasedClassifier {
 
@@ -32,11 +34,20 @@ public class BDTClassifier extends CriterionBasedClassifier {
 	public BDTClassifier(Criterion criterion) {
 		super(criterion);
 		this.model = initializeModel();
+		// this.model = initializeSVMModel();
 		reset();
 	}
 
 	public void reset() {
 		this.dataset = createEmptyDataset();
+	}
+
+	private Classifier initializeSVMModel() {
+
+		LibSVM svm = new LibSVM();
+		svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
+
+		return svm;
 	}
 
 	private Classifier initializeModel() {
@@ -157,7 +168,8 @@ public class BDTClassifier extends CriterionBasedClassifier {
 		String e = this.dataset.classAttribute().value((int) cls);
 		Eligibility eligibility = Eligibility.get(e);
 
-		LOG.debug("Criterion {} was {} for patient {}.", this.criterion.name(), eligibility, p.getID());
+		LOG.debug("Criterion {} was {} for patient {} {} {}.", this.criterion.name(), eligibility, p.getID(), cls,
+				(int) cls);
 		return eligibility;
 	}
 }
