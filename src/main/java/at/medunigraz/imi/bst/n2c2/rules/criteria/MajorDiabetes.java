@@ -23,6 +23,12 @@ public class MajorDiabetes extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("macular degeneration", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("lue weakness", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("retinal venous occlusion", Pattern.CASE_INSENSITIVE));
+        //POSITIVE_MARKERS.add(Pattern.compile("paresthesias", Pattern.CASE_INSENSITIVE)); // Led to loss in accuracy
+
+        // From the corpus itself
+        POSITIVE_MARKERS.add(Pattern.compile("mellitus major", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("radiculopathy", Pattern.CASE_INSENSITIVE));   // 191.xml
+        POSITIVE_MARKERS.add(Pattern.compile("renal insufficiency", Pattern.CASE_INSENSITIVE));   // 286.xml
     }
 
     @Override
