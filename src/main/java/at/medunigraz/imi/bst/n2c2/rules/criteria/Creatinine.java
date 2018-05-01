@@ -16,10 +16,11 @@ public class Creatinine extends BaseClassifiable {
     private static final double MAX_VALUE = 1.1;
 
     // TODO check whether creatinine > 10 is possible
+    // 268.xml: CRE       1.6
     // 107.xml: creatinine of  1.69
     // 105.xml: Cr 1.4
     // 100.xml: Creatinine             1.0
-    private static final Pattern REGEX = Pattern.compile("(?:cr|creatinine) ([0-9]\\.[0-9])", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REGEX = Pattern.compile("(?:cr|creatinine|cre) {1,7}([0-9]\\.[0-9])", Pattern.CASE_INSENSITIVE);
 
     @Override
     public Eligibility isMet(Patient p) {
