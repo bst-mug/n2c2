@@ -91,12 +91,12 @@ public class BasicEvaluator implements Evaluator {
             if (actual.getEligibility(criterion) == Eligibility.MET) {
                 return Match.TP;
             } else if (actual.getEligibility(criterion) == Eligibility.NOT_MET) {
-                LOG.debug("Got a false negative for {} in {}", criterion, actual.getID());
+                LOG.debug("Got a false negative (FN) for {} in {}", criterion, actual.getID());
                 return Match.FN;
             }
         } else if (gold.getEligibility(criterion) == Eligibility.NOT_MET) {
             if (actual.getEligibility(criterion) == Eligibility.MET) {
-                LOG.debug("Got a false positive for {} in {}", criterion, actual.getID());
+                LOG.debug("Got a false positive (FP) for {} in {}", criterion, actual.getID());
                 return Match.FP;
             } else if (actual.getEligibility(criterion) == Eligibility.NOT_MET) {
                 return Match.TN;
