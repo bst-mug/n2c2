@@ -5,7 +5,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class HbA1c extends BaseClassifiable {
@@ -26,28 +26,15 @@ public class HbA1c extends BaseClassifiable {
 
 	@Override
     public Eligibility isMet(Patient p) {
-        Matcher matcher = REGEX.matcher(p.getText());
-        while (matcher.find()) {
-            String group = matcher.group(1);
-            LOG.debug("Got a match for {}", group);
+        List<Double> values = findAllValues(p.getText(), REGEX);
 
-            double value = parseValue(group);
+        for (Double value : values) {
             if (value >= MIN_VALUE && value <= MAX_VALUE) {
                 return Eligibility.MET;
             }
         }
 
 		return Eligibility.NOT_MET;
-    }
-
-    private double parseValue(String group) {
-        double value = 0;
-        try {
-            value = Double.valueOf(group);
-        } catch (NumberFormatException e) {
-            LOG.error("Could not parse {} into a double", group);
-        }
-        return value;
     }
 	
 }

@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class BaseClassifiable implements Classifiable {
@@ -38,5 +39,28 @@ public abstract class BaseClassifiable implements Classifiable {
         }
 
         return false;
+    }
+
+    protected List<Double> findAllValues(String text, Pattern regex) {
+        List<Double> ret = new ArrayList<>();
+
+        Matcher matcher = regex.matcher(text);
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            LOG.debug("Got a match for {}", group);
+            ret.add(parseValue(group));
+        }
+
+        return ret;
+    }
+
+    private double parseValue(String group) {
+        double value = 0;
+        try {
+            value = Double.valueOf(group);
+        } catch (NumberFormatException e) {
+            LOG.error("Could not parse {} into a double", group);
+        }
+        return value;
     }
 }
