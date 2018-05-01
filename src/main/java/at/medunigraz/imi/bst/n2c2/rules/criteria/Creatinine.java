@@ -13,9 +13,12 @@ public class Creatinine extends BaseClassifiable {
     // 101.xml: 1.1 => NOT_MET
     // 225.xml: 1.2 => NOT_MET
     // 272.xml: 1.4 => NOT_MET
+    // 144.xml: 1.43 => MET
     private static final double MAX_VALUE = 1.4;
 
     // TODO check whether creatinine > 10 is possible
+    // 313.xml: mcalb/cr 200
+    // 250.xml: creatinine 2
     // 268.xml: CRE       1.6
     // 107.xml: creatinine of  1.69
     // 105.xml: Cr 1.4
