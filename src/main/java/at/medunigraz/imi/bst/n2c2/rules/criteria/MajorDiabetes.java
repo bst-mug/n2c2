@@ -29,6 +29,9 @@ public class MajorDiabetes extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("mellitus major", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("radiculopathy", Pattern.CASE_INSENSITIVE));   // 191.xml
         POSITIVE_MARKERS.add(Pattern.compile("renal insufficiency", Pattern.CASE_INSENSITIVE));   // 286.xml
+        POSITIVE_MARKERS.add(Pattern.compile("renal failure", Pattern.CASE_INSENSITIVE));
+        //POSITIVE_MARKERS.add(Pattern.compile("end-stage renal", Pattern.CASE_INSENSITIVE)); // No changes
+        // POSITIVE_MARKERS.add(Pattern.compile("ESRD"));   // Increases tp, but also fp
     }
 
     @Override
