@@ -16,7 +16,7 @@ public class Dietsupp2mos extends BaseClassifiable {
     static {
         // Vitamin D is excluded
         POSITIVE_MARKERS.add(Pattern.compile("folate", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("calcium carbonate", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("calcium", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("supplement", Pattern.CASE_INSENSITIVE));
 
         //POSITIVE_MARKERS.add(Pattern.compile("multivitamin", Pattern.CASE_INSENSITIVE));
