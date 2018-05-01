@@ -65,7 +65,6 @@ public class BILSTMC3GClassifierTest {
 			BILSTMC3GClassifier classifier = new BILSTMC3GClassifier(modelPath);
 			patients.forEach(p -> classifier.predictAndOverwrite(p, pathTrainingBDT));
 
-			classifier.predict(patients.get(0), Criterion.ABDOMINAL);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
