@@ -60,6 +60,7 @@ public class AdvancedCAD extends BaseClassifiable {
 
         // 356.xml: PRELIMINARY
         MI_MARKERS.add(Pattern.compile("IMI"));     // TODO check for false positives
+        MI_MARKERS.add(Pattern.compile("myocardial infarction"));
     }
 
     static {
@@ -67,6 +68,7 @@ public class AdvancedCAD extends BaseClassifiable {
         //ANGINA_MARKERS.add(Pattern.compile("chest pain", Pattern.CASE_INSENSITIVE));  // Leads to many fp due to negations
         ANGINA_MARKERS.add(Pattern.compile("unstable angina", Pattern.CASE_INSENSITIVE));
         ANGINA_MARKERS.add(Pattern.compile("current angina", Pattern.CASE_INSENSITIVE));      // FIXME any angina?
+        ANGINA_MARKERS.add(Pattern.compile("angina pectoris", Pattern.CASE_INSENSITIVE));   // 242.xml
         //ANGINA_MARKERS.add(Pattern.compile("EKG changes", Pattern.CASE_INSENSITIVE));   // Really?
     }
 
@@ -74,16 +76,19 @@ public class AdvancedCAD extends BaseClassifiable {
         // 127.xml: no evidence of ischemia
         // 169.xml: no definite evidence of ischemia // 21 chars in the middle
         // 181.xml: no evidence of ischemia
+        // 230.xml: RLE limb ischemia
         // 304.xml: No EKG changes consistent with ischemia // 28 chars in the middle
-        // 313.xml: ischemia colitis (?)
+        // 313.xml: ischemia colitis
         // 315.xml: possible lateral ischemia
         // 393.xml: bowel ischemia
         // 357.xml: Without ischemia
         // 377.xml: no evidence for myocardial ischemia
         // 387.xml: negative for ischemia
         // 391.xml: no ischemia
-        // "?<!" is a negative lookbehind (https://www.regular-expressions.info/lookaround.html)
-        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}|bowel ))ischemia", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
+        // "?<!" is a negative lookbehind
+        // "?!" is a negative lookahead
+        // (https://www.regular-expressions.info/lookaround.html)
+        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}|bowel |limb ))ischemia(?! colitis)", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
         //ISCHEMIA_MARKERS.add(Pattern.compile("dyspnea", Pattern.CASE_INSENSITIVE));    // TODO test it
     }
 
