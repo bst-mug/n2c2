@@ -50,7 +50,7 @@ public class BDTClassifier extends CriterionBasedClassifier {
 		String[] optionsAB = new String[2];
 		optionsAB[0] = "-I";
 		optionsAB[1] = "1000";
-		
+
 		adaboost = new AdaBoostM1();
 		forest = new RandomForest();
 
@@ -157,8 +157,7 @@ public class BDTClassifier extends CriterionBasedClassifier {
 		String e = this.dataset.classAttribute().value((int) cls);
 		Eligibility eligibility = Eligibility.get(e);
 
-		LOG.debug("Predicted {} for patient {}.", eligibility, p.getID());
-
+		LOG.debug("Criterion {} was {} for patient {}.", this.criterion.name(), eligibility, p.getID());
 		return eligibility;
 	}
 }
