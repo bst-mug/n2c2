@@ -3,7 +3,9 @@ package at.medunigraz.imi.bst.n2c2;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +47,10 @@ public class BILSTMC3GBDTFullRun {
 		List<Patient> patientsTraining = DatasetUtil.loadFromFolder(patienFolder);
 		List<Patient> patientsTestBILSTMC3G = DatasetUtil.stripTags(patientsTraining);
 
+		// save back textual information
+		Map<String, String> narrativeMap = new HashMap<String, String>();
+		patientsTestBILSTMC3G.forEach(p -> narrativeMap.put(p.getID(), p.getText()));
+
 		// set port for monitoring neural networks
 		Properties props = System.getProperties();
 		props.setProperty("org.deeplearning4j.ui.port", "9001");
@@ -68,13 +74,9 @@ public class BILSTMC3GBDTFullRun {
 		}
 
 		// write back original text
-		for (Patient testPatient : patientsTestBILSTMC3G) {
-			String id = testPatient.getID();
-			for (Patient predictedPatient : predicted) {
-				if (predictedPatient.getID().equals(id)) {
-					predictedPatient.withText(testPatient.getText());
-				}
-			}
+		for (Patient predictedPatient : predicted) {
+			String id = predictedPatient.getID();
+			predictedPatient.withText(narrativeMap.get(id));
 		}
 
 		// write out
