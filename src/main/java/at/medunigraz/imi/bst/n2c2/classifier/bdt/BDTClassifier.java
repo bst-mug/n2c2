@@ -40,14 +40,30 @@ public class BDTClassifier extends CriterionBasedClassifier {
 	}
 
 	private Classifier initializeModel() {
-		Classifier forest;
+		RandomForest forest;
 		AdaBoostM1 adaboost;
 
-		// defaults from Weka
+		String[] optionsRF = new String[2];
+		optionsRF[0] = "-I";
+		optionsRF[1] = "500";
+
+		String[] optionsAB = new String[2];
+		optionsAB[0] = "-I";
+		optionsAB[1] = "1000";
+		
 		adaboost = new AdaBoostM1();
 		forest = new RandomForest();
 
-		adaboost.setClassifier(forest);
+		// set options
+		try {
+			forest.setOptions(optionsRF);
+
+			adaboost.setClassifier(forest);
+			adaboost.setOptions(optionsAB);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return adaboost;
 	}
 
@@ -58,6 +74,7 @@ public class BDTClassifier extends CriterionBasedClassifier {
 
 		List<String> classes = new ArrayList<String>();
 		Arrays.stream(Eligibility.classifiableValues()).forEach(e -> classes.add(e.name()));
+		attributes.add(new Attribute("ELIGIBILITY", classes));
 
 		return attributes;
 	}
@@ -114,7 +131,10 @@ public class BDTClassifier extends CriterionBasedClassifier {
 			instance.setValue(idx++, Double.parseDouble(probabilityValue));
 		}
 
-		instance.setValue(idx, p.getEligibility(this.criterion).name());
+		// depending on training, test
+		if (p.hasEligibility(criterion)) {
+			instance.setValue(idx, p.getEligibility(this.criterion).name());
+		}
 
 		return instance;
 	}
