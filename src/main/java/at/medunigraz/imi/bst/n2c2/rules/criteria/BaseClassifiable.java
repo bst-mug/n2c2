@@ -47,7 +47,7 @@ public abstract class BaseClassifiable implements Classifiable {
         Matcher matcher = regex.matcher(text);
         while (matcher.find()) {
             String group = matcher.group(1);
-            LOG.debug("Got a match for {}", group);
+            LOG.debug("Got a match for '{}': {}", regex, group);
             ret.add(parseValue(group));
         }
 
