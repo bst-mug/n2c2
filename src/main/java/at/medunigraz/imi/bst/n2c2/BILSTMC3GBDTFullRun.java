@@ -67,6 +67,16 @@ public class BILSTMC3GBDTFullRun {
 			predicted = classifier.predict(patientsTestBDT);
 		}
 
+		// write back original text
+		for (Patient testPatient : patientsTestBILSTMC3G) {
+			String id = testPatient.getID();
+			for (Patient predictedPatient : predicted) {
+				if (predictedPatient.getID().equals(id)) {
+					predictedPatient.withText(testPatient.getText());
+				}
+			}
+		}
+
 		// write out
 		for (Patient p : predicted) {
 			new PatientDAO().toXML(p, new File(pathPredicted + p.getID()));
