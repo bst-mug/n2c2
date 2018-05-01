@@ -57,6 +57,8 @@ public class AdvancedCAD extends BaseClassifiable {
         //MI_MARKERS.add(Pattern.compile("CAD"));
         MI_MARKERS.add(Pattern.compile("STEMI"));
         //        MI_MARKERS.add(Pattern.compile("MI"));  // TODO check for fp
+
+        // 356.xml: PRELIMINARY
         MI_MARKERS.add(Pattern.compile("IMI"));     // TODO check for false positives
     }
 
@@ -69,7 +71,19 @@ public class AdvancedCAD extends BaseClassifiable {
     }
 
     static {
-        ISCHEMIA_MARKERS.add(Pattern.compile("ischemia", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
+        // 127.xml: no evidence of ischemia
+        // 169.xml: no definite evidence of ischemia // 21 chars in the middle
+        // 181.xml: no evidence of ischemia
+        // 304.xml: No EKG changes consistent with ischemia // 28 chars in the middle
+        // 313.xml: ischemia colitis (?)
+        // 315.xml: possible lateral ischemia
+        // 393.xml: bowel ischemia
+        // 357.xml: Without ischemia
+        // 377.xml: no evidence for myocardial ischemia
+        // 387.xml: negative for ischemia
+        // 391.xml: no ischemia
+        // "?<!" is a negative lookbehind (https://www.regular-expressions.info/lookaround.html)
+        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}|bowel ))ischemia", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
         //ISCHEMIA_MARKERS.add(Pattern.compile("dyspnea", Pattern.CASE_INSENSITIVE));    // TODO test it
     }
 
