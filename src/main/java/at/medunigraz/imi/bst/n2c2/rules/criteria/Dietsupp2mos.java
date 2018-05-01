@@ -24,6 +24,9 @@ public class Dietsupp2mos extends BaseClassifiable {
 
         POSITIVE_MARKERS.add(Pattern.compile("gluconate", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("iron", Pattern.CASE_INSENSITIVE));
+
+        POSITIVE_MARKERS.add(Pattern.compile("nephrocaps", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("potassium chloride", Pattern.CASE_INSENSITIVE));
     }
 
     @Override
