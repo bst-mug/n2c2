@@ -1,9 +1,5 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Enum types should be the same as XML with hyphen changed to underscore.
  */
@@ -43,10 +39,22 @@ public enum Criterion {
         return name().replace('_', '-');
     }
 
+    /**
+     * The same as values(), but without OVERALL_MICRO and OVERALL_MACRO
+     *
+     * @return
+     */
     public static Criterion[] classifiableValues() {
-        Set<Criterion> ret = new HashSet<>(Arrays.asList(values()));
-        ret.remove(Criterion.OVERALL_MICRO);
-        ret.remove(Criterion.OVERALL_MACRO);
-        return ret.toArray(new Criterion[]{});
+        Criterion[] values = values();
+        Criterion[] ret = new Criterion[values.length - 2];
+
+        int i = 0;
+        for (Criterion value : values) {
+            if (value != Criterion.OVERALL_MICRO && value != Criterion.OVERALL_MACRO) {
+                ret[i++] = value;
+            }
+        }
+
+        return ret;
     }
 }
