@@ -39,8 +39,6 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 	public RuleBasedClassifier(Criterion c) {
 		super(c);
 	}
-
-	//TODO - 13 different classes to implement 
 	
 	
 	private String[] is_snippet_found(Patient p, String[] valid_snippets){
@@ -69,7 +67,7 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
 		
 	} // End of is_snippet_found() 
 	
-	// TODO -- moves to isMet
+	
 	
 	public Boolean is_makes_decision_met(Patient patient){
 		
