@@ -23,7 +23,7 @@ public class AdvancedCAD extends BaseClassifiable {
     private static final List<Pattern> DRUG_MARKERS = new ArrayList<>();
     private static final List<Pattern> MI_MARKERS = new ArrayList<>();
     private static final List<Pattern> ANGINA_MARKERS = new ArrayList<>();
-    private static final List<Pattern> ISCHEMIA_MARKERS = new ArrayList<>();
+    static final List<Pattern> ISCHEMIA_MARKERS = new ArrayList<>();
 
     static {
         DRUG_MARKERS.add(Pattern.compile("captopril", Pattern.CASE_INSENSITIVE));
@@ -73,22 +73,10 @@ public class AdvancedCAD extends BaseClassifiable {
     }
 
     static {
-        // 127.xml: no evidence of ischemia
-        // 169.xml: no definite evidence of ischemia // 21 chars in the middle
-        // 181.xml: no evidence of ischemia
-        // 230.xml: RLE limb ischemia
-        // 304.xml: No EKG changes consistent with ischemia // 28 chars in the middle
-        // 313.xml: ischemia colitis
-        // 315.xml: possible lateral ischemia
-        // 393.xml: bowel ischemia
-        // 357.xml: Without ischemia
-        // 377.xml: no evidence for myocardial ischemia
-        // 387.xml: negative for ischemia
-        // 391.xml: no ischemia
         // "?<!" is a negative lookbehind
         // "?!" is a negative lookahead
         // (https://www.regular-expressions.info/lookaround.html)
-        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}|bowel |limb ))ischemia(?! colitis)", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
+        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}|bowel |limb ))ischemia(?!( colitis))", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
         //ISCHEMIA_MARKERS.add(Pattern.compile("dyspnea", Pattern.CASE_INSENSITIVE));    // TODO test it
     }
 
