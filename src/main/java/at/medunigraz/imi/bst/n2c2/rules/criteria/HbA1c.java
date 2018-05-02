@@ -16,13 +16,9 @@ public class HbA1c extends BaseClassifiable {
     private static final double MAX_VALUE = 9.5;
 
     //	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"};
-
-    // 117.xml: Hemoglobin A1C 8.5
-    // 147.xml: hemoglobin A1c was 7.4 %
-    // 367.xml: HBA1C 7.2
-    // sample.xml: Hgb A1c 7.30
+    
     // We match only on [0-9] because 10.x would be out anyway...
-    private static final Pattern REGEX = Pattern.compile("A1C (?:[a-z ]{0,20})?(?:was |of |is |at )?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
+    static final Pattern REGEX = Pattern.compile("A1C (?:[a-z ]{0,20})?(?:was |of |is |at )?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
 
 	@Override
     public Eligibility isMet(Patient p) {
