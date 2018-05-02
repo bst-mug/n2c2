@@ -183,6 +183,8 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			fullSetIterator.char3GramToIdxMap = char3GramToIdxMap_0;
 
 			File networkFile = new File(pathToModel + "BILSTMC3G_MBL_0.zip");
+
+			Nd4j.getRandom().setSeed(12345);
 			this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
 
 		} catch (IOException e) {
