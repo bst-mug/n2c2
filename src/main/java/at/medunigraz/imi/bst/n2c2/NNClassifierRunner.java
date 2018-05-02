@@ -19,6 +19,13 @@ import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
 
+/**
+ * Use for NN (BILSTMC3G) single fold validation.
+ * Model is saved.
+ * 
+ * @author Markus
+ *
+ */
 public class NNClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
