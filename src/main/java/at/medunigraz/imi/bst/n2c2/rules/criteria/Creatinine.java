@@ -23,7 +23,7 @@ public class Creatinine extends BaseClassifiable {
     // 107.xml: creatinine of  1.69
     // 105.xml: Cr 1.4
     // 100.xml: Creatinine             1.0
-    private static final Pattern REGEX = Pattern.compile("(?:cr|creatinine|cre)(?: \\(Stat Lab\\))? +(?:of )?([0-9]\\.[0-9])", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REGEX = Pattern.compile("(?:cr|creatinine|cre)(?: \\(Stat Lab\\))? +(?:of |is |stable at )?([0-9]\\.[0-9])", Pattern.CASE_INSENSITIVE);
 
     @Override
     public Eligibility isMet(Patient p) {
