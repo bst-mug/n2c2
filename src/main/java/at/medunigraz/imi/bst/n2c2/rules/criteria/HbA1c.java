@@ -22,7 +22,7 @@ public class HbA1c extends BaseClassifiable {
     // 367.xml: HBA1C 7.2
     // sample.xml: Hgb A1c 7.30
     // We match only on [0-9] because 10.x would be out anyway...
-    private static final Pattern REGEX = Pattern.compile("A1C (?:was )?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REGEX = Pattern.compile("A1C (?:[a-z ]{0,20})?(?:was |of |is |at )?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
 
 	@Override
     public Eligibility isMet(Patient p) {
