@@ -122,6 +122,15 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		initializeCriterionIndex();
 	}
 
+	public LSTMClassifier(String pathToWordVectors) {
+
+		this.wordVectorsPath = pathToWordVectors;
+		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
+
+		initializeTokenizer();
+		initializeCriterionIndex();
+	}
+
 	public LSTMClassifier(String pathToWordVectors, String modelName) {
 
 		this.wordVectorsPath = pathToWordVectors;

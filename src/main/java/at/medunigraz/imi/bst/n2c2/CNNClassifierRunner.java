@@ -11,6 +11,14 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.CNNClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
+/**
+ * CNN training trials. Multi label classification not supported for the moment.
+ * Waiting for dl4j beta release.
+ * https://github.com/deeplearning4j/deeplearning4j/issues/5001#issuecomment-385029609
+ * 
+ * @author Markus
+ *
+ */
 public class CNNClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();

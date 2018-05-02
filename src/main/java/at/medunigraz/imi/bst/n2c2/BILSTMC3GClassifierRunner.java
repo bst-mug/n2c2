@@ -11,6 +11,12 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.BILSTMC3GClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
+/**
+ * Train BILSTMC3G data until 0.95 training accuray.
+ * 
+ * @author Markus
+ *
+ */
 public class BILSTMC3GClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
@@ -18,7 +24,6 @@ public class BILSTMC3GClassifierRunner {
 	public static void main(String[] args) {
 
 		String patientData = "";
-		String wordVectorData = "";
 
 		// check arguments
 		if (args.length < 1) {

@@ -20,6 +20,12 @@ import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
 import at.medunigraz.imi.bst.n2c2.validation.NNCrossValidator;
 
+/**
+ * Use for NN (BILSTMC3G) cross validation. Model is saved.
+ * 
+ * @author Markus
+ *
+ */
 public class NNBestClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
@@ -32,7 +38,7 @@ public class NNBestClassifierRunner {
 		// set port for monitoring neural networks
 		Properties props = System.getProperties();
 		props.setProperty("org.deeplearning4j.ui.port", "9001");
-		
+
 		List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
 		ClassifierFactory factory = new NNClassifierFactory();
 		OfficialEvaluator evaluator = new OfficialEvaluator();
