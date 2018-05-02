@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import at.medunigraz.imi.bst.n2c2.config.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,13 +27,13 @@ public class BILSTMC3GFullRun {
 	public static void main(String[] args) throws IOException {
 
 		// just needed for simulating test data for the moment
-		final File patienFolder = new File("Z:/n2c2/data/samplesTraining");
+		final File patienFolder = new File(Config.NN_SAMPLES_TRAINING);
 
 		// path to persisted BILSTMC3G model
-		final String modelPath = "Z:/n2c2/data/models/";
+		final String modelPath = Config.NN_MODELS;
 
 		// path for saving prediction on test patients
-		final String pathPredicted = "Z:/n2c2/data/models/samplesPredictedBDT/";
+		final String pathPredicted = Config.NN_SAMPLES_PREDICTED_BDT;
 
 		// simulate test data, put in here real test data
 		List<Patient> patientsTraining = DatasetUtil.loadFromFolder(patienFolder);
