@@ -20,6 +20,13 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.BILSTMC3GClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
+/**
+ * Full run of BILSTMC3G with boosted (AdaBoostM1) decision tree (RandomForest)
+ * at the end.
+ * 
+ * @author Markus
+ *
+ */
 public class BILSTMC3GBDTFullRun {
 
 	private static final Logger LOG = LogManager.getLogger();

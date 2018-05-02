@@ -11,6 +11,12 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.LSTMClassifier;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
+/**
+ * Train LSTM with W2C data until 0.95 training accuray.
+ * 
+ * @author Markus
+ *
+ */
 public class LSTMClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
@@ -37,7 +43,7 @@ public class LSTMClassifierRunner {
 		File sampleDirectory = new File(patientData);
 		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
-		LSTMClassifier classifier = new LSTMClassifier(patients, wordVectorData);
+		LSTMClassifier classifier = new LSTMClassifier(wordVectorData);
 		classifier.train(patients);
 
 		LOG.info("Finished training");

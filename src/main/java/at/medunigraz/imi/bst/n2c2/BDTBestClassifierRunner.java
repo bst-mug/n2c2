@@ -19,6 +19,14 @@ import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
 
+/**
+ * Crossvalidation of BILSTMC3G with boosted (AdaBoostM1) decision tree
+ * (RandomForest). Crossvalidation of boosted (AdaBoostM1) decision tree
+ * (RandomForest) is made on full BILSTMC3G output.
+ * 
+ * @author Markus
+ *
+ */
 public class BDTBestClassifierRunner {
 
 	private static final Logger LOG = LogManager.getLogger();

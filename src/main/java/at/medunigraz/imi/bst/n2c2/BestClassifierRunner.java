@@ -18,6 +18,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * SVM cross validation.
+ * 
+ * @author Markus
+ *
+ */
 public class BestClassifierRunner {
 
     private static final Logger LOG = LogManager.getLogger();
