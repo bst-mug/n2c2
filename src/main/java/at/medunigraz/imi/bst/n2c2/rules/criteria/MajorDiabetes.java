@@ -14,6 +14,7 @@ public class MajorDiabetes extends BaseClassifiable {
         // From the guidelines
         DIABETES_MARKERS.add(Pattern.compile("diabetes", Pattern.CASE_INSENSITIVE));
         DIABETES_MARKERS.add(Pattern.compile("insulin", Pattern.CASE_INSENSITIVE));
+        DIABETES_MARKERS.add(Pattern.compile("glucose intolerance", Pattern.CASE_INSENSITIVE));
     }
 
     private static final List<Pattern> COMPLICATION_MARKERS = new ArrayList<>();
