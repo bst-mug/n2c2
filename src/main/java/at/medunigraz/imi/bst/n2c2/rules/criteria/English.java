@@ -13,7 +13,7 @@ public class English extends BaseClassifiable {
 
     static {
         NEGATIVE_MARKERS.add(Pattern.compile("spanish", Pattern.CASE_INSENSITIVE)); // 117.xml: Spanish-speaking
-        //NEGATIVE_MARKERS.add(Pattern.compile("interpreter", Pattern.CASE_INSENSITIVE)); // 242.xml: conducted with interpreter present
+        NEGATIVE_MARKERS.add(Pattern.compile("with interpreter", Pattern.CASE_INSENSITIVE)); // 242.xml: conducted with interpreter present
         NEGATIVE_MARKERS.add(Pattern.compile("translated", Pattern.CASE_INSENSITIVE));// 371.xml: South Korea who has been in Canada for one year, translated by
         NEGATIVE_MARKERS.add(Pattern.compile("-speaking", Pattern.CASE_INSENSITIVE));   // 329.xml: Indonesian-speaking
     }
