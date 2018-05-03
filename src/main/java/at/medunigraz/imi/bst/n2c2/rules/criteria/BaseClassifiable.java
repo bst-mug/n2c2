@@ -15,15 +15,18 @@ public abstract class BaseClassifiable implements Classifiable {
     private static final Logger LOG = LogManager.getLogger();
 
     protected final boolean findAnyPattern(String text, List<Pattern> markers) {
-        return countPatterns(text, markers) >= 1;
+        final int MAX = 1;
+        return countPatterns(text, markers, MAX) >= MAX;
     }
 
-    protected final int countPatterns(String text, List<Pattern> markers) {
+    protected final int countPatterns(String text, List<Pattern> markers, int upTo) {
         int count = 0;
         for (Pattern positiveMarker : markers) {
             if (positiveMarker.matcher(text).find()) {
                 LOG.debug("'{}' fired.", positiveMarker);
-                count++;
+                if (count++ >= upTo) {
+                    return count;
+                }
             }
         }
         return count;

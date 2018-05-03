@@ -11,7 +11,6 @@ public class AspForMi extends BaseClassifiable {
 
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
     static {
-        POSITIVE_MARKERS.add(Pattern.compile("heparin", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("ASA"));
         POSITIVE_MARKERS.add(Pattern.compile("aspirin", Pattern.CASE_INSENSITIVE));
     }

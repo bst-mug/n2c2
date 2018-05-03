@@ -19,6 +19,12 @@ public class Config {
     public static final double SVM_COST_ABDOMINAL = Double.valueOf(getString("SVM_COST_ABDOMINAL"));
     public static final double SVM_COST_DIETSUPP_2MOS = Double.valueOf(getString("SVM_COST_DIETSUPP_2MOS"));
 
+    public static final String NN_SAMPLES_TRAINING = getString("NN_SAMPLES_TRAINING");
+    public static final String NN_MODELS = getString("NN_MODELS");
+    public static final String NN_SAMPLES_TRAINING_BDT = getString("NN_SAMPLES_TRAINING_BDT");
+    public static final String NN_SAMPLES_TEST_BDT = getString("NN_SAMPLES_TEST_BDT");
+    public static final String NN_SAMPLES_PREDICTED_BDT = getString("NN_SAMPLES_PREDICTED_BDT");
+
     public static String getString(String key) {
         return PROPERTIES.getString(key);
     }
