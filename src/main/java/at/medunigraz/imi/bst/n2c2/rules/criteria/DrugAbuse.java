@@ -15,9 +15,11 @@ public class DrugAbuse extends BaseClassifiable {
     	
     	POSITIVE_MARKERS.add(Pattern.compile("cocaine", Pattern.CASE_INSENSITIVE)); // 356.xml: he has used cocaine and crack
     	
-    	POSITIVE_MARKERS.add(Pattern.compile("marijuana", Pattern.CASE_INSENSITIVE)); // 382.xml: +occasional marijuana.
+//    	POSITIVE_MARKERS.add(Pattern.compile("marijuana", Pattern.CASE_INSENSITIVE)); // 382.xml: +occasional marijuana.
     
     	POSITIVE_MARKERS.add(Pattern.compile("IV drug user", Pattern.CASE_INSENSITIVE)); // 382.xml: H/O drug abuse : IV drug user stopped heroin
+    	
+//    	POSITIVE_MARKERS.add(Pattern.compile("substance abuse", Pattern.CASE_INSENSITIVE)); // 159.xml: history of noncompliance and substance abuse.
     	
     	
     }
