@@ -18,11 +18,11 @@ public class AlcoholAbuse extends BaseClassifiable {
     	
     	// TODO -- grouping of drinks or beers per day 
     	
-    	POSITIVE_MARKERS.add(Pattern.compile("(beer|beers|drinks)\\p{javaWhitespace}{1,20}per\\p{javaWhitespace}{1,20}day", Pattern.CASE_INSENSITIVE)); // 159.xml: she drinks about one beer per day 
+    	POSITIVE_MARKERS.add(Pattern.compile("(beer|beers|drinks) per day", Pattern.CASE_INSENSITIVE)); // 159.xml: she drinks about one beer per day
     	
     	POSITIVE_MARKERS.add(Pattern.compile("beers/night", Pattern.CASE_INSENSITIVE)); // 325.xml: 5-6 beers/night on wkends
     	
-    	POSITIVE_MARKERS.add(Pattern.compile("binge\\p{javaWhitespace}{1,20}drinker", Pattern.CASE_INSENSITIVE)); // 187.xml: depressed he becomes a binge drinker
+    	POSITIVE_MARKERS.add(Pattern.compile("binge drinker", Pattern.CASE_INSENSITIVE)); // 187.xml: depressed he becomes a binge drinker
     	
     	POSITIVE_MARKERS.add(Pattern.compile("amount of alcohol", Pattern.CASE_INSENSITIVE)); // 258.xml: wife is concerned about the amount of alcohol he was drinking
     	
@@ -39,6 +39,6 @@ public class AlcoholAbuse extends BaseClassifiable {
     @Override
     public Eligibility isMet(Patient p) {
 //        return Eligibility.NOT_MET;
-    	return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
+    	return findAnyPattern(p.getCleanedText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }

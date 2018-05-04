@@ -29,6 +29,6 @@ public class DrugAbuse extends BaseClassifiable {
     @Override
     public Eligibility isMet(Patient p) {
 //        return Eligibility.NOT_MET;
-    	return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
+    	return findAnyPattern(p.getCleanedText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }

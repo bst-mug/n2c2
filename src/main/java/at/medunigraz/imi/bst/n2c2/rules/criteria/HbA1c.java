@@ -22,7 +22,7 @@ public class HbA1c extends BaseClassifiable {
 
 	@Override
     public Eligibility isMet(Patient p) {
-        List<Double> values = findAllValues(p.getText(), REGEX);
+        List<Double> values = findAllValues(p.getCleanedText(), REGEX);
 
         for (Double value : values) {
             if (value >= MIN_VALUE && value <= MAX_VALUE) {

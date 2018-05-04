@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -40,6 +41,8 @@ public class DataUtilities {
 
 	// defining buffer size
 	private static final int BUFFER_SIZE = 4096;
+
+	private static final Pattern CLEANER_REGEX = Pattern.compile("\\p{javaWhitespace}+");
 
 	// stop words
 	private CharArraySet stopWords = CharArraySet.EMPTY_SET;
@@ -284,5 +287,9 @@ public class DataUtilities {
 		// sentences.forEach(sentence -> System.out.println(sentence));
 
 		return sentences;
+	}
+
+	public static String cleanText(String text) {
+		return CLEANER_REGEX.matcher(text).replaceAll(" ");
 	}
 }

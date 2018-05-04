@@ -1,5 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
+import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
+
 import java.util.Date;
 
 public class PatientVisits {
@@ -30,6 +32,10 @@ public class PatientVisits {
 
 	public String getVisit_text() {
 		return visit_text;
+	}
+
+	public String getCleanedVisitText() {
+		return DataUtilities.cleanText(visit_text);
 	}
 
 	public void setVisit_text(String visit_text) {

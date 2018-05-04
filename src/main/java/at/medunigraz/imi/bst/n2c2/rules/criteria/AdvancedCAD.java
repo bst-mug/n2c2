@@ -89,10 +89,10 @@ public class AdvancedCAD extends BaseClassifiable {
     public Eligibility isMet(Patient p) {
         int countAdvanced = 0;
 
-        countAdvanced += countPatterns(p.getText(), DRUG_MARKERS, MIN_MEDICATIONS) >= MIN_MEDICATIONS ? 1 : 0;
-        countAdvanced += findAnyPattern(p.getText(), MI_MARKERS) ? 1 : 0;
-        countAdvanced += findAnyPattern(p.getText(), ANGINA_MARKERS) ? 1 : 0;
-        countAdvanced += findAnyPattern(p.getText(), ISCHEMIA_MARKERS) ? 1 : 0;
+        countAdvanced += countPatterns(p.getCleanedText(), DRUG_MARKERS, MIN_MEDICATIONS) >= MIN_MEDICATIONS ? 1 : 0;
+        countAdvanced += findAnyPattern(p.getCleanedText(), MI_MARKERS) ? 1 : 0;
+        countAdvanced += findAnyPattern(p.getCleanedText(), ANGINA_MARKERS) ? 1 : 0;
+        countAdvanced += findAnyPattern(p.getCleanedText(), ISCHEMIA_MARKERS) ? 1 : 0;
 
         return countAdvanced >= MIN_MARKERS ? Eligibility.MET : Eligibility.NOT_MET;
     }

@@ -1,6 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
 
+import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -35,6 +37,10 @@ public class Patient {
     public String getText() {
         return text;
     }
+
+    public String getCleanedText() {
+    	return DataUtilities.cleanText(text);
+	}
 
     public Eligibility getEligibility(Criterion criterion) {
         return criteria.get(criterion);

@@ -20,6 +20,6 @@ public class English extends BaseClassifiable {
 
     @Override
     public Eligibility isMet(Patient p) {
-        return findAnyPattern(p.getText(), NEGATIVE_MARKERS) ? Eligibility.NOT_MET : Eligibility.MET;
+        return findAnyPattern(p.getCleanedText(), NEGATIVE_MARKERS) ? Eligibility.NOT_MET : Eligibility.MET;
     }
 }
