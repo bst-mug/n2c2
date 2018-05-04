@@ -29,6 +29,14 @@ public class Abdominal extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("colostomy", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("cholecystectomy", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("colectomy", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("TAH"));   // 18 times
+        POSITIVE_MARKERS.add(Pattern.compile("gastric bypass", Pattern.CASE_INSENSITIVE));  // 13 times
+        POSITIVE_MARKERS.add(Pattern.compile("renal transplant", Pattern.CASE_INSENSITIVE));    // 43 times
+        POSITIVE_MARKERS.add(Pattern.compile("lithotripsy", Pattern.CASE_INSENSITIVE)); // 7 times, all MET
+        POSITIVE_MARKERS.add(Pattern.compile("g[ \\-]tube", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("abdominal scar", Pattern.CASE_INSENSITIVE));
+
+        //POSITIVE_MARKERS.add(Pattern.compile("PEG[^A-Z]]"));
 //        POSITIVE_MARKERS.add(Pattern.compile("tracheostomy", Pattern.CASE_INSENSITIVE));
 
         POSITIVE_MARKERS.add(Pattern.compile("nephrectomy", Pattern.CASE_INSENSITIVE));
