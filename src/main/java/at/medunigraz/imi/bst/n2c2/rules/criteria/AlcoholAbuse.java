@@ -11,8 +11,6 @@ public class AlcoholAbuse extends BaseClassifiable {
 
 	private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
 
-//	private static final List<Pattern> NEGATIVE_MARKERS = new ArrayList<>();
-	
 	
     static {
     	
@@ -20,7 +18,7 @@ public class AlcoholAbuse extends BaseClassifiable {
     	
     	// TODO -- grouping of drinks or beers per day 
     	
-    	POSITIVE_MARKERS.add(Pattern.compile("(beer|beers|drinks) per day", Pattern.CASE_INSENSITIVE)); // 159.xml: she drinks about one beer per day 
+    	POSITIVE_MARKERS.add(Pattern.compile("(beer|beers|drinks)\\p{javaWhitespace}{1,20}per\\p{javaWhitespace}{1,20}day", Pattern.CASE_INSENSITIVE)); // 159.xml: she drinks about one beer per day 
     	
     	POSITIVE_MARKERS.add(Pattern.compile("beers/night", Pattern.CASE_INSENSITIVE)); // 325.xml: 5-6 beers/night on wkends
     	
@@ -30,7 +28,8 @@ public class AlcoholAbuse extends BaseClassifiable {
     	
 //    	POSITIVE_MARKERS.add(Pattern.compile("heavy drinking", Pattern.CASE_INSENSITIVE)); // 344.xml:  He does admit to heavy drinking
     	
-//    	NEGATIVE_MARKERS.add(Pattern.compile("stopped drinking", Pattern.CASE_INSENSITIVE)); // 105.xml: heavy drinking for 40 years, cut down in 2146 and has stopped drinking
+    	POSITIVE_MARKERS.add(Pattern.compile("Whiskey", Pattern.CASE_INSENSITIVE)); // 212.xml: Alcohol use status: abuse  Heavy drinker. Whiskey.
+    	
     	
     }
 	
