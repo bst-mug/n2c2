@@ -21,8 +21,10 @@ public class AlcoholAbuse extends BaseClassifiable {
     	POSITIVE_MARKERS.add(Pattern.compile("(beer|beers|drinks) per day", Pattern.CASE_INSENSITIVE)); // 159.xml: she drinks about one beer per day
     	
     	POSITIVE_MARKERS.add(Pattern.compile("beers/night", Pattern.CASE_INSENSITIVE)); // 325.xml: 5-6 beers/night on wkends
-    	
-    	POSITIVE_MARKERS.add(Pattern.compile("binge drinker", Pattern.CASE_INSENSITIVE)); // 187.xml: depressed he becomes a binge drinker
+
+		// 159.xml: intermittently binge drinking
+		// 187.xml: depressed he becomes a binge drinker
+    	POSITIVE_MARKERS.add(Pattern.compile("binge drink", Pattern.CASE_INSENSITIVE));
     	
     	POSITIVE_MARKERS.add(Pattern.compile("amount of alcohol", Pattern.CASE_INSENSITIVE)); // 258.xml: wife is concerned about the amount of alcohol he was drinking
     	
