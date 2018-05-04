@@ -9,23 +9,17 @@ import java.util.regex.Pattern;
 
 public class MajorDiabetes extends BaseClassifiable {
 
-    private static final List<Pattern> DIABETES_MARKERS = new ArrayList<>();
-    static {
-        // From the guidelines
-        DIABETES_MARKERS.add(Pattern.compile("diabetes", Pattern.CASE_INSENSITIVE));
-        DIABETES_MARKERS.add(Pattern.compile("insulin", Pattern.CASE_INSENSITIVE));
-        DIABETES_MARKERS.add(Pattern.compile("glucose intolerance", Pattern.CASE_INSENSITIVE));
-    }
-
     private static final List<Pattern> COMPLICATION_MARKERS = new ArrayList<>();
     static {
         // From the guidelines
         COMPLICATION_MARKERS.add(Pattern.compile("amputation", Pattern.CASE_INSENSITIVE));
         COMPLICATION_MARKERS.add(Pattern.compile("kidney damage", Pattern.CASE_INSENSITIVE));
         //COMPLICATION_MARKERS.add(Pattern.compile("skin condition", Pattern.CASE_INSENSITIVE));    // No clear distinction?
-        COMPLICATION_MARKERS.add(Pattern.compile("retinopathy", Pattern.CASE_INSENSITIVE));
-        COMPLICATION_MARKERS.add(Pattern.compile("nephropathy", Pattern.CASE_INSENSITIVE));
-        COMPLICATION_MARKERS.add(Pattern.compile("neuropathy", Pattern.CASE_INSENSITIVE));
+        COMPLICATION_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}))retinopathy", Pattern.CASE_INSENSITIVE));
+        COMPLICATION_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}))nephropathy", Pattern.CASE_INSENSITIVE));
+
+        // 355.xml (NOT_MET): No evidence of neuropathy
+        COMPLICATION_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}))neuropathy", Pattern.CASE_INSENSITIVE));
 
         // From the annotated examples
         COMPLICATION_MARKERS.add(Pattern.compile("macular degeneration", Pattern.CASE_INSENSITIVE));
@@ -35,20 +29,36 @@ public class MajorDiabetes extends BaseClassifiable {
 
         // From the corpus itself
         COMPLICATION_MARKERS.add(Pattern.compile("mellitus major", Pattern.CASE_INSENSITIVE));
-        COMPLICATION_MARKERS.add(Pattern.compile("radiculopathy", Pattern.CASE_INSENSITIVE));   // 191.xml
+
+        // 185.xml (NOT_MET): suggest radiculopathy
+        //COMPLICATION_MARKERS.add(Pattern.compile("radiculopathy", Pattern.CASE_INSENSITIVE));
         //COMPLICATION_MARKERS.add(Pattern.compile("staph", Pattern.CASE_INSENSITIVE));    // 161.xml (no changes)
 
         // 316.xml: Renal insuff- need to
+        // 382.xml (NOT_MET): renal insufficiency
         COMPLICATION_MARKERS.add(Pattern.compile("renal insuff", Pattern.CASE_INSENSITIVE));   // 286.xml
-        COMPLICATION_MARKERS.add(Pattern.compile("renal failure", Pattern.CASE_INSENSITIVE));
+
+        COMPLICATION_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}))renal failure", Pattern.CASE_INSENSITIVE));
+
         //COMPLICATION_MARKERS.add(Pattern.compile("end-stage renal", Pattern.CASE_INSENSITIVE)); // No changes
         //COMPLICATION_MARKERS.add(Pattern.compile("ESRD"));   // Increases tp, but also fp
 
         COMPLICATION_MARKERS.add(Pattern.compile("worsening kidney", Pattern.CASE_INSENSITIVE));    // 111.xml
+        COMPLICATION_MARKERS.add(Pattern.compile("ulceration", Pattern.CASE_INSENSITIVE));   // 372.xml
+
+        // 174.xml: Skin: Chronic ischemic ulcer
+        COMPLICATION_MARKERS.add(Pattern.compile("chronic.{0,20}ulcer", Pattern.CASE_INSENSITIVE));
+
+        // 378.xml: Skin:	Telangiectasias
+        COMPLICATION_MARKERS.add(Pattern.compile("ectasia", Pattern.CASE_INSENSITIVE));
+
+        COMPLICATION_MARKERS.add(Pattern.compile("kidney disease", Pattern.CASE_INSENSITIVE));
+        COMPLICATION_MARKERS.add(Pattern.compile("skin.{0,40}breakdown", Pattern.CASE_INSENSITIVE));    // 362.xml: Skin exam: Notable for slight erythema and breakdown
+        COMPLICATION_MARKERS.add(Pattern.compile("blunt trauma", Pattern.CASE_INSENSITIVE));
     }
 
     @Override
     public Eligibility isMet(Patient p) {
-        return (findAnyPattern(p.getText(), DIABETES_MARKERS) && findAnyPattern(p.getText(), COMPLICATION_MARKERS)) ? Eligibility.MET : Eligibility.NOT_MET;
+        return (findAnyPattern(p.getText(), COMPLICATION_MARKERS)) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }
