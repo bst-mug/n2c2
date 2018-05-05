@@ -26,14 +26,14 @@ public class AdvancedCAD extends BaseClassifiable {
     static final List<Pattern> ISCHEMIA_MARKERS = new ArrayList<>();
 
     static {
-        DRUG_MARKERS.add(Pattern.compile("lipitor", Pattern.CASE_INSENSITIVE));     // 377 times
+        //DRUG_MARKERS.add(Pattern.compile("lipitor", Pattern.CASE_INSENSITIVE));     // 377 times
         DRUG_MARKERS.add(Pattern.compile("lisinopril", Pattern.CASE_INSENSITIVE));  // 375 times
-        DRUG_MARKERS.add(Pattern.compile("lasix", Pattern.CASE_INSENSITIVE));       // 319 times
+        //DRUG_MARKERS.add(Pattern.compile("lasix", Pattern.CASE_INSENSITIVE));       // 319 times
         DRUG_MARKERS.add(Pattern.compile("atenolol", Pattern.CASE_INSENSITIVE));    // 310 times
         DRUG_MARKERS.add(Pattern.compile("toprol", Pattern.CASE_INSENSITIVE));      // 258 times  // Matches also metoprolol
         DRUG_MARKERS.add(Pattern.compile("plavix", Pattern.CASE_INSENSITIVE));      // 229 times
         DRUG_MARKERS.add(Pattern.compile("metoprolol", Pattern.CASE_INSENSITIVE));  // 159 times
-        DRUG_MARKERS.add(Pattern.compile("lopressor", Pattern.CASE_INSENSITIVE));   // 155 times
+        //DRUG_MARKERS.add(Pattern.compile("lopressor", Pattern.CASE_INSENSITIVE));   // 155 times
         DRUG_MARKERS.add(Pattern.compile("hctz", Pattern.CASE_INSENSITIVE));        // 134 times
         DRUG_MARKERS.add(Pattern.compile("hydrochlorothiazide", Pattern.CASE_INSENSITIVE)); // 100 times // TODO also spelled as "HYDROCLOROTH" (3 times)
         DRUG_MARKERS.add(Pattern.compile("atorvastatin", Pattern.CASE_INSENSITIVE));    // 94 times    // TODO maybe match on *statin?
@@ -72,6 +72,9 @@ public class AdvancedCAD extends BaseClassifiable {
         ANGINA_MARKERS.add(Pattern.compile("unstable angina", Pattern.CASE_INSENSITIVE));   // 27 times
         ANGINA_MARKERS.add(Pattern.compile("current angina", Pattern.CASE_INSENSITIVE));    // 7 times
         ANGINA_MARKERS.add(Pattern.compile("angina pectoris", Pattern.CASE_INSENSITIVE));   // 7 times // 242.xml
+        ANGINA_MARKERS.add(Pattern.compile("chest heaviness", Pattern.CASE_INSENSITIVE));
+        //ANGINA_MARKERS.add(Pattern.compile("(?<!(no .{0,30}|bowel |limb |negative for |RLE |digital |enteric |extremity |denies .{0,50}))angina", Pattern.CASE_INSENSITIVE));
+        //ANGINA_MARKERS.add(Pattern.compile("(?<!(no.{1,150}|negative for.{1,150}|den.{1,150}|without.{1,30}|abscence of |any.{1,150}))chest pain", Pattern.CASE_INSENSITIVE));
         //ANGINA_MARKERS.add(Pattern.compile("EKG changes", Pattern.CASE_INSENSITIVE));   // Really?
     }
 
@@ -79,7 +82,7 @@ public class AdvancedCAD extends BaseClassifiable {
         // "?<!" is a negative lookbehind
         // "?!" is a negative lookahead
         // (https://www.regular-expressions.info/lookaround.html)
-        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no [a-z ]{0,30}|bowel |limb ))ischemia(?!( colitis))", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
+        ISCHEMIA_MARKERS.add(Pattern.compile("(?<!(no .{0,30}|bowel |limb |negative for |RLE |digital |enteric |extremity |denie.{1,50}|without ))ischemia(?!( colitis))", Pattern.CASE_INSENSITIVE));    // TODO maybe merge with ischemi.*
         //ISCHEMIA_MARKERS.add(Pattern.compile("dyspnea", Pattern.CASE_INSENSITIVE));    // TODO test it
     }
 
