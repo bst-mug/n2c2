@@ -32,6 +32,20 @@ public abstract class BaseClassifiable implements Classifiable {
         return count;
     }
 
+    protected final int countPatternsInRecentPast(Patient patient, List<Pattern> markers, int months, int upTo) {
+        int count = 0;
+        ArrayList<PatientVisits> visits = patient.getMultipleVisits(months);
+        for (PatientVisits visit : visits) {
+            String text = visit.getCleanedVisitText();
+            count += countPatterns(text, markers, upTo);
+            if (count++ >= upTo) {
+                return count;
+            }
+        }
+
+        return count;
+    }
+
     protected final boolean findAnyPatternInRecentPast(Patient patient, List<Pattern> markers, int months) {
         ArrayList<PatientVisits> visits = patient.getMultipleVisits(months);
         for (PatientVisits visit : visits) {
