@@ -16,7 +16,7 @@ public class MakesDecisions extends BaseClassifiable {
         NEGATIVE_MARKERS.add(Pattern.compile("severe dementia", Pattern.CASE_INSENSITIVE)); // 357.xml: 80 year old female with severe dementia and ESRD
 //        NEGATIVE_MARKERS.add(Pattern.compile("(Alzheimer|Alzheimers) (meds|medication)", Pattern.CASE_INSENSITIVE)); // 357.xml: Dementia - Cont Alzheimers meds#
 //        NEGATIVE_MARKERS.add(Pattern.compile("Alzheimer", Pattern.CASE_INSENSITIVE)); // 357.xml: Dementia - Cont Alzheimers meds#
-        NEGATIVE_MARKERS.add(Pattern.compile("(Alzheimer|Alzheimers)", Pattern.CASE_INSENSITIVE)); 
+        //NEGATIVE_MARKERS.add(Pattern.compile("(Alzheimer|Alzheimers)", Pattern.CASE_INSENSITIVE));
         
     }
 	
