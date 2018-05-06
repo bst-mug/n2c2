@@ -153,7 +153,22 @@ public class Patient {
     	}
     	
     	return a_pv_afterDate; 
-    } // End of getMultipleVisits() 
+    } // End of getMultipleVisits()
+
+	/**
+	 * Get the text corresponding to the visits in the last months.
+	 *
+	 * @param months
+	 * @return
+	 */
+	public String getMultipleVisitsText(int months) {
+    	StringBuilder sb = new StringBuilder();
+		for (PatientVisits visits : getMultipleVisits(months)) {
+			sb.append(visits.getVisit_text());
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
     
     
   public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2){
