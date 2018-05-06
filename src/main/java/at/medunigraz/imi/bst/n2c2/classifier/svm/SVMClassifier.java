@@ -4,6 +4,7 @@ import at.medunigraz.imi.bst.n2c2.classifier.CriterionBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.PatientVisits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import weka.classifiers.Classifier;
@@ -40,15 +41,24 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private static final int DEFAULT_COST = 1;
     private static final int DEFAULT_WORDS_TO_KEEP = 1000;
 
+    private static final int NULL_MONTHS = -1;
+
     private Classifier model;
     private Instances dataset;
     private double cost;
 
-    public SVMClassifier(Criterion criterion, double cost) {
+    private int months = NULL_MONTHS;
+
+    public SVMClassifier(Criterion criterion, double cost, int months) {
         super(criterion);
         this.cost = cost;
         this.model = initializeModel();
+        this.months = months;
         reset();
+    }
+
+    public SVMClassifier(Criterion criterion, double cost) {
+        this(criterion, DEFAULT_COST, NULL_MONTHS);
     }
 
     public SVMClassifier(Criterion criterion) {
@@ -188,7 +198,12 @@ public class SVMClassifier extends CriterionBasedClassifier {
             instance.setValue(ID_INDEX, p.getID());
         }
 
-        instance.setValue(TEXT_INDEX, p.getText());
+        String text = p.getText();
+        if (months != NULL_MONTHS) {
+            text = p.getMultipleVisitsText(months);
+        }
+
+        instance.setValue(TEXT_INDEX, text);
 
         return instance;
     }

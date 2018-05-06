@@ -21,12 +21,14 @@ public class SVMClassifierFactory implements ClassifierFactory {
         classifierByCriterion.put(Criterion.ADVANCED_CAD, new SVMClassifier(Criterion.ADVANCED_CAD, Config.SVM_COST_ADVANCED_CAD));
         classifierByCriterion.put(Criterion.CREATININE, new SVMClassifier(Criterion.CREATININE, Config.SVM_COST_CREATININE));
         classifierByCriterion.put(Criterion.ENGLISH, new SVMClassifier(Criterion.ENGLISH, Config.SVM_COST_ENGLISH));
-        classifierByCriterion.put(Criterion.MI_6MOS, new SVMClassifier(Criterion.MI_6MOS, Config.SVM_COST_MI_6MOS));
+        classifierByCriterion.put(Criterion.MI_6MOS, new SVMClassifier(Criterion.MI_6MOS, Config.SVM_COST_MI_6MOS, 6));
         classifierByCriterion.put(Criterion.DRUG_ABUSE, new SVMClassifier(Criterion.DRUG_ABUSE, Config.SVM_COST_DRUG_ABUSE));
         classifierByCriterion.put(Criterion.MAJOR_DIABETES, new SVMClassifier(Criterion.MAJOR_DIABETES, Config.SVM_COST_MAJOR_DIABETES));
         classifierByCriterion.put(Criterion.KETO_1YR, new SVMClassifier(Criterion.KETO_1YR, Config.SVM_COST_KETO_1YR));
         classifierByCriterion.put(Criterion.ABDOMINAL, new SVMClassifier(Criterion.ABDOMINAL, Config.SVM_COST_ABDOMINAL));
-        classifierByCriterion.put(Criterion.DIETSUPP_2MOS, new SVMClassifier(Criterion.DIETSUPP_2MOS, Config.SVM_COST_DIETSUPP_2MOS));
+
+        // 6 months is surprisingly better than 2 months when cross-validated
+        classifierByCriterion.put(Criterion.DIETSUPP_2MOS, new SVMClassifier(Criterion.DIETSUPP_2MOS, Config.SVM_COST_DIETSUPP_2MOS, 6));
     }
 
     public SVMClassifierFactory(double cost) {
