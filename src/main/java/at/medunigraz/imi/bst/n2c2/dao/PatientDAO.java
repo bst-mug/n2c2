@@ -51,6 +51,9 @@ public class PatientDAO {
         Patient patient = new Patient().withID(id).withText(text);
 
         Element tagsElement = (Element) doc.getElementsByTagName(TAGS_NAME).item(0);
+        if (tagsElement == null) {
+            return patient;
+        }
 
         NodeList tags = tagsElement.getElementsByTagName("*");
         for (int i = 0; i < tags.getLength(); i++) {
