@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.Period;
 import java.util.ArrayList;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -62,6 +63,21 @@ public class ZoningTest {
 		
 		
 		
+	}
+
+	@Test
+	public void emptyRecordDate() throws IOException, SAXException {
+		// 292.xml has a visit with no Record Date
+		final File file = new File("data/292.xml");
+		Assume.assumeTrue(file.exists());
+
+		Patient patient = new PatientDAO().fromXML(file);
+
+		ArrayList<PatientVisits> visits = patient.getAllVisits();
+
+		// FIXME See https://github.com/bst-mug/n2c2/issues/62
+		assertEquals(4, visits.size());
+		//assertEquals(5, visits.size());
 	}
 	
 	
