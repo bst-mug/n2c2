@@ -53,7 +53,7 @@ public class SVMCostOptimizer {
     private static void updateBestCosts(Criterion criterion, double metric, float exp) {
         CostMetric costMetric = bestCostPerCriterion.get(criterion);
 
-        if (metric > costMetric.metric) {
+        if (metric >= costMetric.metric) {
             costMetric.metric = metric;
             costMetric.exp = exp;
         }
