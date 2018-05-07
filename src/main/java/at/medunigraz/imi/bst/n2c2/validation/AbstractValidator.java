@@ -1,9 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.validation;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import org.apache.logging.log4j.LogManager;
@@ -28,13 +26,7 @@ public abstract class AbstractValidator implements Validator {
     protected Metrics validateFold(List<Patient> train, List<Patient> test, List<Patient> gold) {
         List<Patient> predicted = test;
 
-        for (Criterion c : Criterion.classifiableValues()) {
-            LOG.info("Evaluating criterion {}...", c);
-            Classifier classifier = classifierFactory.getClassifier(c);
-
-            classifier.train(train);
-            predicted = classifier.predict(predicted);
-        }
+        predicted = classifierFactory.trainAndPredict(train, predicted);
 
         evaluator.evaluate(gold, predicted);
 
