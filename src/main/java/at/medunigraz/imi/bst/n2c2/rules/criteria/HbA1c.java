@@ -18,7 +18,7 @@ public class HbA1c extends BaseClassifiable {
     //	final public String[] a_CriterionID_hba1c = {"hba1c","HB Alc","HgAlC","HbA1c","HBA1c", "Hemoglobin A1C", "Hgb A1c", "hemoglobin A1c"};
 
     // We match only on [0-9] because 10.x would be out anyway...
-    static final Pattern REGEX = Pattern.compile("A1C.{0,20}?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
+    static final Pattern REGEX = Pattern.compile("A1C.{0,25}?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
 
 	@Override
     public Eligibility isMet(Patient p) {
