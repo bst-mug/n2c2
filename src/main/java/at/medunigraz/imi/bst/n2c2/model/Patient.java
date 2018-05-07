@@ -66,8 +66,7 @@ public class Patient {
     		PatientVisits pv = new PatientVisits(); 
     		
     		pv.setVisit_number(i);
-    		String line = visits[i].trim(); 
-    		if(line == "") line = null; 
+    		String line = visits[i].trim();
     		
 			String s_date = getFirstToken(line); 
 			if(s_date != null){
