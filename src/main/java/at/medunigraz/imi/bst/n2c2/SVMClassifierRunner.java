@@ -2,6 +2,7 @@ package at.medunigraz.imi.bst.n2c2;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.SVMClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -11,6 +12,8 @@ import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
+import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
+import at.medunigraz.imi.bst.n2c2.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,25 +24,27 @@ import java.util.List;
 /**
  * SVM cross validation.
  * 
- * @author Markus
+ * @author Michel Oleynik
  *
  */
-public class BestClassifierRunner {
+public class SVMClassifierRunner {
 
     private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
         final File dataFolder = new File("data");
-        final File xmlStatsFile = new File("stats/best.xml");
-        final File csvStatsFile = new File("stats/best.csv");
+        final File xmlStatsFile = new File("stats/svm.xml");
+        final File csvStatsFile = new File("stats/svm.csv");
 
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         ClassifierFactory factory = new SVMClassifierFactory();
 
-        Evaluator evaluator = new OfficialEvaluator();
-        //Evaluator evaluator = new BasicEvaluator();
+        Evaluator officialEvaluator = new OfficialEvaluator();
+        Evaluator basicEvaluator = new BasicEvaluator();
 
-        CrossValidator cv = new CrossValidator(patients, factory, evaluator);
+        Validator sfv = new SingleFoldValidator(patients, factory, basicEvaluator);
+        Validator cv = new CrossValidator(patients, factory, basicEvaluator);
+
         Metrics metrics = cv.validate();
 
         StatsWriter xmlWriter = new XMLStatsWriter(xmlStatsFile);

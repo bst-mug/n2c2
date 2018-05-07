@@ -40,9 +40,13 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private static final int DEFAULT_COST = 1;
     private static final int DEFAULT_WORDS_TO_KEEP = 1000;
 
+    private static final int NULL_MONTHS = -1;
+
     private Classifier model;
     private Instances dataset;
     private double cost;
+
+    private int months = NULL_MONTHS;
 
     public SVMClassifier(Criterion criterion, double cost) {
         super(criterion);
@@ -53,6 +57,11 @@ public class SVMClassifier extends CriterionBasedClassifier {
 
     public SVMClassifier(Criterion criterion) {
         this(criterion, DEFAULT_COST);
+    }
+
+    public SVMClassifier withMonths(int months) {
+        this.months = months;
+        return this;
     }
 
     public void reset() {
@@ -188,7 +197,12 @@ public class SVMClassifier extends CriterionBasedClassifier {
             instance.setValue(ID_INDEX, p.getID());
         }
 
-        instance.setValue(TEXT_INDEX, p.getText());
+        String text = p.getText();
+        if (months != NULL_MONTHS) {
+            text = p.getMultipleVisitsText(months);
+        }
+
+        instance.setValue(TEXT_INDEX, text);
 
         return instance;
     }

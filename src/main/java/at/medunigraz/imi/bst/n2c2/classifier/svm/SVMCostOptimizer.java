@@ -33,7 +33,7 @@ public class SVMCostOptimizer {
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         Evaluator evaluator = new BasicEvaluator();
 
-        for (int exp = -20; exp <= 20; exp += 0.5) {
+        for (float exp = -15; exp <= 15; exp += 2) {
             double cost = Math.pow(2, exp);
 
             ClassifierFactory factory = new SVMClassifierFactory(cost);
@@ -53,7 +53,7 @@ public class SVMCostOptimizer {
     private static void updateBestCosts(Criterion criterion, double metric, float exp) {
         CostMetric costMetric = bestCostPerCriterion.get(criterion);
 
-        if (metric > costMetric.metric) {
+        if (metric >= costMetric.metric) {
             costMetric.metric = metric;
             costMetric.exp = exp;
         }

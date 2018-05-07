@@ -124,7 +124,7 @@
 			<!--<artifactId>exec-maven-plugin</artifactId>-->
 			<!--<version>1.6.0</version>-->
 			<!--<configuration>-->
-			<!--<mainClass>at.medunigraz.imi.bst.n2c2.BestClassifierRunner</mainClass>-->
+			<!--<mainClass>at.medunigraz.imi.bst.n2c2.SVMClassifierRunner/mainClass>-->
 			<!--</configuration>-->
 			<!--</plugin>-->
 			<plugin>

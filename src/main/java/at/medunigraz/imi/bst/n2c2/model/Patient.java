@@ -1,6 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
 
+import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -36,6 +38,10 @@ public class Patient {
         return text;
     }
 
+    public String getCleanedText() {
+    	return DataUtilities.cleanText(text);
+	}
+
     public Eligibility getEligibility(Criterion criterion) {
         return criteria.get(criterion);
     }
@@ -60,8 +66,7 @@ public class Patient {
     		PatientVisits pv = new PatientVisits(); 
     		
     		pv.setVisit_number(i);
-    		String line = visits[i].trim(); 
-    		if(line == "") line = null; 
+    		String line = visits[i].trim();
     		
 			String s_date = getFirstToken(line); 
 			if(s_date != null){
@@ -147,7 +152,22 @@ public class Patient {
     	}
     	
     	return a_pv_afterDate; 
-    } // End of getMultipleVisits() 
+    } // End of getMultipleVisits()
+
+	/**
+	 * Get the text corresponding to the visits in the last months.
+	 *
+	 * @param months
+	 * @return
+	 */
+	public String getMultipleVisitsText(int months) {
+    	StringBuilder sb = new StringBuilder();
+		for (PatientVisits visits : getMultipleVisits(months)) {
+			sb.append(visits.getVisit_text());
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
     
     
   public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2){

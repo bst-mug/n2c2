@@ -12,7 +12,7 @@ public class Abdominal extends BaseClassifiable {
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
     static {
         POSITIVE_MARKERS.add(Pattern.compile("bowel surgery", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("polypectomy", Pattern.CASE_INSENSITIVE)); // Disabled by @kasac
+        //POSITIVE_MARKERS.add(Pattern.compile("polypectomy", Pattern.CASE_INSENSITIVE)); // Disabled by @kasac
 //        POSITIVE_MARKERS.add(Pattern.compile("resection", Pattern.CASE_INSENSITIVE));   // Disabled by @kasac
         POSITIVE_MARKERS.add(Pattern.compile("splenectomy", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("intestine resection", Pattern.CASE_INSENSITIVE));
@@ -33,7 +33,17 @@ public class Abdominal extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("gastric bypass", Pattern.CASE_INSENSITIVE));  // 13 times
         POSITIVE_MARKERS.add(Pattern.compile("renal transplant", Pattern.CASE_INSENSITIVE));    // 43 times
         POSITIVE_MARKERS.add(Pattern.compile("lithotripsy", Pattern.CASE_INSENSITIVE)); // 7 times, all MET
-        POSITIVE_MARKERS.add(Pattern.compile("g[ \\-]tube", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile("small bowel obstruction", Pattern.CASE_INSENSITIVE));
+        //POSITIVE_MARKERS.add(Pattern.compile("back surgery", Pattern.CASE_INSENSITIVE));  // No changes
+        //POSITIVE_MARKERS.add(Pattern.compile("prostatectomy", Pattern.CASE_INSENSITIVE)); // No changes
+
+        POSITIVE_MARKERS.add(Pattern.compile("laparotomy", Pattern.CASE_INSENSITIVE));
+
+        // : G tube
+        // 147.xml (NOT_MET): PEG tube
+        // 106.xml (NOT_MET): NG tube
+        POSITIVE_MARKERS.add(Pattern.compile("[^ne]g.tube", Pattern.CASE_INSENSITIVE));
+
         POSITIVE_MARKERS.add(Pattern.compile("abdominal scar", Pattern.CASE_INSENSITIVE));
 
         //POSITIVE_MARKERS.add(Pattern.compile("PEG[^A-Z]]"));
@@ -46,6 +56,6 @@ public class Abdominal extends BaseClassifiable {
 
     @Override
     public Eligibility isMet(Patient p) {
-        return findAnyPattern(p.getText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
+        return findAnyPattern(p.getCleanedText(), POSITIVE_MARKERS) ? Eligibility.MET : Eligibility.NOT_MET;
     }
 }
