@@ -1,20 +1,19 @@
 package at.medunigraz.imi.bst.n2c2.zoning;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
+import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.model.PatientVisits;
+import org.junit.Assume;
+import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Period;
 import java.util.ArrayList;
 
-import org.junit.Assume;
-import org.junit.Test;
-import org.xml.sax.SAXException;
-
-import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
-import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.PatientVisits;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.*;
 
 public class ZoningTest {
 
@@ -68,7 +67,7 @@ public class ZoningTest {
 	@Test
 	public void emptyRecordDate() throws IOException, SAXException {
 		// 292.xml has a visit with no Record Date
-		final File file = new File("data/292.xml");
+		final File file = new File("data/train/292.xml");
 		Assume.assumeTrue(file.exists());
 
 		Patient patient = new PatientDAO().fromXML(file);

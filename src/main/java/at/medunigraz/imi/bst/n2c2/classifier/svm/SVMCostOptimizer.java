@@ -28,7 +28,7 @@ public class SVMCostOptimizer {
     }
 
     public static void main(String[] args) {
-        final File dataFolder = new File("data");
+        final File dataFolder = new File("data/train");
 
         List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
         Evaluator evaluator = new BasicEvaluator();

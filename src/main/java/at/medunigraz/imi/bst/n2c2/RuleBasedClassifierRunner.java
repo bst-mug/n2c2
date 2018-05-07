@@ -26,7 +26,7 @@ public class RuleBasedClassifierRunner {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        final File dataFolder = new File("data");
+        final File dataFolder = new File("data/train");
         final File xmlStatsFile = new File("stats/rbc.xml");
         final File csvStatsFile = new File("stats/rbc.csv");
 

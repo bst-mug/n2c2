@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FakeClassifier extends CriterionBasedClassifier {
 
-    private static final File DATA_FOLDER = new File("data");
+    private static final File DATA_FOLDER = new File("data/train");
     private static final List<Patient> PATIENTS = DatasetUtil.loadFromFolder(DATA_FOLDER);
 
     public FakeClassifier(Criterion c) {

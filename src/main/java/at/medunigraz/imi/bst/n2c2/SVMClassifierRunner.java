@@ -32,7 +32,7 @@ public class SVMClassifierRunner {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        final File dataFolder = new File("data");
+        final File dataFolder = new File("data/train");
         final File xmlStatsFile = new File("stats/svm.xml");
         final File csvStatsFile = new File("stats/svm.csv");
 
