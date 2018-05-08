@@ -26,18 +26,14 @@ public class BILSTMC3GFullRun {
 
 	public static void main(String[] args) throws IOException {
 
-		// just needed for simulating test data for the moment
-		final File patienFolder = new File(Config.NN_SAMPLES_TRAINING);
-
 		// path to persisted BILSTMC3G model
 		final String modelPath = Config.NN_MODELS;
 
 		// path for saving prediction on test patients
 		final String pathPredicted = Config.NN_SAMPLES_PREDICTED_BDT;
 
-		// simulate test data, put in here real test data
-		List<Patient> patientsTraining = DatasetUtil.loadFromFolder(patienFolder);
-		List<Patient> patientsTestBILSTMC3G = DatasetUtil.stripTags(patientsTraining);
+		// real test data
+		List<Patient> patientsTestBILSTMC3G = DatasetUtil.loadFromFolder(new File("data/test"));
 
 		// set port for monitoring neural networks
 		Properties props = System.getProperties();
