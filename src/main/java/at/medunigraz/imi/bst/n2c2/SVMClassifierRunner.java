@@ -13,6 +13,7 @@ import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
 import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
+import at.medunigraz.imi.bst.n2c2.validation.TrainingValidator;
 import at.medunigraz.imi.bst.n2c2.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +45,7 @@ public class SVMClassifierRunner {
 
         Validator sfv = new SingleFoldValidator(patients, factory, basicEvaluator);
         Validator cv = new CrossValidator(patients, factory, basicEvaluator);
+        Validator tv = new TrainingValidator(patients, factory, basicEvaluator);
 
         Metrics metrics = cv.validate();
 
