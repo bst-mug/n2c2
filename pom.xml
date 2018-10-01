@@ -381,6 +381,12 @@
 			<artifactId>LibSVM</artifactId>
 			<version>1.0.10</version>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.0</version>
+			<scope>provided</scope>
+		</dependency>
         <!-- May be used for Weka stemmer. Conflicts with Lucene dependencies -->
         <!--<dependency>-->
         <!--<groupId>com.github.rholder</groupId>-->
