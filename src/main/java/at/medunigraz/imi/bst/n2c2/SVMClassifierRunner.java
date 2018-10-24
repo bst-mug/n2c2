@@ -4,16 +4,13 @@ import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.classifier.factory.SVMClassifierFactory;
 import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
-import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.model.metrics.Metrics;
 import at.medunigraz.imi.bst.n2c2.stats.CSVStatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.StatsWriter;
 import at.medunigraz.imi.bst.n2c2.stats.XMLStatsWriter;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
-import at.medunigraz.imi.bst.n2c2.validation.CrossValidator;
-import at.medunigraz.imi.bst.n2c2.validation.SingleFoldValidator;
-import at.medunigraz.imi.bst.n2c2.validation.TrainingValidator;
+import at.medunigraz.imi.bst.n2c2.validation.TestValidator;
 import at.medunigraz.imi.bst.n2c2.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,21 +30,24 @@ public class SVMClassifierRunner {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        final File dataFolder = new File("data/train");
+        final File trainFolder = new File("data/train");
+        final File testFolder = new File("data/test");
         final File xmlStatsFile = new File("stats/svm.xml");
         final File csvStatsFile = new File("stats/svm.csv");
 
-        List<Patient> patients = DatasetUtil.loadFromFolder(dataFolder);
+        List<Patient> trainPatients = DatasetUtil.loadFromFolder(trainFolder);
+        List<Patient> testPatients = DatasetUtil.loadFromFolder(testFolder);
         ClassifierFactory factory = new SVMClassifierFactory();
 
-        Evaluator officialEvaluator = new OfficialEvaluator();
-        Evaluator basicEvaluator = new BasicEvaluator();
+//        Evaluator evaluator = new OfficialEvaluator();
+        Evaluator evaluator = new BasicEvaluator();
 
-        Validator sfv = new SingleFoldValidator(patients, factory, basicEvaluator);
-        Validator cv = new CrossValidator(patients, factory, basicEvaluator);
-        Validator tv = new TrainingValidator(patients, factory, basicEvaluator);
+//        Validator validator = new SingleFoldValidator(trainPatients, factory, evaluator);
+//        Validator validator = new CrossValidator(trainPatients, factory, evaluator);
+//        Validator validator = new TrainingValidator(trainPatients, factory, evaluator);
+        Validator validator = new TestValidator(trainPatients, testPatients, factory, evaluator);
 
-        Metrics metrics = cv.validate();
+        Metrics metrics = validator.validate();
 
         StatsWriter xmlWriter = new XMLStatsWriter(xmlStatsFile);
         xmlWriter.write(metrics);
