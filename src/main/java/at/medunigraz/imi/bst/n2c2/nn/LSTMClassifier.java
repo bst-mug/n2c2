@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -320,23 +322,42 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	 */
 	private void initializeTruncateLength() {
 
+		// type coverage
+		Set<String> corpusTypes = new HashSet<String>();
+		Set<String> matchedTypes = new HashSet<String>();
+
+		// token coverage
+		int filteredSum = 0;
+		int tokenSum = 0;
+
 		List<List<String>> allTokens = new ArrayList<>(patientExamples.size());
 		int maxLength = 0;
+
 		for (Patient patient : patientExamples) {
 			String narrative = patient.getText();
 			String cleaned = narrative.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
 			List<String> tokens = tokenizerFactory.create(cleaned).getTokens();
+			tokenSum += tokens.size();
+
 			List<String> tokensFiltered = new ArrayList<>();
 			for (String token : tokens) {
+				corpusTypes.add(token);
 				if (wordVectors.hasWord(token)) {
 					tokensFiltered.add(token);
+					matchedTypes.add(token);
 				} else {
 					LOG.info("Word2vec representation missing:\t" + token);
 				}
 			}
 			allTokens.add(tokensFiltered);
+			filteredSum += tokensFiltered.size();
+
 			maxLength = Math.max(maxLength, tokensFiltered.size());
 		}
+
+		LOG.info("Matched " + matchedTypes.size() + " types out of " + corpusTypes.size());
+		LOG.info("Matched " + filteredSum + " tokens out of " + tokenSum);
+
 		this.truncateLength = maxLength;
 	}
 

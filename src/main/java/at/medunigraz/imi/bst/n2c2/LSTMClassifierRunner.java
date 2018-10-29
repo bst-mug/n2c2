@@ -43,6 +43,8 @@ public class LSTMClassifierRunner {
 		File sampleDirectory = new File(patientData);
 		List<Patient> patients = DatasetUtil.loadFromFolder(sampleDirectory);
 
+		// LSTMClassifier classifier = new LSTMClassifier(patients,
+		// wordVectorData);
 		LSTMClassifier classifier = new LSTMClassifier(wordVectorData);
 		classifier.train(patients);
 
