@@ -5,7 +5,6 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.rules.RuleBasedClassifier;
-import at.medunigraz.imi.bst.n2c2.rules.Rules;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -15,25 +14,6 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 public class RuleBasedClassifierTest {
-
-    @Test
-    public void get_HbA1c_Criterion() throws IOException, SAXException {
-
-        File sample = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
-        Patient pat = new PatientDAO().fromXML(sample);
-
-//        RuleBasedClassifier rbc = new RuleBasedClassifier();
-
-        Rules r = new Rules();
-
-//
-//		String[] criterion_hba1c = r.a_CriterionID_hba1c;
-//		Boolean is_met = rbc.is_criterion_met(pat, criterion_hba1c, r.getRegex_hba1c());
-//		assertTrue(is_met == null);
-//
-
-
-    } // End of get_HbA1c_Criterion()
 
     @Test
     public void predictSample() throws IOException, SAXException {
@@ -54,7 +34,4 @@ public class RuleBasedClassifierTest {
         assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.MAKES_DECISIONS).predict(p)));
 //        assertEquals(Eligibility.MET, (new RuleBasedClassifier(Criterion.MI_6MOS).predict(p)));
     }
-	
-	
-	
 }
