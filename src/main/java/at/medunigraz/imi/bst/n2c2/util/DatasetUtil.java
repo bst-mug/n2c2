@@ -4,16 +4,14 @@ import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class DatasetUtil {
@@ -155,5 +153,25 @@ public final class DatasetUtil {
                 return p;
         }
         return null;
+    }
+
+    /**
+     * Generates an unique representation (checksum) out of a list of patients.
+     *
+     * @param patients
+     * @return
+     */
+    public static String getChecksum(List<Patient> patients) {
+        // We need a TreeSet to ensure order and avoid duplicates, e.g. "1_2" == "2_1"
+        TreeSet<String> patientIds = new TreeSet<>();
+        patients.forEach(p -> patientIds.add(p.getID()));
+
+        StringBuilder sb = new StringBuilder();
+        for (String id : patientIds) {
+            sb.append(id);
+            sb.append("_"); // We need a separator to ensure no collisions, e.g. "1_2" != "12"
+        }
+
+        return DigestUtils.md5Hex(sb.toString());
     }
 }
