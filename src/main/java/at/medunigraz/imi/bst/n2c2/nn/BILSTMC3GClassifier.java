@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import at.medunigraz.imi.bst.n2c2.config.Config;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
@@ -451,7 +452,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	}
 
 	private void saveModel(int epoch) {
-		File root = new File(getModelPath(patientExamples));
+		File root = getModelDirectory(patientExamples);
 
 		// save model after n epochs
 		try {
@@ -661,6 +662,16 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	private static String getModelPath(List<Patient> patients) {
 		return Config.NN_MODELS + File.separator + DatasetUtil.getChecksum(patients) + File.separator;
+	}
+
+	public File getModelDirectory(List<Patient> patients) {
+		File modelDir = new File(getModelPath(patients));
+		modelDir.mkdirs();
+		return modelDir;
+	}
+
+	public void deleteModelDir(List<Patient> patients) throws IOException {
+		FileUtils.deleteDirectory(getModelDirectory(patients));
 	}
 
 	public boolean isTrained(List<Patient> patients) {
