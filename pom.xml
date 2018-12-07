@@ -312,18 +312,11 @@
 			<version>4.3.5</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>6.6.0</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-			<version>6.6.0</version>
+			<version>7.5.0</version>
 		</dependency>
 
 		<!-- END added for deeplearning4j -->
