@@ -36,3 +36,6 @@ local.properties
 
 # n2c2 stuff
 *.xml
+
+# Models
+models/*
