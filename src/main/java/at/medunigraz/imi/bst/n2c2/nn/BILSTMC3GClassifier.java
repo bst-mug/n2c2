@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import at.medunigraz.imi.bst.n2c2.config.Config;
+import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.api.storage.StatsStorage;
@@ -109,6 +111,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		initializeCriterionIndex();
 	}
 
+	@Deprecated
 	public BILSTMC3GClassifier(String pathToModel) {
 
 		initializeCriterionIndex();
@@ -116,6 +119,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	}
 
+	@Deprecated
 	public BILSTMC3GClassifier(List<Patient> examples) {
 
 		this.patientExamples = examples;
@@ -162,13 +166,13 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 			// load a properties file
 			Properties prop = new Properties();
-			InputStream input = new FileInputStream(pathToModel + "BILSTMC3G_MBL_0.properties");
+			InputStream input = new FileInputStream(new File(pathToModel, "BILSTMC3G_MBL_0.properties"));
 
 			prop.load(input);
 			this.truncateLength = Integer.parseInt(prop.getProperty("BILSTMC3G_MBL.truncateLength.0"));
 
 			// read char 3-grams and index
-			FileInputStream fis = new FileInputStream(pathToModel + "characterNGram_3_0");
+			FileInputStream fis = new FileInputStream(new File(pathToModel, "characterNGram_3_0"));
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ArrayList<String> characterNGram_3 = (ArrayList<String>) ois.readObject();
 
@@ -177,12 +181,12 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			this.vectorSize = fullSetIterator.vectorSize;
 
 			// read char 3-grams index
-			fis = new FileInputStream(pathToModel + "char3GramToIdxMap_0");
+			fis = new FileInputStream(new File(pathToModel, "char3GramToIdxMap_0"));
 			ois = new ObjectInputStream(fis);
 			Map<String, Integer> char3GramToIdxMap_0 = (HashMap<String, Integer>) ois.readObject();
 			fullSetIterator.char3GramToIdxMap = char3GramToIdxMap_0;
 
-			File networkFile = new File(pathToModel + "BILSTMC3G_MBL_0.zip");
+			File networkFile = new File(pathToModel, "BILSTMC3G_MBL_0.zip");
 
 			Nd4j.getRandom().setSeed(12345);
 			this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
@@ -193,6 +197,8 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		trained = true;
 	}
 
 	/**
@@ -344,9 +350,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	/**
 	 * Training for binary multi label classifcation.
-	 * 
-	 * @param examples
-	 *            Patient training examples.
 	 */
 	private void trainFullSetBML() {
 
@@ -448,16 +451,17 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	}
 
 	private void saveModel(int epoch) {
+		File root = new File(getModelPath(patientExamples));
 
 		// save model after n epochs
 		try {
 
-			File locationToSave = new File("BILSTMC3G_MBL_" + trainCounter + ".zip");
+			File locationToSave = new File(root, "BILSTMC3G_MBL_" + trainCounter + ".zip");
 			boolean saveUpdater = true;
 			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
 
 			// writing our character n-grams
-			FileOutputStream fos = new FileOutputStream("characterNGram_3_" + trainCounter);
+			FileOutputStream fos = new FileOutputStream(new File(root, "characterNGram_3_" + trainCounter));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(fullSetIterator.characterNGram_3);
 			oos.flush();
@@ -465,7 +469,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			fos.close();
 
 			// writing our character n-grams
-			fos = new FileOutputStream("char3GramToIdxMap_" + trainCounter);
+			fos = new FileOutputStream(new File(root, "char3GramToIdxMap_" + trainCounter));
 			oos = new ObjectOutputStream(fos);
 			oos.writeObject(fullSetIterator.char3GramToIdxMap);
 			oos.flush();
@@ -477,7 +481,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 				props.setProperty("BILSTMC3G_MBL.bestModelEpoch." + trainCounter, new Integer(epoch).toString());
 				props.setProperty("BILSTMC3G_MBL.truncateLength." + trainCounter,
 						new Integer(truncateLength).toString());
-				File f = new File("BILSTMC3G_MBL_" + trainCounter + ".properties");
+				File f = new File(root, "BILSTMC3G_MBL_" + trainCounter + ".properties");
 				OutputStream out = new FileOutputStream(f);
 				props.store(out, "Best model at epoch");
 			} catch (Exception e) {
@@ -570,8 +574,10 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	@Override
 	public void train(List<Patient> examples) {
-
-		if (trained == false) {
+		if (isTrained(examples)) {
+			initializeNetworkFromFile(getModelPath(examples));
+		}
+		else {
 			this.patientExamples = examples;
 
 			initializeNetworkBinaryMultiLabelDeep();
@@ -651,6 +657,14 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			e.printStackTrace();
 		}
 
+	}
+
+	private static String getModelPath(List<Patient> patients) {
+		return Config.NN_MODELS + File.separator + DatasetUtil.getChecksum(patients) + File.separator;
+	}
+
+	public boolean isTrained(List<Patient> patients) {
+		return new File(getModelPath(patients)).isDirectory();
 	}
 
 	public boolean isTrained() {
