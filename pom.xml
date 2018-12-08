@@ -285,33 +285,6 @@
 			<version>${guava.version}</version>
 		</dependency>
 
-		<!-- datavec-data-codec: used only in video example for loading video util -->
-		<dependency>
-			<artifactId>datavec-data-codec</artifactId>
-			<groupId>org.datavec</groupId>
-			<version>${datavec.version}</version>
-		</dependency>
-
-		<!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions 
-			example -->
-		<dependency>
-			<groupId>jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>${jfreechart.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jcommon</artifactId>
-			<version>${jcommon.version}</version>
-		</dependency>
-
-		<!-- Used for downloading data in some of the examples -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.5</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
