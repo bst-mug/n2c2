@@ -46,8 +46,9 @@ public class TrainingCurvesRunner {
             dataset.split(threshold, 0.0, 1 - threshold);
             List<Patient> split = dataset.getTrainingSet();
 
-            // We train on the split and test on all training
-            Validator trainValidator = new TestValidator(split, trainPatients, factory, evaluator);
+            // We train and test on the split
+            // TODO Use a TrainingValidator
+            Validator trainValidator = new TestValidator(split, split, factory, evaluator);
             validateAndWrite(trainValidator, new String[]{factory.getClass().getSimpleName(), "train", String.valueOf(threshold)});
 
             // We train on the split and test on the test set
