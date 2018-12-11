@@ -580,6 +580,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		}
 		else {
 			this.patientExamples = examples;
+			this.trainCounter = 0;
 
 			initializeNetworkBinaryMultiLabelDeep();
 			initializeMonitoring();
