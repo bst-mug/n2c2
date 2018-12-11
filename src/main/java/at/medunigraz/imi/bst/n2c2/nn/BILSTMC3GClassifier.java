@@ -594,6 +594,29 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		}
 	}
 
+	private void predict(Patient p) {
+		String patientNarrative = p.getText();
+
+		INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
+		INDArray networkOutput = net.output(features);
+
+		int timeSeriesLength = networkOutput.size(2);
+		INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
+
+		criterionIndex.forEach((c, idx) -> {
+			double probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
+			Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
+
+			p.withCriterion(c, eligibility);
+
+			LOG.info("\n\n-------------------------------");
+			LOG.info("Patient: " + p.getID());
+			LOG.info("Probabilities at last time step for {}", c.name());
+			LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
+			LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
+		});
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -603,27 +626,8 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	 */
 	@Override
 	public Eligibility predict(Patient p, Criterion c) {
-
-		String patientNarrative = p.getText();
-
-		INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
-		INDArray networkOutput = net.output(features);
-
-		int timeSeriesLength = networkOutput.size(2);
-		INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(),
-				NDArrayIndex.point(timeSeriesLength - 1));
-
-		double probabilityForCriterion = 0.0;
-		probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
-		Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
-
-		LOG.info("\n\n-------------------------------");
-		LOG.info("Patient: " + p.getID());
-		LOG.info("Probabilities at last time step for {}", c.name());
-		LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
-		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
-
-		return eligibility;
+		predict(p);
+		return p.getEligibility(c);
 	}
 
 	public void predictAndOverwrite(Patient p, String pathToWrite) {
