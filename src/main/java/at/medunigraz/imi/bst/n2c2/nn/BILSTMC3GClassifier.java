@@ -103,8 +103,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	private int trainCounter = 0;
 
-	private boolean trained = false;
-
 	private static final Logger LOG = LogManager.getLogger();
 
 	public BILSTMC3GClassifier() {
@@ -198,8 +196,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		trained = true;
 	}
 
 	/**
@@ -342,7 +338,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			this.saveModel(result);
 
 			trainCounter++;
-			trained = true;
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -399,7 +394,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		this.saveModel(epochCounter);
 
 		trainCounter++;
-		trained = true;
 	}
 
 	/**
@@ -591,7 +585,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			LOG.info("Epochs         :\t" + nEpochs);
 			LOG.info("Truncate length:\t" + truncateLength);
 
-			// trained = true
 			trainFullSetBML();
 		}
 	}
@@ -682,13 +675,5 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 
 	public boolean isTrained(List<Patient> patients) {
 		return new File(getModelPath(patients)).isDirectory();
-	}
-
-	public boolean isTrained() {
-		return trained;
-	}
-
-	public void setTrained(boolean trained) {
-		this.trained = trained;
 	}
 }
