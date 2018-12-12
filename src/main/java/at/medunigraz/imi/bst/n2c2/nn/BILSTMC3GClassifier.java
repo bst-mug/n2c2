@@ -518,6 +518,22 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		}
 		return features;
 	}
+	
+	private INDArray loadFeaturesForNarrativeDebug(String reviewContents, int maxLength) {
+
+		List<String> sentences = DataUtilities.getSentences(reviewContents);
+		
+		int outputLength = Math.min(maxLength, sentences.size());
+		INDArray features = Nd4j.create(1, vectorSize, outputLength);
+
+		for (int j = 0; j < sentences.size() && j < outputLength; j++) {
+			String sentence = sentences.get(j);
+			INDArray vector = fullSetIterator.getChar3GramVectorToSentence(sentence);
+			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
+					vector);
+		}
+		return features;
+	}
 
 	private void logEvaluationStats(NGramIterator training, NGramIterator validation, EarlyStoppingResult result) {
 		// resetting iterators
