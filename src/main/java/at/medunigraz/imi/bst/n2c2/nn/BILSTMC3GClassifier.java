@@ -622,40 +622,6 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		return p.getEligibility(c);
 	}
 
-	public void predictAndOverwrite(Patient p, String pathToWrite) {
-
-		String patientNarrative = p.getText();
-		p.withText("");
-
-		INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
-		INDArray networkOutput = net.output(features);
-
-		int timeSeriesLength = networkOutput.size(2);
-		INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(),
-				NDArrayIndex.point(timeSeriesLength - 1));
-
-		criterionIndex.forEach((c, idx) -> {
-			double probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
-			Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
-
-			p.withText(p.getText() + probabilityForCriterion + " ");
-
-			LOG.info("\n\n-------------------------------");
-			LOG.info("Patient: " + p.getID());
-			LOG.info("Probabilities at last time step for {}", c.name());
-			LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
-			LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
-		});
-		p.withText(p.getText().trim());
-
-		try {
-			new PatientDAO().toXML(p, new File(pathToWrite + p.getID()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 	private static String getModelPath(List<Patient> patients) {
 		return Config.NN_MODELS + File.separator + DatasetUtil.getChecksum(patients) + File.separator;
 	}
