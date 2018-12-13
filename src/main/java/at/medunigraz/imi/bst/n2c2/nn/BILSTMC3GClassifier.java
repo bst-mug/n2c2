@@ -96,31 +96,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 		initializeCriterionIndex();
 	}
 
-	@Deprecated
-	public BILSTMC3GClassifier(String pathToModel) {
-
-		initializeCriterionIndex();
-		this.initializeNetworkFromFile(pathToModel);
-
-	}
-
-	@Deprecated
-	public BILSTMC3GClassifier(List<Patient> examples) {
-
-		this.patientExamples = examples;
-
-		initializeCriterionIndex();
-		initializeNetworkBinaryMultiLabelDeep();
-		// initializeNetworkDebug();
-		initializeMonitoring();
-
-		LOG.info("Minibatchsize  :\t" + miniBatchSize);
-		LOG.info("tbptt length   :\t" + tbpttLength);
-		LOG.info("Epochs         :\t" + nEpochs);
-		LOG.info("Truncate length:\t" + truncateLength);
-	}
-
-	private void initializeCriterionIndex() {
+    private void initializeCriterionIndex() {
 		this.criterionIndex.put(Criterion.ABDOMINAL, 0);
 		this.criterionIndex.put(Criterion.ADVANCED_CAD, 1);
 		this.criterionIndex.put(Criterion.ALCOHOL_ABUSE, 2);
