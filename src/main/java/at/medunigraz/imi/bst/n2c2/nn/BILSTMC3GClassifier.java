@@ -508,12 +508,9 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 	 */
 	private INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
 
-		int maxSentences = 0;
-
 		List<String> sentences = DataUtilities.getSentences(reviewContents);
-		maxSentences = sentences.size() > maxSentences ? sentences.size() : maxSentences;
 
-		int outputLength = Math.max(maxLength, maxSentences);
+		int outputLength = Math.min(maxLength, sentences.size());
 		INDArray features = Nd4j.create(1, vectorSize, outputLength);
 
 		for (int j = 0; j < sentences.size() && j < outputLength; j++) {
