@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
