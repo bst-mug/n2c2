@@ -59,39 +59,6 @@ public class NGramIterator implements DataSetIterator {
 	}
 
 	/**
-	 * 
-	 * 
-	 * @param patients
-	 * @param miniBatchSize
-	 * @param characterNGram_3
-	 * @param char3GramToIdxMap
-	 * @throws IOException
-	 */
-	public NGramIterator(List<Patient> patients, int miniBatchSize, ArrayList<String> characterNGram_3,
-			Map<String, Integer> char3GramToIdxMap) throws IOException {
-
-		this.patients = patients;
-		this.miniBatchSize = miniBatchSize;
-
-		// getting lines from all patients
-		this.patientLines = new HashMap<Integer, List<String>>();
-
-		int patientIndex = 0;
-		for (Patient patient : patients) {
-			List<String> tmpLines = DataUtilities.getSentences(patient.getText());
-			this.maxSentences = tmpLines.size() > maxSentences ? tmpLines.size() : maxSentences;
-			this.patientLines.put(patientIndex++, tmpLines);
-		}
-
-		// generate char 3 grams
-		this.characterNGram_3 = characterNGram_3;
-		this.vectorSize = characterNGram_3.size();
-
-		// generate index
-		this.char3GramToIdxMap = char3GramToIdxMap;
-	}
-
-	/**
 	 * Iterator representing sentences as character 3-grams.
 	 * 
 	 * @param patients
