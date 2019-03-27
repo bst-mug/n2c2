@@ -389,7 +389,7 @@ public class BILSTMC3GClassifier extends PatientBasedClassifier {
 			this.trainCounter = 0;
 
 			initializeNetworkBinaryMultiLabelDeep();
-			initializeMonitoring();
+//			initializeMonitoring();
 
 			LOG.info("Minibatchsize  :\t" + miniBatchSize);
 			LOG.info("tbptt length   :\t" + tbpttLength);
