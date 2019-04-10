@@ -225,4 +225,19 @@ public class DataUtilities {
 	public static String cleanText(String text) {
 		return CLEANER_REGEX.matcher(text).replaceAll(" ");
 	}
+
+	/**
+	 * Tokenizes a given text.
+	 *
+	 * @param text
+	 * @return
+	 */
+	public static String[] tokenize(String text) {
+		TokenStream stream = getTokenStream(new StringReader(text));
+		try {
+			return tokenStreamToArray(stream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

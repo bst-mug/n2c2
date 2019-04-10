@@ -56,4 +56,21 @@ public class DataUtilitiesTest {
 		assertEquals(FileUtils.readFileToString(expectedTrigrams, "UTF-8"), textTrigrams.toString());
 	}
 
+	@Test
+	public void tokenize() {
+		// Example from https://nlp.stanford.edu/software/tokenizer.shtml
+		String[] actual = DataUtilities.tokenize("\"Oh, no,\" she's saying, \"our $400 blender can't handle something this hard!\"");
+		assertEquals("Oh no she's saying our 400 blender can't handle something this hard", String.join(" ", actual));
+
+		// Examples from https://www.nltk.org/api/nltk.tokenize.html
+		actual = DataUtilities.tokenize("Good muffins cost $3.88\nin New York.  Please buy me\ntwo of them.\nThanks.");
+		assertEquals("Good muffins cost 3.88 in New York Please buy me two of them Thanks", String.join(" ", actual));
+
+		actual = DataUtilities.tokenize("They'll save and invest more.");
+		assertEquals("They'll save and invest more", String.join(" ", actual));
+
+		actual = DataUtilities.tokenize("hi, my name can't hello,");
+		assertEquals("hi my name can't hello", String.join(" ", actual));
+	}
+
 }
