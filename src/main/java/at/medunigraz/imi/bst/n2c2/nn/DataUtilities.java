@@ -175,4 +175,24 @@ public abstract class DataUtilities {
 			throw new RuntimeException(e);
 		}
 	}
+
+	/**
+	 * Extracts the unique set of words used in a text.
+	 *
+	 * @param text
+	 * @return
+	 */
+	public static Set<String> getVocabulary(String text) {
+		Set<String> ret = new TreeSet<>();
+
+		List<String> sentences = getSentences(text);
+		for (String sentence : sentences) {
+			String[] tokens = tokenize(sentence);
+			for (String token : tokens) {
+				ret.add(token.toLowerCase());
+			}
+		}
+
+		return ret;
+	}
 }
