@@ -11,7 +11,6 @@ import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
-import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.AttributeFactory;
@@ -59,7 +58,6 @@ public class DataUtilities {
 	public TokenStream getQuickViewStreamReduced(Reader reader) {
 		TokenStream result = getTokenStream(reader);
 
-		result = new StandardFilter(result);
 		result = new LowerCaseFilter(result);
 
 		// negations tokens are included therefore no use
