@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -69,6 +72,13 @@ public class DataUtilitiesTest {
 
 		actual = DataUtilities.tokenize("hi, my name can't hello,");
 		assertEquals("hi my name can't hello", String.join(" ", actual));
+	}
+
+	@Test
+	public void getVocabulary() {
+		Set<String> actual = DataUtilities.getVocabulary("This is a test sentence. Can't you think of a better sentence?");
+		Set<String> expected = new TreeSet<>(Arrays.asList("a", "better", "can't", "is", "of", "sentence", "test", "think", "this", "you"));
+		assertEquals(expected, actual);
 	}
 
 }
