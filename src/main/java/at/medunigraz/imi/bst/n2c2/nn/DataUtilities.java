@@ -1,17 +1,12 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
@@ -30,28 +25,6 @@ import org.apache.lucene.util.AttributeFactory;
 public class DataUtilities {
 
 	private static final Pattern CLEANER_REGEX = Pattern.compile("\\p{javaWhitespace}+");
-
-	// stop words
-	private CharArraySet stopWords = CharArraySet.EMPTY_SET;
-
-	public DataUtilities() {
-
-		try {
-			ArrayList<String> stopWords = new ArrayList<String>();
-			InputStream is = this.getClass().getResourceAsStream("/nlp/StopWords.txt");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				stopWords.add(line);
-			}
-			this.stopWords = new CharArraySet(stopWords, true);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	private static String[] tokenStreamToArray(TokenStream stream) throws IOException {
 		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
