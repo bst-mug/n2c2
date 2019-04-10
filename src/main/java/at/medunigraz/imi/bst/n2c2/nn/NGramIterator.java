@@ -49,8 +49,6 @@ public class NGramIterator implements DataSetIterator {
 
 	public int vectorSize;
 
-	DataUtilities utilities = new DataUtilities();
-
 	/**
 	 * Default constructor.
 	 * 
@@ -108,8 +106,8 @@ public class NGramIterator implements DataSetIterator {
 
 		for (Map.Entry<Integer, List<String>> entry : patientLines.entrySet()) {
 			for (String line : entry.getValue()) {
-				String normalized = utilities.processTextReduced(line);
-				String char3Grams = utilities.getChar3GramRepresentation(normalized);
+				String normalized = DataUtilities.processTextReduced(line);
+				String char3Grams = DataUtilities.getChar3GramRepresentation(normalized);
 
 				// process character n-grams
 				String[] char3Splits = char3Grams.split("\\s+");
@@ -212,8 +210,8 @@ public class NGramIterator implements DataSetIterator {
 
 		INDArray featureVector = Nd4j.zeros(vectorSize);
 		try {
-			String normalized = utilities.processTextReduced(sentence);
-			String char3Grams = utilities.getChar3GramRepresentation(normalized);
+			String normalized = DataUtilities.processTextReduced(sentence);
+			String char3Grams = DataUtilities.getChar3GramRepresentation(normalized);
 
 			// process character n-grams
 			String[] char3Splits = char3Grams.split("\\s+");

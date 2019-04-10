@@ -21,7 +21,7 @@ import org.apache.lucene.util.AttributeFactory;
  * @author Markus
  *
  */
-public class DataUtilities {
+public abstract class DataUtilities {
 
 	private static final Pattern CLEANER_REGEX = Pattern.compile("\\p{javaWhitespace}+");
 
@@ -55,7 +55,7 @@ public class DataUtilities {
 	 * @param reader
 	 * @return
 	 */
-	public TokenStream getQuickViewStreamReduced(Reader reader) {
+	public static TokenStream getQuickViewStreamReduced(Reader reader) {
 		TokenStream result = getTokenStream(reader);
 
 		result = new LowerCaseFilter(result);
@@ -73,8 +73,8 @@ public class DataUtilities {
 	 * @param textToProcess
 	 * @return
 	 */
-	public String processTextReduced(String textToProcess) {
-		TokenStream stream = this.getQuickViewStreamReduced(new StringReader(textToProcess));
+	public static String processTextReduced(String textToProcess) {
+		TokenStream stream = getQuickViewStreamReduced(new StringReader(textToProcess));
 		String[] tokens = new String[0];
 		try {
 			tokens = tokenStreamToArray(stream);
@@ -92,7 +92,7 @@ public class DataUtilities {
 		return normalized;
 	}
 
-    public String getChar3GramRepresentation(String toProcess) throws IOException {
+    public static String getChar3GramRepresentation(String toProcess) throws IOException {
 
 		String charNGramRepresentation = "";
 		String embedding = "_";

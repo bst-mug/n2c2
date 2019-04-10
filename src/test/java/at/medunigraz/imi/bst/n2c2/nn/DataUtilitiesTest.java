@@ -15,17 +15,15 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class DataUtilitiesTest {
 
-	private static final DataUtilities UTILITIES = new DataUtilities();
-
 	@Test
 	public void processTextReduced() throws IOException {
-		String normalized = UTILITIES.processTextReduced("This is a, test    sentence: test_sentence.");
+		String normalized = DataUtilities.processTextReduced("This is a, test    sentence: test_sentence.");
 		assertEquals("this is a test sentenc test sent", normalized);
 	}
 
 	@Test
 	public void getChar3GramRepresentation() throws IOException {
-		String normalized = UTILITIES.getChar3GramRepresentation("this is a test sentence");
+		String normalized = DataUtilities.getChar3GramRepresentation("this is a test sentence");
 		assertEquals("_th thi his is_ _is is_ _a_ _te tes est st_ _se sen ent nte ten enc nce ce_", normalized);
 	}
 
@@ -39,8 +37,8 @@ public class DataUtilitiesTest {
 
 		List<String> sentences = DataUtilities.getSentences(p.getText());
 		for (String sentence : sentences) {
-			String normalized = UTILITIES.processTextReduced(sentence);
-			String charTrigrams = UTILITIES.getChar3GramRepresentation(normalized);
+			String normalized = DataUtilities.processTextReduced(sentence);
+			String charTrigrams = DataUtilities.getChar3GramRepresentation(normalized);
 
 			normalizedText.append(normalized);
 			normalizedText.append("\n");
