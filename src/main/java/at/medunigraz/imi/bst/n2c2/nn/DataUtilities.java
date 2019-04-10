@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
@@ -55,21 +53,39 @@ public class DataUtilities {
 
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param reader
-	 * @return
-	 * @throws IOException
-	 */
-	public TokenStream getQuickViewStreamReduced(Reader reader) throws IOException {
+	private static String[] tokenStreamToArray(TokenStream stream) throws IOException {
+		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
+		stream.reset();
 
+		ArrayList<String> ret = new ArrayList<>();
+		while (stream.incrementToken()) {
+			ret.add(charTermAttribute.toString());
+		}
+
+		stream.end();
+		stream.close();
+
+		return ret.toArray(new String[0]);
+	}
+
+	private static TokenStream getTokenStream(Reader reader) {
 		AttributeFactory factory = AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY;
 
 		StandardTokenizer standardTokenizer = new StandardTokenizer(factory);
 		standardTokenizer.setReader(reader);
 
-		TokenStream result = standardTokenizer;
+		return standardTokenizer;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param reader
+	 * @return
+	 */
+	public TokenStream getQuickViewStreamReduced(Reader reader) {
+		TokenStream result = getTokenStream(reader);
+
 		result = new StandardFilter(result);
 		result = new LowerCaseFilter(result);
 
@@ -85,26 +101,22 @@ public class DataUtilities {
 	 * 
 	 * @param textToProcess
 	 * @return
-	 * @throws IOException
 	 */
-	public String processTextReduced(String textToProcess) throws IOException {
-
+	public String processTextReduced(String textToProcess) {
 		TokenStream stream = this.getQuickViewStreamReduced(new StringReader(textToProcess));
-		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
-		stream.reset();
-
-		String normalized = "";
-		while (stream.incrementToken()) {
-			normalized += charTermAttribute.toString() + " ";
+		String[] tokens = new String[0];
+		try {
+			tokens = tokenStreamToArray(stream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
+
+		String normalized = String.join(" ", tokens);;
 
 		// post normalization
 		normalized = normalized.replaceAll("[\\.\\,\\_\\:]+", " ");
 		normalized = normalized.replaceAll("[\\s]+", " ");
 		normalized = normalized.trim();
-
-		stream.end();
-		stream.close();
 
 		return normalized;
 	}
