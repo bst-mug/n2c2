@@ -92,42 +92,6 @@ public class DataUtilities {
 		return normalized;
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param toProcess
-	 * @param charNGram
-	 * @return
-	 * @throws IOException
-	 */
-	public String getCharNGramRepresentation001(String toProcess, int charNGram) throws IOException {
-
-		String charNGramRepresentation = "";
-		String embeddingChar = "_";
-		String embedding = "";
-
-		for (int i = 0; i < charNGram - 1; i++) {
-			embedding += embeddingChar;
-		}
-
-		toProcess = embedding + toProcess.replaceAll("\\s+", embeddingChar) + embedding;
-
-		NGramTokenizer nGramTokenizer = new NGramTokenizer(charNGram, charNGram);
-		CharTermAttribute charTermAttribute = nGramTokenizer.addAttribute(CharTermAttribute.class);
-
-		nGramTokenizer.setReader(new StringReader(toProcess));
-		nGramTokenizer.reset();
-
-		while (nGramTokenizer.incrementToken()) {
-			String characterNGram = charTermAttribute.toString();
-			charNGramRepresentation += characterNGram + " ";
-		}
-		nGramTokenizer.end();
-		nGramTokenizer.close();
-
-		return charNGramRepresentation.trim();
-	}
-
     public String getChar3GramRepresentation(String toProcess) throws IOException {
 
 		String charNGramRepresentation = "";
