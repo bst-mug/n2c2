@@ -15,17 +15,15 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class DataUtilitiesTest {
 
-	private static final DataUtilities UTILITIES = new DataUtilities();
-
 	@Test
 	public void processTextReduced() throws IOException {
-		String normalized = UTILITIES.processTextReduced("This is a, test    sentence: test_sentence.");
+		String normalized = DataUtilities.processTextReduced("This is a, test    sentence: test_sentence.");
 		assertEquals("this is a test sentenc test sent", normalized);
 	}
 
 	@Test
 	public void getChar3GramRepresentation() throws IOException {
-		String normalized = UTILITIES.getChar3GramRepresentation("this is a test sentence");
+		String normalized = DataUtilities.getChar3GramRepresentation("this is a test sentence");
 		assertEquals("_th thi his is_ _is is_ _a_ _te tes est st_ _se sen ent nte ten enc nce ce_", normalized);
 	}
 
@@ -39,8 +37,8 @@ public class DataUtilitiesTest {
 
 		List<String> sentences = DataUtilities.getSentences(p.getText());
 		for (String sentence : sentences) {
-			String normalized = UTILITIES.processTextReduced(sentence);
-			String charTrigrams = UTILITIES.getChar3GramRepresentation(normalized);
+			String normalized = DataUtilities.processTextReduced(sentence);
+			String charTrigrams = DataUtilities.getChar3GramRepresentation(normalized);
 
 			normalizedText.append(normalized);
 			normalizedText.append("\n");
@@ -54,6 +52,23 @@ public class DataUtilitiesTest {
 
 		assertEquals(FileUtils.readFileToString(expectedNormalized, "UTF-8"), normalizedText.toString());
 		assertEquals(FileUtils.readFileToString(expectedTrigrams, "UTF-8"), textTrigrams.toString());
+	}
+
+	@Test
+	public void tokenize() {
+		// Example from https://nlp.stanford.edu/software/tokenizer.shtml
+		String[] actual = DataUtilities.tokenize("\"Oh, no,\" she's saying, \"our $400 blender can't handle something this hard!\"");
+		assertEquals("Oh no she's saying our 400 blender can't handle something this hard", String.join(" ", actual));
+
+		// Examples from https://www.nltk.org/api/nltk.tokenize.html
+		actual = DataUtilities.tokenize("Good muffins cost $3.88\nin New York.  Please buy me\ntwo of them.\nThanks.");
+		assertEquals("Good muffins cost 3.88 in New York Please buy me two of them Thanks", String.join(" ", actual));
+
+		actual = DataUtilities.tokenize("They'll save and invest more.");
+		assertEquals("They'll save and invest more", String.join(" ", actual));
+
+		actual = DataUtilities.tokenize("hi, my name can't hello,");
+		assertEquals("hi my name can't hello", String.join(" ", actual));
 	}
 
 }

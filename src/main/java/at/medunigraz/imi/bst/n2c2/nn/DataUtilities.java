@@ -1,24 +1,16 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
-import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.AttributeFactory;
@@ -29,30 +21,32 @@ import org.apache.lucene.util.AttributeFactory;
  * @author Markus
  *
  */
-public class DataUtilities {
+public abstract class DataUtilities {
 
 	private static final Pattern CLEANER_REGEX = Pattern.compile("\\p{javaWhitespace}+");
 
-	// stop words
-	private CharArraySet stopWords = CharArraySet.EMPTY_SET;
+	private static String[] tokenStreamToArray(TokenStream stream) throws IOException {
+		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
+		stream.reset();
 
-	public DataUtilities() {
-
-		try {
-			ArrayList<String> stopWords = new ArrayList<String>();
-			InputStream is = this.getClass().getResourceAsStream("/nlp/StopWords.txt");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				stopWords.add(line);
-			}
-			this.stopWords = new CharArraySet(stopWords, true);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		ArrayList<String> ret = new ArrayList<>();
+		while (stream.incrementToken()) {
+			ret.add(charTermAttribute.toString());
 		}
 
+		stream.end();
+		stream.close();
+
+		return ret.toArray(new String[0]);
+	}
+
+	private static TokenStream getTokenStream(Reader reader) {
+		AttributeFactory factory = AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY;
+
+		StandardTokenizer standardTokenizer = new StandardTokenizer(factory);
+		standardTokenizer.setReader(reader);
+
+		return standardTokenizer;
 	}
 
 	/**
@@ -60,17 +54,10 @@ public class DataUtilities {
 	 * 
 	 * @param reader
 	 * @return
-	 * @throws IOException
 	 */
-	public TokenStream getQuickViewStreamReduced(Reader reader) throws IOException {
+	public static TokenStream getQuickViewStreamReduced(Reader reader) {
+		TokenStream result = getTokenStream(reader);
 
-		AttributeFactory factory = AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY;
-
-		StandardTokenizer standardTokenizer = new StandardTokenizer(factory);
-		standardTokenizer.setReader(reader);
-
-		TokenStream result = standardTokenizer;
-		result = new StandardFilter(result);
 		result = new LowerCaseFilter(result);
 
 		// negations tokens are included therefore no use
@@ -85,67 +72,27 @@ public class DataUtilities {
 	 * 
 	 * @param textToProcess
 	 * @return
-	 * @throws IOException
 	 */
-	public String processTextReduced(String textToProcess) throws IOException {
-
-		TokenStream stream = this.getQuickViewStreamReduced(new StringReader(textToProcess));
-		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
-		stream.reset();
-
-		String normalized = "";
-		while (stream.incrementToken()) {
-			normalized += charTermAttribute.toString() + " ";
+	public static String processTextReduced(String textToProcess) {
+		TokenStream stream = getQuickViewStreamReduced(new StringReader(textToProcess));
+		String[] tokens = new String[0];
+		try {
+			tokens = tokenStreamToArray(stream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
+
+		String normalized = String.join(" ", tokens);;
 
 		// post normalization
 		normalized = normalized.replaceAll("[\\.\\,\\_\\:]+", " ");
 		normalized = normalized.replaceAll("[\\s]+", " ");
 		normalized = normalized.trim();
 
-		stream.end();
-		stream.close();
-
 		return normalized;
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param toProcess
-	 * @param charNGram
-	 * @return
-	 * @throws IOException
-	 */
-	public String getCharNGramRepresentation001(String toProcess, int charNGram) throws IOException {
-
-		String charNGramRepresentation = "";
-		String embeddingChar = "_";
-		String embedding = "";
-
-		for (int i = 0; i < charNGram - 1; i++) {
-			embedding += embeddingChar;
-		}
-
-		toProcess = embedding + toProcess.replaceAll("\\s+", embeddingChar) + embedding;
-
-		NGramTokenizer nGramTokenizer = new NGramTokenizer(charNGram, charNGram);
-		CharTermAttribute charTermAttribute = nGramTokenizer.addAttribute(CharTermAttribute.class);
-
-		nGramTokenizer.setReader(new StringReader(toProcess));
-		nGramTokenizer.reset();
-
-		while (nGramTokenizer.incrementToken()) {
-			String characterNGram = charTermAttribute.toString();
-			charNGramRepresentation += characterNGram + " ";
-		}
-		nGramTokenizer.end();
-		nGramTokenizer.close();
-
-		return charNGramRepresentation.trim();
-	}
-
-    public String getChar3GramRepresentation(String toProcess) throws IOException {
+    public static String getChar3GramRepresentation(String toProcess) throws IOException {
 
 		String charNGramRepresentation = "";
 		String embedding = "_";
@@ -212,5 +159,20 @@ public class DataUtilities {
 
 	public static String cleanText(String text) {
 		return CLEANER_REGEX.matcher(text).replaceAll(" ");
+	}
+
+	/**
+	 * Tokenizes a given text.
+	 *
+	 * @param text
+	 * @return
+	 */
+	public static String[] tokenize(String text) {
+		TokenStream stream = getTokenStream(new StringReader(text));
+		try {
+			return tokenStreamToArray(stream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
