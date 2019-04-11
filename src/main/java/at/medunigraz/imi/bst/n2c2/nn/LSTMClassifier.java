@@ -85,7 +85,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	private int truncateLength = 64;
 
 	// Google word vector size
-	int vectorSize = 300;
+	int vectorSize = 200;
 
 	// accessing Google word vectors
 	private WordVectors wordVectors;
@@ -100,7 +100,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	private MultiLayerNetwork net;
 
 	// location of precalculated vectors
-	private String wordVectorsPath = "C:/DataN2c2/google/GoogleNews-vectors-negative300.bin.gz";
+	private String wordVectorsPath = "vectors.tsv";
 
 	// criterion index
 	private Map<Criterion, Integer> criterionIndex = new HashMap<Criterion, Integer>();
