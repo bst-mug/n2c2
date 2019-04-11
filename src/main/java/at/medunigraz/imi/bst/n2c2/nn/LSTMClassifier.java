@@ -62,7 +62,6 @@ import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
-import at.medunigraz.imi.bst.n2c2.model.dataset.SingleFoldValidatedDataset;
 
 /**
  * LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
@@ -122,66 +121,6 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
 		initializeTokenizer();
 		initializeCriterionIndex();
-	}
-
-	public LSTMClassifier(String pathToWordVectors) {
-
-		this.wordVectorsPath = pathToWordVectors;
-		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
-
-		initializeTokenizer();
-		initializeCriterionIndex();
-	}
-
-	public LSTMClassifier(String pathToWordVectors, String modelName) {
-
-		this.wordVectorsPath = pathToWordVectors;
-		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
-
-		initializeTokenizer();
-		initializeCriterionIndex();
-
-		// TODO load from persisted variable via properties file
-		this.truncateLength = 5305;
-		this.initializeNetworkFromFile(modelName);
-
-	}
-
-	public LSTMClassifier(List<Patient> examples, String pathToWordVectors) {
-
-		this.patientExamples = examples;
-		this.wordVectorsPath = pathToWordVectors;
-		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
-
-		initializeTokenizer();
-		initializeCriterionIndex();
-		initializeTruncateLength();
-		initializeNetworkBinaryMultiLabel();
-		initializeMonitoring();
-
-		LOG.info("Minibatchsize  :\t" + miniBatchSize);
-		LOG.info("tbptt length   :\t" + tbpttLength);
-		LOG.info("Epochs         :\t" + nEpochs);
-		LOG.info("Truncate lenght:\t" + truncateLength);
-		LOG.info("Vector size    :\t" + vectorSize);
-	}
-
-	public LSTMClassifier(List<Patient> examples) {
-
-		this.patientExamples = examples;
-		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
-
-		initializeTokenizer();
-		initializeCriterionIndex();
-		initializeTruncateLength();
-		initializeNetworkBinaryMultiLabel();
-		initializeMonitoring();
-
-		LOG.info("Minibatchsize  :\t" + miniBatchSize);
-		LOG.info("tbptt length   :\t" + tbpttLength);
-		LOG.info("Epochs         :\t" + nEpochs);
-		LOG.info("Truncate lenght:\t" + truncateLength);
-		LOG.info("Vector size    :\t" + vectorSize);
 	}
 
 	private void initializeCriterionIndex() {
@@ -362,62 +301,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	}
 
 	/**
-	 * Train with early stopping.
-	 *
-	 */
-	private void trainWithEarlyStoppingBML() {
-
-		List<Patient> trainingSplit = new ArrayList<Patient>();
-		List<Patient> validationSplit = new ArrayList<Patient>();
-
-		SingleFoldValidatedDataset dataset = new SingleFoldValidatedDataset(this.patientExamples);
-		dataset.split(0.9, 0.1, 0);
-
-		trainingSplit = dataset.getTrainingSet();
-		validationSplit = dataset.getValidationSet();
-
-		N2c2PatientIteratorBML training;
-		N2c2PatientIteratorBML validation;
-
-		try {
-			training = new N2c2PatientIteratorBML(trainingSplit, wordVectors, miniBatchSize, truncateLength);
-			validation = new N2c2PatientIteratorBML(validationSplit, wordVectors, miniBatchSize, truncateLength);
-
-			// early stopping on validation
-			EarlyStoppingModelSaver<MultiLayerNetwork> saver = new InMemoryModelSaver<>();
-			EarlyStoppingConfiguration<MultiLayerNetwork> esConf = new EarlyStoppingConfiguration.Builder<MultiLayerNetwork>()
-					.epochTerminationConditions(new MaxEpochsTerminationCondition(nEpochs),
-							new ScoreImprovementEpochTerminationCondition(10))
-					.iterationTerminationConditions(new MaxTimeIterationTerminationCondition(4, TimeUnit.HOURS),
-							new MaxScoreIterationTerminationCondition(20))
-					.scoreCalculator(new DataSetLossCalculator(validation, true)).modelSaver(saver).build();
-
-			// conduct early stopping training
-			IEarlyStoppingTrainer trainer = new EarlyStoppingTrainer(esConf, net, training);
-			EarlyStoppingResult result = trainer.fit();
-
-			// set back current model to best model
-			this.net = (MultiLayerNetwork) result.getBestModel();
-
-			// log evaluation statistics
-			this.logEvaluationStats(training, validation, result);
-
-			// save model and parameters for reloading
-			this.saveModel(result);
-
-			trainCounter++;
-			trained = true;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Training for binary multi label classifcation.
-	 *
-	 * @param examples
-	 *            Patient training examples.
 	 */
 	private void trainFullSetBML() {
 
@@ -466,39 +350,6 @@ public class LSTMClassifier extends PatientBasedClassifier {
 
 		trainCounter++;
 		trained = true;
-	}
-
-	/**
-	 * Save model with properties to separate files.
-	 *
-	 * @param result
-	 */
-	private void saveModel(EarlyStoppingResult result) {
-
-		// save model after n epochs
-		try {
-
-			File locationToSave = new File("LSTMW2V_MBL_" + trainCounter + ".zip");
-			boolean saveUpdater = true;
-			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
-
-			try {
-				Properties props = new Properties();
-				props.setProperty("LSTMW2V_MBL.bestModelEpoch." + trainCounter,
-						new Integer(result.getBestModelEpoch()).toString());
-				props.setProperty("LSTMW2V_MBL.truncateLength." + trainCounter, new Integer(truncateLength).toString());
-				File f = new File("LSTMW2V_MBL_" + trainCounter + ".properties");
-				OutputStream out = new FileOutputStream(f);
-				props.store(out, "Best model at epoch");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -563,66 +414,6 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		return features;
 	}
 
-	/**
-	 * Log evaluation statistics.
-	 *
-	 * @param training
-	 *            Taining iterator
-	 * @param validation
-	 *            Validation iterator
-	 * @param result
-	 *            EarlyStoppingResult
-	 */
-	private void logEvaluationStats(N2c2PatientIteratorBML training, N2c2PatientIteratorBML validation,
-			EarlyStoppingResult result) {
-		// resetting iterators
-		training.reset();
-		validation.reset();
-
-		// ---------------------------------------------
-		// printing out evaluation stats
-		// ---------------------------------------------
-		LOG.info(System.getProperty("line.separator") + "---------------------------------");
-		LOG.info("Termination reason: " + result.getTerminationReason());
-		LOG.info("Termination details: " + result.getTerminationDetails());
-		LOG.info("Total epochs: " + result.getTotalEpochs());
-		LOG.info("Best epoch number: " + result.getBestModelEpoch());
-		LOG.info("Score at best epoch: " + result.getBestModelScore());
-		LOG.info(System.getProperty("line.separator") + "---------------------------------");
-
-		// training
-		EvaluationBinary eb = new EvaluationBinary();
-		while (training.hasNext()) {
-			DataSet t = training.next();
-			INDArray features = t.getFeatureMatrix();
-			INDArray lables = t.getLabels();
-			INDArray inMask = t.getFeaturesMaskArray();
-			INDArray outMask = t.getLabelsMaskArray();
-			INDArray predicted = net.output(features, false, inMask, outMask);
-
-			eb.eval(lables, predicted, outMask);
-		}
-		training.reset();
-		LOG.info("TRAINING");
-		LOG.info(System.getProperty("line.separator") + eb.stats());
-
-		// validation
-		eb = new EvaluationBinary();
-		while (validation.hasNext()) {
-			DataSet t = validation.next();
-			INDArray features = t.getFeatureMatrix();
-			INDArray lables = t.getLabels();
-			INDArray inMask = t.getFeaturesMaskArray();
-			INDArray outMask = t.getLabelsMaskArray();
-			INDArray predicted = net.output(features, false, inMask, outMask);
-
-			eb.eval(lables, predicted, outMask);
-		}
-		validation.reset();
-		LOG.info("VALIDATION");
-		LOG.info(System.getProperty("line.separator") + eb.stats());
-	}
-
 	@Override
 	public void train(List<Patient> examples) {
 		if (trained == false) {
@@ -630,7 +421,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 
 			initializeTruncateLength();
 			initializeNetworkBinaryMultiLabelDebug();
-			initializeMonitoring();
+//			initializeMonitoring();
 
 			LOG.info("Minibatchsize  :\t" + miniBatchSize);
 			LOG.info("tbptt length   :\t" + tbpttLength);
@@ -672,13 +463,5 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
 
 		return eligibility;
-	}
-
-	public boolean isTrained() {
-		return trained;
-	}
-
-	public void setTrained(boolean trained) {
-		this.trained = trained;
 	}
 }
