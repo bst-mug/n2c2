@@ -342,6 +342,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 
 			fullSetIterator.reset();
 			LOG.info(System.getProperty("line.separator") + ebepoch.stats());
+            LOG.info("Average accuracy: {}", eb.averageAccuracy());
 
 		} while (eb.averageAccuracy() < 0.95);
 
