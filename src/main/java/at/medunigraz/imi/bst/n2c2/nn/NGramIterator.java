@@ -11,13 +11,10 @@ import java.util.NoSuchElementException;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 /**
@@ -25,7 +22,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * 
  * @author Markus
  */
-public class NGramIterator implements DataSetIterator {
+public class NGramIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,10 +35,6 @@ public class NGramIterator implements DataSetIterator {
 	public int maxTokens = 0;
 
 	int sentenceIndex = 0;
-
-	private List<Patient> patients;
-
-	private int cursor = 0;
 
 	public int maxSentences = 0;
 
@@ -229,54 +222,6 @@ public class NGramIterator implements DataSetIterator {
 			e.printStackTrace();
 		}
 		return featureVector;
-	}
-
-	/**
-	 * Fill multi-hot vector for mulit label classification.
-	 * 
-	 * @param binaryMultiHotVector
-	 */
-	private void fillBinaryMultiHotVector(List<Boolean> binaryMultiHotVector) {
-
-		// <ABDOMINAL met="not met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET));
-
-		// <ADVANCED-CAD met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ADVANCED_CAD).equals(Eligibility.MET));
-
-		// <ALCOHOL-ABUSE met="not met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ALCOHOL_ABUSE).equals(Eligibility.MET));
-
-		// <ASP-FOR-MI met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ASP_FOR_MI).equals(Eligibility.MET));
-
-		// <CREATININE met="not met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.CREATININE).equals(Eligibility.MET));
-
-		// <DIETSUPP-2MOS met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.DIETSUPP_2MOS).equals(Eligibility.MET));
-
-		// <DRUG-ABUSE met="not met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.DRUG_ABUSE).equals(Eligibility.MET));
-
-		// <ENGLISH met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ENGLISH).equals(Eligibility.MET));
-
-		// <HBA1C met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.HBA1C).equals(Eligibility.MET));
-
-		// <KETO-1YR met="not met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.KETO_1YR).equals(Eligibility.MET));
-
-		// <MAJOR-DIABETES met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.MAJOR_DIABETES).equals(Eligibility.MET));
-
-		// <MAKES-DECISIONS met="met" />
-		binaryMultiHotVector
-				.add(patients.get(cursor).getEligibility(Criterion.MAKES_DECISIONS).equals(Eligibility.MET));
-
-		// <MI-6MOS met="met" />
-		binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.MI_6MOS).equals(Eligibility.MET));
 	}
 
 	/*
