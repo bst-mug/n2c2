@@ -57,9 +57,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     public DataSetIterator fullSetIterator;
 
-    // training counter
-    protected int trainCounter = 0;
-
     protected void initializeCriterionIndex() {
         this.criterionIndex.put(Criterion.ABDOMINAL, 0);
         this.criterionIndex.put(Criterion.ADVANCED_CAD, 1);
@@ -101,6 +98,9 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             net.fit(fullSetIterator);
             fullSetIterator.reset();
 
+            // save model and parameters for reloading
+            this.saveModel(epochCounter);
+
             LOG.info("Epoch " + epochCounter++ + " complete.");
             LOG.info("Starting FULL SET evaluation:");
 
@@ -121,11 +121,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             LOG.info("Average accuracy: {}", eb.averageAccuracy());
 
         } while (eb.averageAccuracy() < 0.95);
-
-        // save model and parameters for reloading
-        this.saveModel(epochCounter);
-
-        trainCounter++;
     }
 
     /**
@@ -156,15 +151,18 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         // save model after n epochs
         try {
 
-            File locationToSave = new File(root, getModelName() + "_" + trainCounter + ".zip");
+            File locationToSave = new File(root, getModelName() + "_" + epoch + ".zip");
             boolean saveUpdater = true;
             ModelSerializer.writeModel(net, locationToSave, saveUpdater);
 
             try {
                 Properties props = new Properties();
-                props.setProperty(getModelName() + ".bestModelEpoch." + trainCounter, new Integer(epoch).toString());
-                props.setProperty(getModelName() + ".truncateLength." + trainCounter, new Integer(truncateLength).toString());
-                File f = new File(root, getModelName() + "_" + trainCounter + ".properties");
+                props.setProperty(getModelName() + ".bestModelEpoch", new Integer(epoch).toString());
+
+                // TODO truncateLength does not change each epoch, this could be persisted in saveParams()
+                props.setProperty(getModelName() + ".truncateLength", new Integer(truncateLength).toString());
+
+                File f = new File(root, getModelName() + ".properties");
                 OutputStream out = new FileOutputStream(f);
                 props.store(out, "Best model at epoch");
             } catch (Exception e) {
@@ -223,7 +221,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         }
         else {
             this.patientExamples = examples;
-            this.trainCounter = 0;
 
             initializeNetwork();
 //			initializeMonitoring();
@@ -259,11 +256,29 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     public void initializeNetworkFromFile(String pathToModel) {
         try {
-            File networkFile = new File(pathToModel, getModelName() + "_0.zip");
+            Properties prop = loadProperties(pathToModel);
+            final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
+            this.truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
+
+            File networkFile = new File(pathToModel, getModelName() + "_" + bestEpoch + ".zip");
             this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * load a properties file
+     *
+     * @param pathToModel
+     * @return
+     * @throws IOException
+     */
+    protected Properties loadProperties(String pathToModel) throws IOException {
+        Properties prop = new Properties();
+        InputStream input = new FileInputStream(new File(pathToModel, getModelName() + ".properties"));
+        prop.load(input);
+        return prop;
     }
 
     protected abstract void initializeNetwork();
