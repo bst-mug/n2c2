@@ -5,14 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,16 +62,8 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		fullSetIterator = new NGramIterator();
 
 		try {
-
-			// load a properties file
-			Properties prop = new Properties();
-			InputStream input = new FileInputStream(new File(pathToModel, "BILSTMC3G_MBL_0.properties"));
-
-			prop.load(input);
-			this.truncateLength = Integer.parseInt(prop.getProperty("BILSTMC3G_MBL.truncateLength.0"));
-
 			// read char 3-grams and index
-			FileInputStream fis = new FileInputStream(new File(pathToModel, "characterNGram_3_0"));
+			FileInputStream fis = new FileInputStream(new File(pathToModel, "characterNGram_3"));
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ArrayList<String> characterNGram_3 = (ArrayList<String>) ois.readObject();
 
@@ -82,7 +72,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 			this.vectorSize = ((NGramIterator)fullSetIterator).vectorSize;
 
 			// read char 3-grams index
-			fis = new FileInputStream(new File(pathToModel, "char3GramToIdxMap_0"));
+			fis = new FileInputStream(new File(pathToModel, "char3GramToIdxMap"));
 			ois = new ObjectInputStream(fis);
 			Map<String, Integer> char3GramToIdxMap_0 = (HashMap<String, Integer>) ois.readObject();
 			((NGramIterator)fullSetIterator).char3GramToIdxMap = char3GramToIdxMap_0;
@@ -130,6 +120,8 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		double adaGradCore = 0.04;
 		double adaGradDense = 0.01;
 		double adaGradGraves = 0.008;
+
+		saveParams();
 
 		// seed for reproducibility
 		final int seed = 12345;
@@ -182,14 +174,12 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		return "BILSTMC3G_MBL";
 	}
 
-	protected void saveModel(int epoch) {
-		super.saveModel(epoch);
-
+	protected void saveParams() {
 		File root = getModelDirectory(patientExamples);
 
 		try {
 			// writing our character n-grams
-			FileOutputStream fos = new FileOutputStream(new File(root, "characterNGram_3_" + trainCounter));
+			FileOutputStream fos = new FileOutputStream(new File(root, "characterNGram_3"));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(((NGramIterator)fullSetIterator).characterNGram_3);
 			oos.flush();
@@ -197,7 +187,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 			fos.close();
 
 			// writing our character n-grams
-			fos = new FileOutputStream(new File(root, "char3GramToIdxMap_" + trainCounter));
+			fos = new FileOutputStream(new File(root, "char3GramToIdxMap"));
 			oos = new ObjectOutputStream(fos);
 			oos.writeObject(((NGramIterator)fullSetIterator).char3GramToIdxMap);
 			oos.flush();
