@@ -2,15 +2,12 @@ package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -26,21 +23,13 @@ public class NGramIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
-	private int miniBatchSize;
-
 	public ArrayList<String> characterNGram_3 = new ArrayList<String>();
 
 	public Map<String, Integer> char3GramToIdxMap = new HashMap<String, Integer>();
 
-	public int maxTokens = 0;
-
-	int sentenceIndex = 0;
-
 	public int maxSentences = 0;
 
 	Map<Integer, List<String>> patientLines;
-
-	public int vectorSize;
 
 	/**
 	 * Default constructor.
@@ -54,14 +43,14 @@ public class NGramIterator extends BaseNNIterator {
 	 * 
 	 * @param patients
 	 *            List of patients.
-	 * @param miniBatchSize
+	 * @param batchSize
 	 *            Minibatch size.
 	 * @throws IOException
 	 */
-	public NGramIterator(List<Patient> patients, int miniBatchSize) throws IOException {
+	public NGramIterator(List<Patient> patients, int batchSize) throws IOException {
 
 		this.patients = patients;
-		this.miniBatchSize = miniBatchSize;
+		this.batchSize = batchSize;
 
 		// getting lines from all patients
 		this.patientLines = new HashMap<Integer, List<String>>();
@@ -126,15 +115,14 @@ public class NGramIterator extends BaseNNIterator {
 	 * @param num
 	 *            Minibatch size.
 	 * @return DatSet
-	 * @throws IOException
 	 */
-	public DataSet getNext(int num) throws IOException {
+	public DataSet getNext(int num) {
 
 		HashMap<Integer, ArrayList<Boolean>> binaryMultiHotVectorMap = new HashMap<Integer, ArrayList<Boolean>>();
 
 		// load patient batch
 		int maxLength = 0;
-		Map<Integer, List<String>> patientBatch = new HashMap<Integer, List<String>>(miniBatchSize);
+		Map<Integer, List<String>> patientBatch = new HashMap<Integer, List<String>>(batchSize);
 		for (int i = 0; i < num && cursor < totalExamples(); i++) {
 			List<String> sentences = patientLines.get(cursor);
 			patientBatch.put(i, sentences);
@@ -222,175 +210,5 @@ public class NGramIterator extends BaseNNIterator {
 			e.printStackTrace();
 		}
 		return featureVector;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#totalExamples()
-	 */
-	@Override
-	public int totalExamples() {
-		return this.patients.size();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#inputColumns()
-	 */
-	@Override
-	public int inputColumns() {
-		return vectorSize;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#totalOutcomes()
-	 */
-	@Override
-	public int totalOutcomes() {
-		return 13;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#reset()
-	 */
-	@Override
-	public void reset() {
-		cursor = 0;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#resetSupported()
-	 */
-	public boolean resetSupported() {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#asyncSupported()
-	 */
-	@Override
-	public boolean asyncSupported() {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#batch()
-	 */
-	@Override
-	public int batch() {
-		return miniBatchSize;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#cursor()
-	 */
-	@Override
-	public int cursor() {
-		return cursor;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#numExamples()
-	 */
-	@Override
-	public int numExamples() {
-		return totalExamples();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#setPreProcessor(org.
-	 * nd4j.linalg.dataset.api.DataSetPreProcessor)
-	 */
-	@Override
-	public void setPreProcessor(DataSetPreProcessor preProcessor) {
-		throw new UnsupportedOperationException();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#getLabels()
-	 */
-	@Override
-	public List<String> getLabels() {
-		return Arrays.asList("ABDOMINAL", "ADVANCED-CAD", "ALCOHOL-ABUSE", "ASP-FOR-MI", "CREATININE", "DIETSUPP-2MOS",
-				"DRUG-ABUSE", "ENGLISH", "HBA1C", "KETO-1YR", "MAJOR-DIABETES", "MAKES-DECISIONS", "MI-6MOS");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#hasNext()
-	 */
-	@Override
-	public boolean hasNext() {
-		return cursor < numExamples();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#remove()
-	 */
-	@Override
-	public void remove() {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#getPreProcessor()
-	 */
-	@Override
-	public DataSetPreProcessor getPreProcessor() {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#next()
-	 */
-	@Override
-	public DataSet next() {
-		return next(miniBatchSize);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#next(int)
-	 */
-	@Override
-	public DataSet next(int num) {
-		if (cursor >= patients.size())
-			throw new NoSuchElementException();
-		try {
-			return getNext(num);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
