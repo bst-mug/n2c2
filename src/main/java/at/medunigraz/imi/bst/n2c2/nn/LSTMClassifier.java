@@ -1,25 +1,16 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.deeplearning4j.api.storage.StatsStorage;
-import org.deeplearning4j.eval.EvaluationBinary;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
-import org.deeplearning4j.nn.api.Layer;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -32,13 +23,8 @@ import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
-import org.deeplearning4j.ui.api.UIServer;
-import org.deeplearning4j.ui.stats.StatsListener;
-import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
-import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -46,9 +32,6 @@ import org.nd4j.linalg.learning.config.AdaGrad;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 /**
@@ -57,10 +40,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * @author Markus
  *
  */
-public class LSTMClassifier extends PatientBasedClassifier {
-
-	// size of mini-batch for training
-	private int miniBatchSize = 10;
+public class LSTMClassifier extends BaseNNClassifier {
 
 	// length for truncated backpropagation through time
 	private int tbpttLength = 50;
@@ -68,38 +48,17 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	// total number of training epochs
 	private int nEpochs = 50;
 
-	// specifies time series length
-	private int truncateLength = 64;
-
 	// Google word vector size
 	int vectorSize = 200;
 
 	// accessing Google word vectors
 	private WordVectors wordVectors;
 
-	// training data
-	private List<Patient> patientExamples;
-
 	// tokenizer logic
 	private TokenizerFactory tokenizerFactory;
 
-	// multi layer network
-	private MultiLayerNetwork net;
-
 	// location of precalculated vectors
 	private String wordVectorsPath = "vectors.tsv";
-
-	// criterion index
-	private Map<Criterion, Integer> criterionIndex = new HashMap<Criterion, Integer>();
-
-	// iterator over full training set
-	public N2c2PatientIteratorBML fullSetIterator;
-
-	// training counter
-	private int trainCounter = 0;
-
-	// is network trained
-	private boolean trained = false;
 
 	// logging
 	private static final Logger LOG = LogManager.getLogger();
@@ -111,34 +70,15 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		initializeCriterionIndex();
 	}
 
-	private void initializeCriterionIndex() {
-		this.criterionIndex.put(Criterion.ABDOMINAL, 0);
-		this.criterionIndex.put(Criterion.ADVANCED_CAD, 1);
-		this.criterionIndex.put(Criterion.ALCOHOL_ABUSE, 2);
-		this.criterionIndex.put(Criterion.ASP_FOR_MI, 3);
-		this.criterionIndex.put(Criterion.CREATININE, 4);
-		this.criterionIndex.put(Criterion.DIETSUPP_2MOS, 5);
-		this.criterionIndex.put(Criterion.DRUG_ABUSE, 6);
-		this.criterionIndex.put(Criterion.ENGLISH, 7);
-		this.criterionIndex.put(Criterion.HBA1C, 8);
-		this.criterionIndex.put(Criterion.KETO_1YR, 9);
-		this.criterionIndex.put(Criterion.MAJOR_DIABETES, 10);
-		this.criterionIndex.put(Criterion.MAKES_DECISIONS, 11);
-		this.criterionIndex.put(Criterion.MI_6MOS, 12);
-	}
-
 	private void initializeTokenizer() {
 		tokenizerFactory = new DefaultTokenizerFactory();
 		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 	}
 
-	public void initializeNetworkFromFile(String modelFile) {
-		try {
-			File networkFile = new File(getClass().getResource("/models/" + modelFile).getPath());
-			this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	@Override
+	protected void initializeNetwork() {
+		initializeTruncateLength();
+		initializeNetworkBinaryMultiLabelDebug();
 	}
 
 	/**
@@ -221,28 +161,6 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	}
 
 	/**
-	 * Initialize monitoring.
-	 *
-	 */
-	private void initializeMonitoring() {
-		// setting monitor
-		UIServer uiServer = UIServer.getInstance();
-
-		// Configure where the network information (gradients, score vs. time
-		// etc) is to be stored. Here: store in memory.
-		// Alternative: new FileStatsStorage(File), for saving and loading later
-		StatsStorage statsStorage = new InMemoryStatsStorage();
-
-		// Attach the StatsStorage instance to the UI: this allows the contents
-		// of the StatsStorage to be visualized
-		uiServer.attach(statsStorage);
-
-		// Then add the StatsListener to collect this information from the
-		// network, as it trains
-		net.setListeners(new StatsListener(statsStorage));
-	}
-
-	/**
 	 * Get longest token sequence of all patients with respect to existing word
 	 * vector out of Google corpus.
 	 *
@@ -288,89 +206,9 @@ public class LSTMClassifier extends PatientBasedClassifier {
 		this.truncateLength = maxLength;
 	}
 
-	/**
-	 * Training for binary multi label classifcation.
-	 */
-	private void trainFullSetBML() {
-
-		// print the number of parameters in the network (and for each layer)
-		Layer[] layers = net.getLayers();
-		int totalNumParams = 0;
-		for (int i = 0; i < layers.length; i++) {
-			int nParams = layers[i].numParams();
-			LOG.info("Number of parameters in layer " + i + ": " + nParams);
-			totalNumParams += nParams;
-		}
-		LOG.info("Total number of network parameters: " + totalNumParams);
-
-		int epochCounter = 0;
-
-		EvaluationBinary eb = new EvaluationBinary();
-		do {
-
-			EvaluationBinary ebepoch = new EvaluationBinary();
-
-			net.fit(fullSetIterator);
-			fullSetIterator.reset();
-
-			LOG.info("Epoch " + epochCounter++ + " complete.");
-			LOG.info("Starting FULL SET evaluation:");
-
-			while (fullSetIterator.hasNext()) {
-				DataSet t = fullSetIterator.next();
-				INDArray features = t.getFeatureMatrix();
-				INDArray lables = t.getLabels();
-				INDArray inMask = t.getFeaturesMaskArray();
-				INDArray outMask = t.getLabelsMaskArray();
-				INDArray predicted = net.output(features, false, inMask, outMask);
-
-				ebepoch.eval(lables, predicted, outMask);
-				eb = ebepoch;
-			}
-
-			fullSetIterator.reset();
-			LOG.info(System.getProperty("line.separator") + ebepoch.stats());
-            LOG.info("Average accuracy: {}", eb.averageAccuracy());
-
-		} while (eb.averageAccuracy() < 0.95);
-
-		// save model and parameters for reloading
-		this.saveModel(epochCounter);
-
-		trainCounter++;
-		trained = true;
-	}
-
-	/**
-	 * Save model with properties to separate files.
-	 *
-	 * @param epoch
-	 */
-	private void saveModel(int epoch) {
-
-		// save model after n epochs
-		try {
-
-			File locationToSave = new File("LSTMW2V_MBL_" + trainCounter + ".zip");
-			boolean saveUpdater = true;
-			ModelSerializer.writeModel(net, locationToSave, saveUpdater);
-
-			try {
-				Properties props = new Properties();
-				props.setProperty("LSTMW2V_MBL.bestModelEpoch." + trainCounter, new Integer(epoch).toString());
-				props.setProperty("LSTMW2V_MBL.truncateLength." + trainCounter, new Integer(truncateLength).toString());
-				File f = new File("LSTMW2V_MBL_" + trainCounter + ".properties");
-				OutputStream out = new FileOutputStream(f);
-				props.store(out, "Best model at epoch");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	@Override
+	protected String getModelName() {
+		return "LSTMW2V_MBL";
 	}
 
 	/**
@@ -382,7 +220,7 @@ public class LSTMClassifier extends PatientBasedClassifier {
 	 *            Maximum length of token series length.
 	 * @return Time series feature presentation of narrative.
 	 */
-	private INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
+	protected INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
 
 		List<String> tokens = tokenizerFactory.create(reviewContents).getTokens();
 		List<String> tokensFiltered = new ArrayList<>();
@@ -401,56 +239,5 @@ public class LSTMClassifier extends PatientBasedClassifier {
 					vector);
 		}
 		return features;
-	}
-
-	@Override
-	public void train(List<Patient> examples) {
-		if (trained == false) {
-			this.patientExamples = examples;
-
-			initializeTruncateLength();
-			initializeNetworkBinaryMultiLabelDebug();
-//			initializeMonitoring();
-
-			LOG.info("Minibatchsize  :\t" + miniBatchSize);
-			LOG.info("tbptt length   :\t" + tbpttLength);
-			LOG.info("Epochs         :\t" + nEpochs);
-			LOG.info("Truncate length:\t" + truncateLength);
-
-			// trained = true
-			trainFullSetBML();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * at.medunigraz.imi.bst.n2c2.classifier.Classifier#predict(at.medunigraz.
-	 * imi.bst.n2c2.model.Patient, at.medunigraz.imi.bst.n2c2.model.Criterion)
-	 */
-	@Override
-	public Eligibility predict(Patient p, Criterion c) {
-
-		String patientNarrative = p.getText();
-
-		INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
-		INDArray networkOutput = net.output(features);
-
-		int timeSeriesLength = networkOutput.size(2);
-		INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(),
-				NDArrayIndex.point(timeSeriesLength - 1));
-
-		double probabilityForCriterion = 0.0;
-		probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
-		Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
-
-		LOG.info("\n\n-------------------------------");
-		LOG.info("Patient: " + p.getID());
-		LOG.info("Probabilities at last time step for {}", c.name());
-		LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
-		LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
-
-		return eligibility;
 	}
 }
