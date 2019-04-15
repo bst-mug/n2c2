@@ -178,7 +178,13 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     protected abstract String getModelName();
 
-    private void predict(Patient p) {
+    /**
+     * Apply the NN on a given patient and modify the given instance with the predictions.
+     *
+     * @param p A given patient.
+     * @return A map of MET probabilities for each criterion.
+     */
+    public Map<Criterion, Double> predict(Patient p) {
         String patientNarrative = p.getText();
 
         INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
@@ -187,10 +193,13 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         int timeSeriesLength = networkOutput.size(2);
         INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
 
+        Map<Criterion, Double> ret = new HashMap<>();
+
         criterionIndex.forEach((c, idx) -> {
             double probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
-            Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
+            ret.put(c, probabilityForCriterion);
 
+            Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
             p.withCriterion(c, eligibility);
 
             LOG.info("\n\n-------------------------------");
@@ -199,6 +208,8 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
             LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
         });
+
+        return ret;
     }
 
     /*
