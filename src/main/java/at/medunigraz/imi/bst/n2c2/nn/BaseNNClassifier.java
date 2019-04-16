@@ -35,12 +35,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // size of mini-batch for training
     protected int miniBatchSize = 10;
 
-    // length for truncated backpropagation through time
-    protected int tbpttLength = 100;
-
-    // total number of training epochs
-    protected int nEpochs = 100;
-
     // specifies time series length
     protected int truncateLength = 64;
 
@@ -237,8 +231,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 //			initializeMonitoring();
 
             LOG.info("Minibatchsize  :\t" + miniBatchSize);
-            LOG.info("tbptt length   :\t" + tbpttLength);
-            LOG.info("Epochs         :\t" + nEpochs);
             LOG.info("Truncate length:\t" + truncateLength);
 
             trainFullSetBML();
