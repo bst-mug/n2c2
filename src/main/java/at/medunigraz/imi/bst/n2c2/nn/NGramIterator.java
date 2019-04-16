@@ -141,7 +141,7 @@ public class NGramIterator extends BaseNNIterator {
 			maxLength = maxSentences;
 
 		INDArray features = Nd4j.create(new int[] { patientBatch.size(), vectorSize, maxLength }, 'f');
-		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), 13, maxLength }, 'f');
+		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), totalOutcomes(), maxLength }, 'f');
 
 		INDArray featuresMask = Nd4j.zeros(patientBatch.size(), maxLength);
 		INDArray labelsMask = Nd4j.zeros(patientBatch.size(), maxLength);

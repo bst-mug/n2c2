@@ -58,7 +58,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
      */
     @Override
     public int totalOutcomes() {
-        return 13;
+        return Criterion.classifiableValues().length;
     }
 
     /*

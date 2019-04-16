@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.nn.conf.GradientNormalization;
@@ -152,7 +153,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 								.activation(Activation.SOFTSIGN).build())
 
 				.layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(Criterion.classifiableValues().length).build())
 
 				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
 				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
