@@ -91,12 +91,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 		Nd4j.getMemoryManager().setAutoGcWindow(10000);
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
-		try {
-			fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
 
 		int lstmLayerSize = 128;
 		double l2Regulization = 0.01;
@@ -132,12 +127,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 
 		Nd4j.getMemoryManager().setAutoGcWindow(10000); // https://deeplearning4j.org/workspaces
 
-		try {
-			fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
 
 		// Set up network configuration
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)

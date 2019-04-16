@@ -29,20 +29,16 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * @author Markus
  *
  */
-public class N2c2PatientIteratorBML implements DataSetIterator {
+public class N2c2PatientIteratorBML extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
 	private final WordVectors wordVectors;
 
-	private final int batchSize;
-	private final int vectorSize;
 	private final int truncateLength;
 
-	private int cursor = 0;
 	private final TokenizerFactory tokenizerFactory;
 
-	private List<Patient> patients;
 
 	/**
 	 * Patient data iterator for the n2c2 task.
@@ -55,10 +51,8 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 	 *            Mini batch size use for processing.
 	 * @param truncateLength
 	 *            Maximum length of token sequence.
-	 * @throws IOException
 	 */
-	public N2c2PatientIteratorBML(List<Patient> patients, WordVectors wordVectors, int batchSize, int truncateLength)
-			throws IOException {
+	public N2c2PatientIteratorBML(List<Patient> patients, WordVectors wordVectors, int batchSize, int truncateLength) {
 
 		this.patients = patients;
 		this.batchSize = batchSize;
@@ -71,31 +65,15 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#next(int)
-	 */
-	@Override
-	public DataSet next(int num) {
-		if (cursor >= patients.size())
-			throw new NoSuchElementException();
-		try {
-			return nextPatientsDataSet(num);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	/**
 	 * Next data set implementation.
 	 * 
 	 * @param num
 	 *            Mini batch size.
 	 * @return DataSet Patients data set.
-	 * @throws IOException
 	 */
-	private DataSet nextPatientsDataSet(int num) throws IOException {
+	@Override
+	public DataSet getNext(int num) {
 
 		HashMap<Integer, ArrayList<Boolean>> binaryMultiHotVectorMap = new HashMap<Integer, ArrayList<Boolean>>();
 
@@ -106,50 +84,7 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 			narratives.add(narrative);
 
 			ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
-
-			// <ABDOMINAL met="not met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ABDOMINAL).equals(Eligibility.MET));
-
-			// <ADVANCED-CAD met="met" />
-			binaryMultiHotVector
-					.add(patients.get(cursor).getEligibility(Criterion.ADVANCED_CAD).equals(Eligibility.MET));
-
-			// <ALCOHOL-ABUSE met="not met" />
-			binaryMultiHotVector
-					.add(patients.get(cursor).getEligibility(Criterion.ALCOHOL_ABUSE).equals(Eligibility.MET));
-
-			// <ASP-FOR-MI met="met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ASP_FOR_MI).equals(Eligibility.MET));
-
-			// <CREATININE met="not met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.CREATININE).equals(Eligibility.MET));
-
-			// <DIETSUPP-2MOS met="met" />
-			binaryMultiHotVector
-					.add(patients.get(cursor).getEligibility(Criterion.DIETSUPP_2MOS).equals(Eligibility.MET));
-
-			// <DRUG-ABUSE met="not met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.DRUG_ABUSE).equals(Eligibility.MET));
-
-			// <ENGLISH met="met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.ENGLISH).equals(Eligibility.MET));
-
-			// <HBA1C met="met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.HBA1C).equals(Eligibility.MET));
-
-			// <KETO-1YR met="not met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.KETO_1YR).equals(Eligibility.MET));
-
-			// <MAJOR-DIABETES met="met" />
-			binaryMultiHotVector
-					.add(patients.get(cursor).getEligibility(Criterion.MAJOR_DIABETES).equals(Eligibility.MET));
-
-			// <MAKES-DECISIONS met="met" />
-			binaryMultiHotVector
-					.add(patients.get(cursor).getEligibility(Criterion.MAKES_DECISIONS).equals(Eligibility.MET));
-
-			// <MI-6MOS met="met" />
-			binaryMultiHotVector.add(patients.get(cursor).getEligibility(Criterion.MI_6MOS).equals(Eligibility.MET));
+			fillBinaryMultiHotVector(binaryMultiHotVector);
 
 			binaryMultiHotVectorMap.put(i, binaryMultiHotVector);
 			cursor++;
@@ -208,160 +143,5 @@ public class N2c2PatientIteratorBML implements DataSetIterator {
 			labelsMask.putScalar(new int[] { i, lastIdx - 1 }, 1.0);
 		}
 		return new DataSet(features, labels, featuresMask, labelsMask);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#totalExamples()
-	 */
-	@Override
-	public int totalExamples() {
-		return this.patients.size();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#inputColumns()
-	 */
-	@Override
-	public int inputColumns() {
-		return vectorSize;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#totalOutcomes()
-	 */
-	@Override
-	public int totalOutcomes() {
-		return 13;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#reset()
-	 */
-	@Override
-	public void reset() {
-		cursor = 0;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#resetSupported()
-	 */
-	public boolean resetSupported() {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#asyncSupported()
-	 */
-	@Override
-	public boolean asyncSupported() {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#batch()
-	 */
-	@Override
-	public int batch() {
-		return batchSize;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#cursor()
-	 */
-	@Override
-	public int cursor() {
-		return cursor;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#numExamples()
-	 */
-	@Override
-	public int numExamples() {
-		return totalExamples();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#setPreProcessor(org.
-	 * nd4j.linalg.dataset.api.DataSetPreProcessor)
-	 */
-	@Override
-	public void setPreProcessor(DataSetPreProcessor preProcessor) {
-		throw new UnsupportedOperationException();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.nd4j.linalg.dataset.api.iterator.DataSetIterator#getLabels()
-	 */
-	@Override
-	public List<String> getLabels() {
-		return Arrays.asList("ABDOMINAL", "ADVANCED-CAD", "ALCOHOL-ABUSE", "ASP-FOR-MI", "CREATININE", "DIETSUPP-2MOS",
-				"DRUG-ABUSE", "ENGLISH", "HBA1C", "KETO-1YR", "MAJOR-DIABETES", "MAKES-DECISIONS", "MI-6MOS");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#hasNext()
-	 */
-	@Override
-	public boolean hasNext() {
-		return cursor < numExamples();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#next()
-	 */
-	@Override
-	public DataSet next() {
-		return next(batchSize);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#remove()
-	 */
-	@Override
-	public void remove() {
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.nd4j.linalg.dataset.api.iterator.DataSetIterator#getPreProcessor()
-	 */
-	@Override
-	public DataSetPreProcessor getPreProcessor() {
-		throw new UnsupportedOperationException("Not implemented");
 	}
 }
