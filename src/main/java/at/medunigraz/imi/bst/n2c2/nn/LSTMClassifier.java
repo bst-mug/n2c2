@@ -218,12 +218,12 @@ public class LSTMClassifier extends BaseNNClassifier {
 			if (wordVectors.hasWord(t))
 				tokensFiltered.add(t);
 		}
-		int outputLength = Math.max(maxLength, tokensFiltered.size());
+		int outputLength = Math.min(maxLength, tokensFiltered.size());
 
 		INDArray features = Nd4j.create(1, vectorSize, outputLength);
 
-		for (int j = 0; j < tokens.size() && j < maxLength; j++) {
-			String token = tokens.get(j);
+		for (int j = 0; j < tokensFiltered.size() && j < maxLength; j++) {
+			String token = tokensFiltered.get(j);
 			INDArray vector = wordVectors.getWordVectorMatrix(token);
 			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
 					vector);
