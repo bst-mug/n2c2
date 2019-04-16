@@ -33,7 +33,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     private static final Logger LOG = LogManager.getLogger();
 
     // size of mini-batch for training
-    protected int miniBatchSize = 10;
+    protected static final int BATCH_SIZE = 10;
 
     // specifies time series length
     protected int truncateLength = 64;
@@ -211,7 +211,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             initializeNetwork();
 //			initializeMonitoring();
 
-            LOG.info("Minibatchsize  :\t" + miniBatchSize);
+            LOG.info("Minibatchsize  :\t" + BATCH_SIZE);
             LOG.info("Truncate length:\t" + truncateLength);
 
             trainFullSetBML();

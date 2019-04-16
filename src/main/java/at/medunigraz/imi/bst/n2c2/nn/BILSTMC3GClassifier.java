@@ -102,7 +102,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new NGramIterator(patientExamples, BATCH_SIZE);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
