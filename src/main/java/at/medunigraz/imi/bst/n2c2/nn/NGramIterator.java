@@ -103,10 +103,10 @@ public class NGramIterator extends BaseNNIterator {
 
 			// adding out of dictionary entries
 			characterNGram_3.add("OOD");
-
-			// set vector dimensionality
-			vectorSize = characterNGram_3.size();
 		}
+
+        // set vector dimensionality
+        vectorSize = characterNGram_3.size();
 	}
 
 	/**
