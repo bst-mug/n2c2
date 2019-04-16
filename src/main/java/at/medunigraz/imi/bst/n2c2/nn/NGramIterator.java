@@ -52,7 +52,22 @@ public class NGramIterator extends BaseNNIterator {
 		this.patients = patients;
 		this.batchSize = batchSize;
 
-		// getting lines from all patients
+		this.patientLines = createPatientLines(patients);
+
+		// generate char 3 grams
+		this.fillCharNGramsMaps();
+
+		// generate index
+		this.createIndizes();
+	}
+
+	/**
+	 * getting lines from all patients
+	 *
+	 * @param patients
+	 * @return
+	 */
+	private Map<Integer, List<String>> createPatientLines(List<Patient> patients) {
 		this.patientLines = new HashMap<Integer, List<String>>();
 
 		int patientIndex = 0;
@@ -62,11 +77,7 @@ public class NGramIterator extends BaseNNIterator {
 			this.patientLines.put(patientIndex++, tmpLines);
 		}
 
-		// generate char 3 grams
-		this.fillCharNGramsMaps();
-
-		// generate index
-		this.createIndizes();
+		return this.patientLines;
 	}
 
 	/**
