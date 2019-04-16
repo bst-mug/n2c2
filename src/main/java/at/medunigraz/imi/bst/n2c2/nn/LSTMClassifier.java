@@ -1,7 +1,6 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +27,6 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
-import org.nd4j.linalg.learning.config.AdaGrad;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
@@ -79,48 +77,6 @@ public class LSTMClassifier extends BaseNNClassifier {
 	protected void initializeNetwork() {
 		initializeTruncateLength();
 		initializeNetworkBinaryMultiLabelDebug();
-	}
-
-	/**
-	 * SIGMOID activation and XENT loss function for binary multi-label
-	 * classification.
-	 */
-	private void initializeNetworkBinaryMultiLabel() {
-
-		// https://deeplearning4j.org/workspaces
-		Nd4j.getMemoryManager().setAutoGcWindow(10000);
-		// Nd4j.getMemoryManager().togglePeriodicGc(false);
-
-		fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
-
-		int lstmLayerSize = 128;
-		double l2Regulization = 0.01;
-		double adaGradCore = 0.04;
-		double adaGradGraves = 0.008;
-
-		// seed for reproducibility
-		final int seed = 12345;
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
-				.updater(AdaGrad.builder().learningRate(adaGradCore).build()).regularization(true).l2(l2Regulization)
-				.weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
-				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE).list()
-				.layer(0,
-						new GravesLSTM.Builder().nIn(vectorSize).nOut(lstmLayerSize)
-								.updater(AdaGrad.builder().learningRate(adaGradGraves).build())
-								.activation(Activation.SOFTSIGN).build())
-				.layer(1,
-						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-								.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
-				.pretrain(false).backprop(true).build();
-
-		// for truncated backpropagation over time
-		// .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength)
-		// .tBPTTBackwardLength(tbpttLength).pretrain(false).backprop(true).build();
-
-		this.net = new MultiLayerNetwork(conf);
-		this.net.init();
-		this.net.setListeners(new ScoreIterationListener(1));
 	}
 
 	private void initializeNetworkBinaryMultiLabelDebug() {
