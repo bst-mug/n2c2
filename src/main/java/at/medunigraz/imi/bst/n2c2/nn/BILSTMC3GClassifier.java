@@ -45,11 +45,6 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	public BILSTMC3GClassifier() {
-
-		initializeCriterionIndex();
-	}
-
 	public void initializeNetworkFromFile(String pathToModel) {
 
 		// settings for memory management:

@@ -46,26 +46,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // multi layer network
     protected MultiLayerNetwork net;
 
-    // criterion index
-    protected Map<Criterion, Integer> criterionIndex = new HashMap<Criterion, Integer>();
-
     public DataSetIterator fullSetIterator;
-
-    protected void initializeCriterionIndex() {
-        this.criterionIndex.put(Criterion.ABDOMINAL, 0);
-        this.criterionIndex.put(Criterion.ADVANCED_CAD, 1);
-        this.criterionIndex.put(Criterion.ALCOHOL_ABUSE, 2);
-        this.criterionIndex.put(Criterion.ASP_FOR_MI, 3);
-        this.criterionIndex.put(Criterion.CREATININE, 4);
-        this.criterionIndex.put(Criterion.DIETSUPP_2MOS, 5);
-        this.criterionIndex.put(Criterion.DRUG_ABUSE, 6);
-        this.criterionIndex.put(Criterion.ENGLISH, 7);
-        this.criterionIndex.put(Criterion.HBA1C, 8);
-        this.criterionIndex.put(Criterion.KETO_1YR, 9);
-        this.criterionIndex.put(Criterion.MAJOR_DIABETES, 10);
-        this.criterionIndex.put(Criterion.MAKES_DECISIONS, 11);
-        this.criterionIndex.put(Criterion.MI_6MOS, 12);
-    }
 
     /**
      * Training for binary multi label classifcation.
@@ -189,8 +170,8 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
         Map<Criterion, Double> ret = new HashMap<>();
 
-        criterionIndex.forEach((c, idx) -> {
-            double probabilityForCriterion = probabilitiesAtLastWord.getDouble(criterionIndex.get(c));
+        for (Criterion c : Criterion.classifiableValues()) {
+            double probabilityForCriterion = probabilitiesAtLastWord.getDouble(c.getValue());
             ret.put(c, probabilityForCriterion);
 
             Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
@@ -201,7 +182,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             LOG.info("Probabilities at last time step for {}", c.name());
             LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
             LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
-        });
+        }
 
         return ret;
     }
