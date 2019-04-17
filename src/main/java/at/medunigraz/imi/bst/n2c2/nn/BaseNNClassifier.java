@@ -260,7 +260,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     }
 
     public boolean isTrained(List<Patient> patients) {
-        return new File(getModelPath(patients)).isDirectory();
+        return new File(getModelPath(patients), getModelName() + ".properties").exists();
     }
 
     protected abstract INDArray loadFeaturesForNarrative(String reviewContents, int maxLength);
