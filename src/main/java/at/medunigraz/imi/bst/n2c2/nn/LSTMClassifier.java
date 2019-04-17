@@ -87,7 +87,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 
 		// Set up network configuration
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)
-				.updater(Adam.builder().learningRate(2e-2).build()).l2(1e-5).weightInit(WeightInit.XAVIER)
+				.updater(Adam.builder().learningRate(2e-2).build()).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
 				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
 				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE) // https://deeplearning4j.org/workspaces
