@@ -4,21 +4,27 @@ package at.medunigraz.imi.bst.n2c2.model;
  * Enum types should be the same as XML with hyphen changed to underscore.
  */
 public enum Criterion {
-    ABDOMINAL,
-    ADVANCED_CAD,
-    ALCOHOL_ABUSE,
-    ASP_FOR_MI,
-    CREATININE,
-    DIETSUPP_2MOS,
-    DRUG_ABUSE,
-    ENGLISH,
-    HBA1C,
-    KETO_1YR,
-    MAJOR_DIABETES,
-    MAKES_DECISIONS,
-    MI_6MOS,
-    OVERALL_MICRO,
-    OVERALL_MACRO;
+    ABDOMINAL(0),
+    ADVANCED_CAD(1),
+    ALCOHOL_ABUSE(2),
+    ASP_FOR_MI(3),
+    CREATININE(4),
+    DIETSUPP_2MOS(5),
+    DRUG_ABUSE(6),
+    ENGLISH(7),
+    HBA1C(8),
+    KETO_1YR(9),
+    MAJOR_DIABETES(10),
+    MAKES_DECISIONS(11),
+    MI_6MOS(12),
+    OVERALL_MICRO(90),
+    OVERALL_MACRO(91);
+
+    private final int value;
+
+    private Criterion(int value) {
+        this.value = value;
+    }
 
     public static Criterion get(String value) {
         String cleanedValue = value.replaceAll("[()]", "").replace('-', '_').replace(' ', '_');
@@ -56,5 +62,9 @@ public enum Criterion {
         }
 
         return ret;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

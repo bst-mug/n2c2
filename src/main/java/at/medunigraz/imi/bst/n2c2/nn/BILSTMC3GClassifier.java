@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.nn.conf.GradientNormalization;
@@ -44,11 +45,6 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 public class BILSTMC3GClassifier extends BaseNNClassifier {
 
 	private static final Logger LOG = LogManager.getLogger();
-
-	public BILSTMC3GClassifier() {
-
-		initializeCriterionIndex();
-	}
 
 	public void initializeNetworkFromFile(String pathToModel) {
 
@@ -106,7 +102,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		try {
-			fullSetIterator = new NGramIterator(patientExamples, miniBatchSize);
+			fullSetIterator = new NGramIterator(patientExamples, BATCH_SIZE);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -157,7 +153,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 								.activation(Activation.SOFTSIGN).build())
 
 				.layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(13).build())
+						.lossFunction(LossFunctions.LossFunction.XENT).nIn(lstmLayerSize).nOut(Criterion.classifiableValues().length).build())
 
 				.inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
 				.inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();

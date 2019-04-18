@@ -52,7 +52,22 @@ public class NGramIterator extends BaseNNIterator {
 		this.patients = patients;
 		this.batchSize = batchSize;
 
-		// getting lines from all patients
+		this.patientLines = createPatientLines(patients);
+
+		// generate char 3 grams
+		this.fillCharNGramsMaps();
+
+		// generate index
+		this.createIndizes();
+	}
+
+	/**
+	 * getting lines from all patients
+	 *
+	 * @param patients
+	 * @return
+	 */
+	private Map<Integer, List<String>> createPatientLines(List<Patient> patients) {
 		this.patientLines = new HashMap<Integer, List<String>>();
 
 		int patientIndex = 0;
@@ -62,11 +77,7 @@ public class NGramIterator extends BaseNNIterator {
 			this.patientLines.put(patientIndex++, tmpLines);
 		}
 
-		// generate char 3 grams
-		this.fillCharNGramsMaps();
-
-		// generate index
-		this.createIndizes();
+		return this.patientLines;
 	}
 
 	/**
@@ -103,10 +114,10 @@ public class NGramIterator extends BaseNNIterator {
 
 			// adding out of dictionary entries
 			characterNGram_3.add("OOD");
-
-			// set vector dimensionality
-			vectorSize = characterNGram_3.size();
 		}
+
+        // set vector dimensionality
+        vectorSize = characterNGram_3.size();
 	}
 
 	/**
@@ -141,7 +152,7 @@ public class NGramIterator extends BaseNNIterator {
 			maxLength = maxSentences;
 
 		INDArray features = Nd4j.create(new int[] { patientBatch.size(), vectorSize, maxLength }, 'f');
-		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), 13, maxLength }, 'f');
+		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), totalOutcomes(), maxLength }, 'f');
 
 		INDArray featuresMask = Nd4j.zeros(patientBatch.size(), maxLength);
 		INDArray labelsMask = Nd4j.zeros(patientBatch.size(), maxLength);
