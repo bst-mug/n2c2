@@ -162,7 +162,7 @@ public abstract class DataUtilities {
 	}
 
 	/**
-	 * Tokenizes a given text.
+	 * Tokenizes a given sentence. Use `getTokens` if you're tokenizing a full text.
 	 *
 	 * @param text
 	 * @return
@@ -177,13 +177,13 @@ public abstract class DataUtilities {
 	}
 
 	/**
-	 * Extracts the unique set of words used in a text.
+	 * Cleans the text, does sentence detection, tokenization and lowercasing.
 	 *
 	 * @param text
 	 * @return
 	 */
-	public static Set<String> getVocabulary(String text) {
-		Set<String> ret = new TreeSet<>();
+	public static List<String> getTokens(String text) {
+		List<String> ret = new ArrayList<>();
 
 		List<String> sentences = getSentences(text);
 		for (String sentence : sentences) {
@@ -194,5 +194,15 @@ public abstract class DataUtilities {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Extracts the unique set of words used in a text.
+	 *
+	 * @param text
+	 * @return
+	 */
+	public static Set<String> getVocabulary(String text) {
+		return new TreeSet<>(getTokens(text));
 	}
 }
