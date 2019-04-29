@@ -65,7 +65,6 @@ public class LSTMClassifier extends BaseNNClassifier {
 
 		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
 		initializeTokenizer();
-		initializeCriterionIndex();
 	}
 
 	private void initializeTokenizer() {
@@ -83,7 +82,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 
 		Nd4j.getMemoryManager().setAutoGcWindow(10000); // https://deeplearning4j.org/workspaces
 
-		fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, miniBatchSize, truncateLength);
+		fullSetIterator = new N2c2PatientIteratorBML(patientExamples, wordVectors, BATCH_SIZE, truncateLength);
 
 		// Set up network configuration
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)
