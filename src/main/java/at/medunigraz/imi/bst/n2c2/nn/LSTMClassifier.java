@@ -56,7 +56,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 	private TokenizerFactory tokenizerFactory;
 
 	// location of precalculated vectors
-	private String wordVectorsPath = "vectors.tsv";
+	private String wordVectorsPath = "src/main/resources/vectors.tsv";
 
 	// logging
 	private static final Logger LOG = LogManager.getLogger();
