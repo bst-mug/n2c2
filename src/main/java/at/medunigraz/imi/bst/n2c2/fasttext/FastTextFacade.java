@@ -32,7 +32,7 @@ public final class FastTextFacade {
     private static final File TEST_FILE = new File(ROOT_FOLDER, "test.txt");
     private static final File OUTPUT_FILE = new File(ROOT_FOLDER, "output.txt");
     
-    private static final List<String> COMMAND = Arrays.asList("fasttext");
+    private static final List<String> COMMAND = Arrays.asList("target/lib/fasttext");
 
     /**
      * Static class.
