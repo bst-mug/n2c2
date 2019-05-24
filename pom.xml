@@ -83,6 +83,19 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<target>
+								<!-- fastText -->
+								<mkdir dir="${project.build.directory}/lib" />
+								<get
+										src="https://github.com/facebookresearch/fastText/archive/v0.2.0.zip"
+										dest="${project.build.directory}/lib/fastText-0.2.0.zip"
+										verbose="false" usetimestamp="true"/>
+								<unzip
+										src="${project.build.directory}/lib/fastText-0.2.0.zip"
+										dest="${project.build.directory}/lib/" />
+								<exec executable="make" failonerror="true"
+									  dir="${project.build.directory}/lib/fastText-0.2.0/"/>
+								<move file="${project.build.directory}/lib/fastText-0.2.0/fasttext"
+									  tofile="${project.build.directory}/lib/fasttext"/>
                                 <!-- Evaluation script -->
                                 <get
                                         src="https://raw.githubusercontent.com/filannim/2018_n2c2_evaluation_scripts/master/track1_eval.py"
