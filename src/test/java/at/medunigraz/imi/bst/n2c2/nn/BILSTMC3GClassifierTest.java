@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.medunigraz.imi.bst.n2c2.nn.iterator.NGramIterator;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 

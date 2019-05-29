@@ -1,4 +1,4 @@
-package at.medunigraz.imi.bst.n2c2.nn;
+package at.medunigraz.imi.bst.n2c2.nn.iterator;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;

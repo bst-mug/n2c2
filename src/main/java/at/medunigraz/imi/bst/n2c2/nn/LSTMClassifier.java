@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import at.medunigraz.imi.bst.n2c2.nn.iterator.N2c2PatientIteratorBML;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;

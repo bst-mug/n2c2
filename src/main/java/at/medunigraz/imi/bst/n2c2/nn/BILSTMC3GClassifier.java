@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
+import at.medunigraz.imi.bst.n2c2.nn.iterator.NGramIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.nn.conf.GradientNormalization;

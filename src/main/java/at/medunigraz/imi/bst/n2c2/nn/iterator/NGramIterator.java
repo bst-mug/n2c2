@@ -1,4 +1,4 @@
-package at.medunigraz.imi.bst.n2c2.nn;
+package at.medunigraz.imi.bst.n2c2.nn.iterator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
