@@ -40,12 +40,6 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  */
 public class LSTMClassifier extends BaseNNClassifier {
 
-	// length for truncated backpropagation through time
-	private int tbpttLength = 50;
-
-	// total number of training epochs
-	private int nEpochs = 50;
-
 	// Google word vector size
 	int vectorSize = 200;
 
