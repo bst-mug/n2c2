@@ -40,10 +40,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  */
 public class LSTMClassifier extends BaseNNClassifier {
 
-	// Google word vector size
-	int vectorSize = 200;
-
-	// accessing Google word vectors
+	// accessing word vectors
 	private WordVectors wordVectors;
 
 	// tokenizer logic
@@ -51,6 +48,9 @@ public class LSTMClassifier extends BaseNNClassifier {
 
 	// location of precalculated vectors
 	private static final File PRETRAINED_VECTORS = new File(LSTMClassifier.class.getClassLoader().getResource("vectors.vec").getFile());
+
+	// word vector size
+	private static final int PRETRAINED_VECTORS_DIMENSION = 200;
 
 	// logging
 	private static final Logger LOG = LogManager.getLogger();
@@ -83,7 +83,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 				.gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
 				.gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
 				.inferenceWorkspaceMode(WorkspaceMode.SEPARATE) // https://deeplearning4j.org/workspaces
-				.list().layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256).activation(Activation.TANH).build())
+				.list().layer(0, new GravesLSTM.Builder().nIn(PRETRAINED_VECTORS_DIMENSION).nOut(256).activation(Activation.TANH).build())
 				.layer(1,
 						new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
 								.lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
@@ -168,7 +168,7 @@ public class LSTMClassifier extends BaseNNClassifier {
 		}
 		int outputLength = Math.min(maxLength, tokensFiltered.size());
 
-		INDArray features = Nd4j.create(1, vectorSize, outputLength);
+		INDArray features = Nd4j.create(1, PRETRAINED_VECTORS_DIMENSION, outputLength);
 
 		for (int j = 0; j < tokensFiltered.size() && j < maxLength; j++) {
 			String token = tokensFiltered.get(j);
