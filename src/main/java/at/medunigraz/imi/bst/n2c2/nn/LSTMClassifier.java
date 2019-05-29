@@ -56,14 +56,13 @@ public class LSTMClassifier extends BaseNNClassifier {
 	private TokenizerFactory tokenizerFactory;
 
 	// location of precalculated vectors
-	private String wordVectorsPath = "src/main/resources/vectors.tsv";
+	private static final File PRETRAINED_VECTORS = new File(LSTMClassifier.class.getClassLoader().getResource("vectors.vec").getFile());
 
 	// logging
 	private static final Logger LOG = LogManager.getLogger();
 
 	public LSTMClassifier() {
-
-		this.wordVectors = WordVectorSerializer.loadStaticModel(new File(wordVectorsPath));
+		this.wordVectors = WordVectorSerializer.loadStaticModel(PRETRAINED_VECTORS);
 		initializeTokenizer();
 	}
 
