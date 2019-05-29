@@ -1,11 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.nn;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
@@ -13,14 +10,10 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import at.medunigraz.imi.bst.n2c2.model.Criterion;
-import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 /**
