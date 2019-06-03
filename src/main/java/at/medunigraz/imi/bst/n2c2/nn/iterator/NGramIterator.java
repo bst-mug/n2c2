@@ -1,12 +1,12 @@
 package at.medunigraz.imi.bst.n2c2.nn.iterator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
+import at.medunigraz.imi.bst.n2c2.nn.input.InputRepresentation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
@@ -24,20 +24,7 @@ public class NGramIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
-	public ArrayList<String> characterNGram_3 = new ArrayList<String>();
-
-	public Map<String, Integer> char3GramToIdxMap = new HashMap<String, Integer>();
-
-	public int maxSentences = 0;
-
-	Map<Integer, List<String>> patientLines;
-
-	/**
-	 * Default constructor.
-	 * 
-	 */
-	public NGramIterator() {
-	}
+	private Map<Integer, List<String>> patientLines;
 
 	/**
 	 * Iterator representing sentences as character 3-grams.
@@ -46,20 +33,28 @@ public class NGramIterator extends BaseNNIterator {
 	 *            List of patients.
 	 * @param batchSize
 	 *            Minibatch size.
-	 * @throws IOException
 	 */
-	public NGramIterator(List<Patient> patients, int batchSize) throws IOException {
+	public NGramIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
+		super(inputRepresentation);
 
 		this.patients = patients;
 		this.batchSize = batchSize;
 
 		this.patientLines = createPatientLines(patients);
+		this.truncateLength = calculateMaxSentences(patients);
+	}
 
-		// generate char 3 grams
-		this.fillCharNGramsMaps();
+	/**
+	 *
+	 * @param inputRepresentation
+	 * @param truncateLength
+	 * @param batchSize
+	 */
+	public NGramIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+		super(inputRepresentation);
 
-		// generate index
-		this.createIndizes();
+		this.truncateLength = truncateLength;
+		this.batchSize = batchSize;
 	}
 
 	/**
@@ -68,57 +63,27 @@ public class NGramIterator extends BaseNNIterator {
 	 * @param patients
 	 * @return
 	 */
-	private Map<Integer, List<String>> createPatientLines(List<Patient> patients) {
-		this.patientLines = new HashMap<Integer, List<String>>();
+	public static Map<Integer, List<String>> createPatientLines(List<Patient> patients) {
+		// TODO return List<String>
+		Map<Integer, List<String>> integerListMap = new HashMap<Integer, List<String>>();
 
 		int patientIndex = 0;
 		for (Patient patient : patients) {
 			List<String> tmpLines = DataUtilities.getSentences(patient.getText());
-			this.maxSentences = tmpLines.size() > maxSentences ? tmpLines.size() : maxSentences;
-			this.patientLines.put(patientIndex++, tmpLines);
+			integerListMap.put(patientIndex++, tmpLines);
 		}
 
-		return this.patientLines;
+		return integerListMap;
 	}
 
-	/**
-	 * Creates index for character 3-grams.
-	 */
-	private void createIndizes() {
-
-		// store indexes
-		for (int i = 0; i < characterNGram_3.size(); i++)
-			char3GramToIdxMap.put(characterNGram_3.get(i), i);
-	}
-
-	/**
-	 * Fills character 3-gram dictionary.
-	 * 
-	 * @throws IOException
-	 */
-	private void fillCharNGramsMaps() throws IOException {
-
-		for (Map.Entry<Integer, List<String>> entry : patientLines.entrySet()) {
-			for (String line : entry.getValue()) {
-				String normalized = DataUtilities.processTextReduced(line);
-				String char3Grams = DataUtilities.getChar3GramRepresentation(normalized);
-
-				// process character n-grams
-				String[] char3Splits = char3Grams.split("\\s+");
-
-				for (String split : char3Splits) {
-					if (!characterNGram_3.contains(split)) {
-						characterNGram_3.add(split);
-					}
-				}
-			}
-
-			// adding out of dictionary entries
-			characterNGram_3.add("OOD");
+	private int calculateMaxSentences(List<Patient> patients) {
+		// TODO reuse patientLines?
+		int maxSentences = 0;
+		for (Patient patient : patients) {
+			List<String> tmpLines = DataUtilities.getSentences(patient.getText());
+			maxSentences = tmpLines.size() > maxSentences ? tmpLines.size() : maxSentences;
 		}
-
-        // set vector dimensionality
-        vectorSize = characterNGram_3.size();
+		return maxSentences;
 	}
 
 	/**
@@ -136,6 +101,7 @@ public class NGramIterator extends BaseNNIterator {
 		int maxLength = 0;
 		Map<Integer, List<String>> patientBatch = new HashMap<Integer, List<String>>(batchSize);
 		for (int i = 0; i < num && cursor < totalExamples(); i++) {
+			// TODO regenerate sentences and do not depend on patientLines?
 			List<String> sentences = patientLines.get(cursor);
 			patientBatch.put(i, sentences);
 
@@ -149,10 +115,10 @@ public class NGramIterator extends BaseNNIterator {
 		}
 
 		// truncate if sequence is longer than maxSentences
-		if (maxLength > maxSentences)
-			maxLength = maxSentences;
+		if (maxLength > getTruncateLength())
+			maxLength = getTruncateLength();
 
-		INDArray features = Nd4j.create(new int[] { patientBatch.size(), vectorSize, maxLength }, 'f');
+		INDArray features = Nd4j.create(new int[] { patientBatch.size(), inputRepresentation.getVectorSize(), maxLength }, 'f');
 		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), totalOutcomes(), maxLength }, 'f');
 
 		INDArray featuresMask = Nd4j.zeros(patientBatch.size(), maxLength);
@@ -168,7 +134,7 @@ public class NGramIterator extends BaseNNIterator {
 				String sentence = sentences.get(j);
 
 				// get vector presentation of sentence
-				INDArray vector = getChar3GramVectorToSentence(sentence);
+				INDArray vector = inputRepresentation.getVector(sentence);
 				features.put(new INDArrayIndex[] { NDArrayIndex.point(i), NDArrayIndex.all(), NDArrayIndex.point(j) },
 						vector);
 
@@ -193,34 +159,29 @@ public class NGramIterator extends BaseNNIterator {
 	}
 
 	/**
-	 * Sentence will be transformed to a character 3-gram vector.
-	 * 
-	 * @param sentence
-	 *            Sentence which gets vector representation.
-	 * @return
+	 * Load features from narrative.
+	 *
+	 * @param reviewContents
+	 *            Narrative content.
+	 * @param maxLength
+	 *            Maximum length of token series length.
+	 * @return Time series feature presentation of narrative.
 	 */
-	public INDArray getChar3GramVectorToSentence(String sentence) {
+	@Override
+	public INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
 
-		INDArray featureVector = Nd4j.zeros(vectorSize);
-		try {
-			String normalized = DataUtilities.processTextReduced(sentence);
-			String char3Grams = DataUtilities.getChar3GramRepresentation(normalized);
+		List<String> sentences = DataUtilities.getSentences(reviewContents);
 
-			// process character n-grams
-			String[] char3Splits = char3Grams.split("\\s+");
+		int outputLength = Math.min(maxLength, sentences.size());
+		INDArray features = Nd4j.create(1, inputRepresentation.getVectorSize(), outputLength);
 
-			for (String split : char3Splits) {
-				if (char3GramToIdxMap.get(split) == null) {
-					int nGramIndex = char3GramToIdxMap.get("OOD");
-					featureVector.putScalar(new int[] { nGramIndex }, 1.0);
-				} else {
-					int nGramIndex = char3GramToIdxMap.get(split);
-					featureVector.putScalar(new int[] { nGramIndex }, 1.0);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (int j = 0; j < sentences.size() && j < outputLength; j++) {
+			String sentence = sentences.get(j);
+			INDArray vector = inputRepresentation.getVector(sentence);
+			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
+					vector);
 		}
-		return featureVector;
+		return features;
 	}
+
 }

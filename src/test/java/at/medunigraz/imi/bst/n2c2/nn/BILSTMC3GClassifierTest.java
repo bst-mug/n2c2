@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.medunigraz.imi.bst.n2c2.nn.iterator.NGramIterator;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -38,19 +37,6 @@ public class BILSTMC3GClassifierTest extends BaseNNClassifierTest {
 		assertTrue(testClassifier.isTrained(train));
 		// TODO use Mockito to call train() and ensure trainFullSetBMC is NOT called.
 		testClassifier.initializeNetworkFromFile(BaseNNClassifier.getModelPath(train));
-
-		// Check classifier attributes are properly initialized
-		assertEquals(trainClassifier.truncateLength, testClassifier.truncateLength);
-		assertEquals(trainClassifier.vectorSize, testClassifier.vectorSize);
-
-		// Check maps are properly initialized
-		NGramIterator trainIterator = (NGramIterator)trainClassifier.fullSetIterator;
-		NGramIterator testIterator = (NGramIterator)testClassifier.fullSetIterator;
-		assertEquals(trainIterator.characterNGram_3, testIterator.characterNGram_3);
-		assertEquals(trainIterator.char3GramToIdxMap, testIterator.char3GramToIdxMap);
-
-		// XXX maxSentences is not initialized, but is not needed for prediction
-		//assertEquals(trainIterator.maxSentences, testIterator.maxSentences);
 
 		assertSamplePatient(testClassifier, p);
 	}

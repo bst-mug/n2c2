@@ -1,10 +1,10 @@
 package at.medunigraz.imi.bst.n2c2.nn.iterator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import at.medunigraz.imi.bst.n2c2.nn.input.InputRepresentation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
@@ -23,36 +23,43 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  *
  */
 public class N2c2PatientIteratorBML extends BaseNNIterator {
+	private static final Logger LOG = LogManager.getLogger();
 
 	private static final long serialVersionUID = 1L;
 
-	private final WordVectors wordVectors;
-
-	private final int truncateLength;
-
 	private final TokenizerFactory tokenizerFactory;
-
 
 	/**
 	 * Patient data iterator for the n2c2 task.
 	 * 
 	 * @param patients
 	 *            Patient data.
-	 * @param wordVectors
-	 *            Word vectors object.
 	 * @param batchSize
 	 *            Mini batch size use for processing.
-	 * @param truncateLength
-	 *            Maximum length of token sequence.
 	 */
-	public N2c2PatientIteratorBML(List<Patient> patients, WordVectors wordVectors, int batchSize, int truncateLength) {
+	public N2c2PatientIteratorBML(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
+		super(inputRepresentation);
 
 		this.patients = patients;
 		this.batchSize = batchSize;
-		this.vectorSize = wordVectors.getWordVector(wordVectors.vocab().wordAtIndex(0)).length;
 
-		this.wordVectors = wordVectors;
+		tokenizerFactory = new DefaultTokenizerFactory();
+		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+
+		initializeTruncateLength();
+	}
+
+	/**
+	 *
+	 * @param inputRepresentation
+	 * @param truncateLength
+	 * @param batchSize
+	 */
+	public N2c2PatientIteratorBML(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+		super(inputRepresentation);
+
 		this.truncateLength = truncateLength;
+		this.batchSize = batchSize;
 
 		tokenizerFactory = new DefaultTokenizerFactory();
 		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
@@ -90,7 +97,7 @@ public class N2c2PatientIteratorBML extends BaseNNIterator {
 			List<String> tokens = tokenizerFactory.create(narrative).getTokens();
 			List<String> tokensFiltered = new ArrayList<>();
 			for (String token : tokens) {
-				if (wordVectors.hasWord(token))
+				if (inputRepresentation.hasRepresentation(token))
 					tokensFiltered.add(token);
 			}
 			allTokens.add(tokensFiltered);
@@ -98,11 +105,11 @@ public class N2c2PatientIteratorBML extends BaseNNIterator {
 		}
 
 		// truncate if sequence is longer than truncateLength
-		if (maxLength > truncateLength)
-			maxLength = truncateLength;
+		if (maxLength > getTruncateLength())
+			maxLength = getTruncateLength();
 
-		INDArray features = Nd4j.create(narratives.size(), vectorSize, maxLength);
-		INDArray labels = Nd4j.create(narratives.size(), 13, maxLength);
+		INDArray features = Nd4j.create(narratives.size(), inputRepresentation.getVectorSize(), maxLength);
+		INDArray labels = Nd4j.create(narratives.size(), totalOutcomes(), maxLength);
 
 		INDArray featuresMask = Nd4j.zeros(narratives.size(), maxLength);
 		INDArray labelsMask = Nd4j.zeros(narratives.size(), maxLength);
@@ -115,7 +122,7 @@ public class N2c2PatientIteratorBML extends BaseNNIterator {
 			// get word vectors for each token in narrative
 			for (int j = 0; j < tokens.size() && j < maxLength; j++) {
 				String token = tokens.get(j);
-				INDArray vector = wordVectors.getWordVectorMatrix(token);
+				INDArray vector = inputRepresentation.getVector(token);
 				features.put(new INDArrayIndex[] { NDArrayIndex.point(i), NDArrayIndex.all(), NDArrayIndex.point(j) },
 						vector);
 
@@ -136,5 +143,82 @@ public class N2c2PatientIteratorBML extends BaseNNIterator {
 			labelsMask.putScalar(new int[] { i, lastIdx - 1 }, 1.0);
 		}
 		return new DataSet(features, labels, featuresMask, labelsMask);
+	}
+
+	/**
+	 * Get longest token sequence of all patients with respect to existing word
+	 * vector out of Google corpus.
+	 *
+	 */
+	private void initializeTruncateLength() {
+
+		// type coverage
+		Set<String> corpusTypes = new HashSet<String>();
+		Set<String> matchedTypes = new HashSet<String>();
+
+		// token coverage
+		int filteredSum = 0;
+		int tokenSum = 0;
+
+		List<List<String>> allTokens = new ArrayList<>(patients.size());
+		int maxLength = 0;
+
+		for (Patient patient : patients) {
+			String narrative = patient.getText();
+			String cleaned = narrative.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
+			List<String> tokens = tokenizerFactory.create(cleaned).getTokens();
+			tokenSum += tokens.size();
+
+			List<String> tokensFiltered = new ArrayList<>();
+			for (String token : tokens) {
+				corpusTypes.add(token);
+				if (inputRepresentation.hasRepresentation(token)) {
+					tokensFiltered.add(token);
+					matchedTypes.add(token);
+				} else {
+					LOG.info("Word2vec representation missing:\t" + token);
+				}
+			}
+			allTokens.add(tokensFiltered);
+			filteredSum += tokensFiltered.size();
+
+			maxLength = Math.max(maxLength, tokensFiltered.size());
+		}
+
+		LOG.info("Matched " + matchedTypes.size() + " types out of " + corpusTypes.size());
+		LOG.info("Matched " + filteredSum + " tokens out of " + tokenSum);
+
+		this.truncateLength = maxLength;
+	}
+
+	/**
+	 * Load features from narrative.
+	 *
+	 * @param reviewContents
+	 *            Narrative content.
+	 * @param maxLength
+	 *            Maximum length of token series length.
+	 * @return Time series feature presentation of narrative.
+	 */
+	@Override
+	public INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
+
+		List<String> tokens = tokenizerFactory.create(reviewContents).getTokens();
+		List<String> tokensFiltered = new ArrayList<>();
+		for (String t : tokens) {
+			if (inputRepresentation.hasRepresentation(t))
+				tokensFiltered.add(t);
+		}
+		int outputLength = Math.min(maxLength, tokensFiltered.size());
+
+		INDArray features = Nd4j.create(1, inputRepresentation.getVectorSize(), outputLength);
+
+		for (int j = 0; j < tokensFiltered.size() && j < maxLength; j++) {
+			String token = tokensFiltered.get(j);
+			INDArray vector = inputRepresentation.getVector(token);
+			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
+					vector);
+		}
+		return features;
 	}
 }

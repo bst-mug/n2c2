@@ -3,22 +3,32 @@ package at.medunigraz.imi.bst.n2c2.nn.iterator;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.nn.input.InputRepresentation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.io.File;
+import java.util.*;
 
 public abstract class BaseNNIterator implements DataSetIterator {
+    private static final Logger LOG = LogManager.getLogger();
 
+    protected final InputRepresentation inputRepresentation;
 
-    protected List<Patient> patients;
+    protected int truncateLength;
+
+    protected List<Patient> patients;   // TODO separate train and test data, allow iterator on test
     protected int cursor = 0;
 
     protected int batchSize;
-    public int vectorSize;
+
+    public BaseNNIterator(InputRepresentation inputRepresentation) {
+        this.inputRepresentation = inputRepresentation;
+    }
 
     /**
      * Fill multi-hot vector for mulit label classification.
@@ -29,6 +39,10 @@ public abstract class BaseNNIterator implements DataSetIterator {
         for (Criterion criterion : Criterion.classifiableValues()) {
             binaryMultiHotVector.add(patients.get(cursor).getEligibility(criterion).equals(Eligibility.MET));
         }
+    }
+
+    public InputRepresentation getInputRepresentation() {
+        return inputRepresentation;
     }
 
     /*
@@ -48,7 +62,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
      */
     @Override
     public int inputColumns() {
-        return vectorSize;
+        return inputRepresentation.getVectorSize();
     }
 
     /*
@@ -198,5 +212,19 @@ public abstract class BaseNNIterator implements DataSetIterator {
         return getNext(num);
     }
 
+    public int getTruncateLength() {
+        return truncateLength;
+    }
+
     public abstract DataSet getNext(int num);
+
+    public abstract INDArray loadFeaturesForNarrative(String reviewContents, int maxLength);
+
+    public void save(File model) {
+        inputRepresentation.save(model);
+    }
+
+    public void load(File model) {
+        inputRepresentation.load(model);
+    }
 }
