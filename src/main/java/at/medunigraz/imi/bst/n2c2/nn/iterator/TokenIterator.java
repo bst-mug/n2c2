@@ -191,34 +191,13 @@ public class TokenIterator extends BaseNNIterator {
 		this.truncateLength = maxLength;
 	}
 
-	/**
-	 * Load features from narrative.
-	 *
-	 * @param reviewContents
-	 *            Narrative content.
-	 * @param maxLength
-	 *            Maximum length of token series length.
-	 * @return Time series feature presentation of narrative.
-	 */
-	@Override
-	public INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
-
-		List<String> tokens = tokenizerFactory.create(reviewContents).getTokens();
+	protected List<String> getUnits(String text) {
+		List<String> tokens = tokenizerFactory.create(text).getTokens();
 		List<String> tokensFiltered = new ArrayList<>();
 		for (String t : tokens) {
 			if (inputRepresentation.hasRepresentation(t))
 				tokensFiltered.add(t);
 		}
-		int outputLength = Math.min(maxLength, tokensFiltered.size());
-
-		INDArray features = Nd4j.create(1, inputRepresentation.getVectorSize(), outputLength);
-
-		for (int j = 0; j < tokensFiltered.size() && j < maxLength; j++) {
-			String token = tokensFiltered.get(j);
-			INDArray vector = inputRepresentation.getVector(token);
-			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
-					vector);
-		}
-		return features;
+		return tokensFiltered;
 	}
 }

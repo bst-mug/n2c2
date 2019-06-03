@@ -158,30 +158,7 @@ public class SentenceIterator extends BaseNNIterator {
 		return new DataSet(features, labels, featuresMask, labelsMask);
 	}
 
-	/**
-	 * Load features from narrative.
-	 *
-	 * @param reviewContents
-	 *            Narrative content.
-	 * @param maxLength
-	 *            Maximum length of token series length.
-	 * @return Time series feature presentation of narrative.
-	 */
-	@Override
-	public INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
-
-		List<String> sentences = DataUtilities.getSentences(reviewContents);
-
-		int outputLength = Math.min(maxLength, sentences.size());
-		INDArray features = Nd4j.create(1, inputRepresentation.getVectorSize(), outputLength);
-
-		for (int j = 0; j < sentences.size() && j < outputLength; j++) {
-			String sentence = sentences.get(j);
-			INDArray vector = inputRepresentation.getVector(sentence);
-			features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
-					vector);
-		}
-		return features;
+	protected List<String> getUnits(String text) {
+		return DataUtilities.getSentences(text);
 	}
-
 }

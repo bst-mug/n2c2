@@ -10,6 +10,9 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import java.io.File;
 import java.util.*;
@@ -218,7 +221,31 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
     public abstract DataSet getNext(int num);
 
-    public abstract INDArray loadFeaturesForNarrative(String reviewContents, int maxLength);
+    /**
+     * Load features from narrative.
+     *
+     * @param reviewContents
+     *            Narrative content.
+     * @param maxLength
+     *            Maximum length of token series length.
+     * @return Time series feature presentation of narrative.
+     */
+    public INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
+        List<String> units = getUnits(reviewContents);
+
+        int outputLength = Math.min(maxLength, units.size());
+        INDArray features = Nd4j.create(1, inputRepresentation.getVectorSize(), outputLength);
+
+        for (int j = 0; j < units.size() && j < outputLength; j++) {
+            String unit = units.get(j);
+            INDArray vector = inputRepresentation.getVector(unit);
+            features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
+                    vector);
+        }
+        return features;
+    }
+
+    protected abstract List<String> getUnits(String text);
 
     public void save(File model) {
         inputRepresentation.save(model);
