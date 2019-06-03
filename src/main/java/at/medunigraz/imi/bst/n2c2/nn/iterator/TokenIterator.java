@@ -108,8 +108,8 @@ public class TokenIterator extends BaseNNIterator {
 		if (maxLength > getTruncateLength())
 			maxLength = getTruncateLength();
 
-		INDArray features = Nd4j.create(narratives.size(), inputRepresentation.getVectorSize(), maxLength);
-		INDArray labels = Nd4j.create(narratives.size(), totalOutcomes(), maxLength);
+		INDArray features = Nd4j.create(new int[] { narratives.size(), inputRepresentation.getVectorSize(), maxLength}, 'f');
+		INDArray labels = Nd4j.create(new int[] { narratives.size(), totalOutcomes(), maxLength}, 'f');
 
 		INDArray featuresMask = Nd4j.zeros(narratives.size(), maxLength);
 		INDArray labelsMask = Nd4j.zeros(narratives.size(), maxLength);
