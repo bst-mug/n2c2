@@ -13,10 +13,10 @@ import org.xml.sax.SAXException;
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
-public class BILSTMC3GClassifierTest extends BaseNNClassifierTest {
+public class BiLSTMCharacterTrigramClassifierTest extends BaseNNClassifierTest {
 
-	public BILSTMC3GClassifierTest() {
-		this.classifier = new BILSTMC3GClassifier();
+	public BiLSTMCharacterTrigramClassifierTest() {
+		this.classifier = new BiLSTMCharacterTrigramClassifier();
 	}
 
 	@Test
@@ -27,13 +27,13 @@ public class BILSTMC3GClassifierTest extends BaseNNClassifierTest {
 		train.add(p);
 
 		// We first train on some examples...
-		BILSTMC3GClassifier trainClassifier = new BILSTMC3GClassifier();
+		BiLSTMCharacterTrigramClassifier trainClassifier = new BiLSTMCharacterTrigramClassifier();
 		trainClassifier.deleteModelDir(train);	// Delete any previously trained models, to ensure training is tested
 		trainClassifier.train(train);			// This should persist models
 		assertTrue(trainClassifier.isTrained(train));
 
 		// ... and then try to load the model on a new instance.
-		BILSTMC3GClassifier testClassifier = new BILSTMC3GClassifier();
+		BiLSTMCharacterTrigramClassifier testClassifier = new BiLSTMCharacterTrigramClassifier();
 		assertTrue(testClassifier.isTrained(train));
 		// TODO use Mockito to call train() and ensure trainFullSetBMC is NOT called.
 		testClassifier.initializeNetworkFromFile(BaseNNClassifier.getModelPath(train));

@@ -16,11 +16,11 @@ import org.nd4j.linalg.indexing.NDArrayIndex;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 /**
- * A character 3-gram DataSetIterator.
+ * A sentence iterator.
  * 
  * @author Markus
  */
-public class NGramIterator extends BaseNNIterator {
+public class SentenceIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +34,7 @@ public class NGramIterator extends BaseNNIterator {
 	 * @param batchSize
 	 *            Minibatch size.
 	 */
-	public NGramIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
+	public SentenceIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
 		super(inputRepresentation);
 
 		this.patients = patients;
@@ -50,7 +50,7 @@ public class NGramIterator extends BaseNNIterator {
 	 * @param truncateLength
 	 * @param batchSize
 	 */
-	public NGramIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+	public SentenceIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
 		super(inputRepresentation);
 
 		this.truncateLength = truncateLength;

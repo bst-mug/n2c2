@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.nn.input.CharacterTrigram;
-import at.medunigraz.imi.bst.n2c2.nn.iterator.NGramIterator;
+import at.medunigraz.imi.bst.n2c2.nn.iterator.SentenceIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.nn.conf.GradientNormalization;
@@ -32,7 +32,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  * @author Markus
  *
  */
-public class BILSTMC3GClassifier extends BaseNNClassifier {
+public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -49,7 +49,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		try {
 			prop = loadProperties(pathToModel);
 			final int truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
-			fullSetIterator = new NGramIterator(new CharacterTrigram(), truncateLength, BATCH_SIZE);
+			fullSetIterator = new SentenceIterator(new CharacterTrigram(), truncateLength, BATCH_SIZE);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -73,7 +73,7 @@ public class BILSTMC3GClassifier extends BaseNNClassifier {
 		Nd4j.getMemoryManager().setAutoGcWindow(10000);
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
-		fullSetIterator = new NGramIterator(patientExamples, new CharacterTrigram(NGramIterator.createPatientLines(patientExamples)), BATCH_SIZE);
+		fullSetIterator = new SentenceIterator(patientExamples, new CharacterTrigram(SentenceIterator.createPatientLines(patientExamples)), BATCH_SIZE);
 
 		int nOutFF = 150;
 		int lstmLayerSize = 128;

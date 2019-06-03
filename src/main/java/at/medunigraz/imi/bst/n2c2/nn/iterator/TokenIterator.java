@@ -22,7 +22,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * @author Markus
  *
  */
-public class N2c2PatientIteratorBML extends BaseNNIterator {
+public class TokenIterator extends BaseNNIterator {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final long serialVersionUID = 1L;
@@ -37,7 +37,7 @@ public class N2c2PatientIteratorBML extends BaseNNIterator {
 	 * @param batchSize
 	 *            Mini batch size use for processing.
 	 */
-	public N2c2PatientIteratorBML(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
+	public TokenIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
 		super(inputRepresentation);
 
 		this.patients = patients;
@@ -55,7 +55,7 @@ public class N2c2PatientIteratorBML extends BaseNNIterator {
 	 * @param truncateLength
 	 * @param batchSize
 	 */
-	public N2c2PatientIteratorBML(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+	public TokenIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
 		super(inputRepresentation);
 
 		this.truncateLength = truncateLength;

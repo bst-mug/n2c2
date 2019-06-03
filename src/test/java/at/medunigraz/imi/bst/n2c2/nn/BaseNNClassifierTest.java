@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class BaseNNClassifierTest {
 
-    protected static final File SAMPLE = new File(BILSTMC3GClassifierTest.class.getResource("/gold-standard/sample.xml").getPath());
+    protected static final File SAMPLE = new File(BaseNNClassifierTest.class.getResource("/gold-standard/sample.xml").getPath());
 
     protected BaseNNClassifier classifier;
 
