@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public abstract class BaseNNClassifierTest {
 
     protected static final File SAMPLE = new File(BaseNNClassifierTest.class.getResource("/gold-standard/sample.xml").getPath());
 
-    protected BaseNNClassifier classifier;
+    protected BaseNNClassifier trainClassifier, testClassifier;
 
     @Test
     public void predictSample() throws IOException, SAXException {
@@ -28,10 +29,30 @@ public abstract class BaseNNClassifierTest {
         List<Patient> train = new ArrayList<>();
         train.add(p);
 
-        classifier.deleteModelDir(train);	// Delete any previously trained models, to ensure training is tested
-        classifier.train(train);
+        trainClassifier.deleteModelDir(train);	// Delete any previously trained models, to ensure training is tested
+        trainClassifier.train(train);
 
-        assertSamplePatient(classifier, p);
+        assertSamplePatient(trainClassifier, p);
+    }
+
+    @Test
+    public void saveAndLoad() throws IOException, SAXException {
+        Patient p = new PatientDAO().fromXML(SAMPLE);
+
+        List<Patient> train = new ArrayList<>();
+        train.add(p);
+
+        // We first train on some examples...
+        trainClassifier.deleteModelDir(train);	// Delete any previously trained models, to ensure training is tested
+        trainClassifier.train(train);			// This should persist models
+        assertTrue(trainClassifier.isTrained(train));
+
+        // ... and then try to load the model on a new instance.
+        assertTrue(testClassifier.isTrained(train));
+        // TODO use Mockito to call train() and ensure trainFullSetBMC is NOT called.
+        testClassifier.initializeNetworkFromFile(BaseNNClassifier.getModelPath(train));
+
+        assertSamplePatient(testClassifier, p);
     }
 
     protected void assertSamplePatient(BaseNNClassifier nn, Patient p) {
