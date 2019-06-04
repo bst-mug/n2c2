@@ -6,8 +6,6 @@ import java.util.Properties;
 import at.medunigraz.imi.bst.n2c2.nn.architecture.BiLSTMArchitecture;
 import at.medunigraz.imi.bst.n2c2.nn.input.CharacterTrigram;
 import at.medunigraz.imi.bst.n2c2.nn.iterator.SentenceIterator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nd4j.linalg.factory.Nd4j;
 
 /**
@@ -17,8 +15,6 @@ import org.nd4j.linalg.factory.Nd4j;
  *
  */
 public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
-
-	private static final Logger LOG = LogManager.getLogger();
 
 	@Override
 	public void initializeNetworkFromFile(String pathToModel) throws IOException {

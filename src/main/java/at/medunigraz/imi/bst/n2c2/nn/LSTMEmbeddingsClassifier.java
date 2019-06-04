@@ -22,9 +22,6 @@ public class LSTMEmbeddingsClassifier extends BaseNNClassifier {
 	// location of precalculated vectors
 	private static final File PRETRAINED_VECTORS = new File(LSTMEmbeddingsClassifier.class.getClassLoader().getResource("vectors.vec").getFile());
 
-	// logging
-	private static final Logger LOG = LogManager.getLogger();
-
 	@Override
 	protected void initializeNetwork() {
 		initializeNetworkBinaryMultiLabelDebug();

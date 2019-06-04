@@ -18,8 +18,6 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  *
  */
 public class TokenIterator extends BaseNNIterator {
-	private static final Logger LOG = LogManager.getLogger();
-
 	private static final long serialVersionUID = 1L;
 
 	private static final TokenizerFactory TOKENIZER_FACTORY = new DefaultTokenizerFactory();

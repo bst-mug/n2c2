@@ -4,8 +4,6 @@ import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 import at.medunigraz.imi.bst.n2c2.nn.input.InputRepresentation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
@@ -18,7 +16,6 @@ import java.io.File;
 import java.util.*;
 
 public abstract class BaseNNIterator implements DataSetIterator {
-    private static final Logger LOG = LogManager.getLogger();
 
     protected final InputRepresentation inputRepresentation;
 
@@ -188,6 +185,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
      */
     @Override
     public void remove() {
+        // Empty
     }
 
     /*

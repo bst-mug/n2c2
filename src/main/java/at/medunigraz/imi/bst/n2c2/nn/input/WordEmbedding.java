@@ -34,7 +34,7 @@ public class WordEmbedding implements InputRepresentation {
 
     @Override
     public void save(File model) {
-
+        // NOOP While we don't train vectors
     }
 
     @Override
