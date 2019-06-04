@@ -44,13 +44,13 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
     /**
      * Fill multi-hot vector for mulit label classification.
-     *
-     * @param binaryMultiHotVector
      */
-    protected void fillBinaryMultiHotVector(List<Boolean> binaryMultiHotVector) {
+    protected List<Boolean> patientToBinaryMultiHotVector(Patient patient) {
+        List<Boolean> binaryMultiHotVector = new ArrayList<>();
         for (Criterion criterion : Criterion.classifiableValues()) {
-            binaryMultiHotVector.add(patients.get(cursor).getEligibility(criterion).equals(Eligibility.MET));
+            binaryMultiHotVector.add(patient.getEligibility(criterion).equals(Eligibility.MET));
         }
+        return binaryMultiHotVector;
     }
 
     public InputRepresentation getInputRepresentation() {
@@ -236,8 +236,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
      * @return DatSet
      */
     public DataSet getNext(int num) {
-
-        HashMap<Integer, ArrayList<Boolean>> binaryMultiHotVectorMap = new HashMap<Integer, ArrayList<Boolean>>();
+        HashMap<Integer, List<Boolean>> binaryMultiHotVectorMap = new HashMap<>();
 
         // load patient batch
         int maxLength = 0;
@@ -248,10 +247,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
             maxLength = Math.max(maxLength, units.size());
 
-            ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
-            fillBinaryMultiHotVector(binaryMultiHotVector);
-
-            binaryMultiHotVectorMap.put(i, binaryMultiHotVector);
+            binaryMultiHotVectorMap.put(i, patientToBinaryMultiHotVector(patients.get(cursor)));
             cursor++;
         }
 
@@ -286,7 +282,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
             int lastIdx = Math.min(units.size(), maxLength);
 
             // set binary multi-labels
-            ArrayList<Boolean> binaryMultiHotVector = binaryMultiHotVectorMap.get(i);
+            List<Boolean> binaryMultiHotVector = binaryMultiHotVectorMap.get(i);
             int labelIndex = 0;
             for (Boolean label : binaryMultiHotVector) {
                 labels.putScalar(new int[] { i, labelIndex, lastIdx - 1 }, label == true ? 1.0 : 0.0);
