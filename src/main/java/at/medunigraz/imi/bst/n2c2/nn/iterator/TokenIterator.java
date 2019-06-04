@@ -8,11 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.INDArrayIndex;
-import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
@@ -63,75 +58,6 @@ public class TokenIterator extends BaseNNIterator {
 
 		tokenizerFactory = new DefaultTokenizerFactory();
 		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
-	}
-
-	/**
-	 * Next data set implementation.
-	 * 
-	 * @param num
-	 *            Mini batch size.
-	 * @return DataSet Patients data set.
-	 */
-	@Override
-	public DataSet getNext(int num) {
-
-		HashMap<Integer, ArrayList<Boolean>> binaryMultiHotVectorMap = new HashMap<Integer, ArrayList<Boolean>>();
-
-		// load narrative from patient
-		int maxLength = 0;
-		List<List<String>> patientUnits = new ArrayList<>(num);
-		for (int i = 0; i < num && cursor < totalExamples(); i++) {
-			List<String> units = getUnits(patients.get(cursor).getText());
-			patientUnits.add(units);
-
-			maxLength = Math.max(maxLength, units.size());
-
-			ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
-			fillBinaryMultiHotVector(binaryMultiHotVector);
-
-			binaryMultiHotVectorMap.put(i, binaryMultiHotVector);
-			cursor++;
-		}
-
-		// truncate if sequence is longer than truncateLength
-		if (maxLength > getTruncateLength())
-			maxLength = getTruncateLength();
-
-		INDArray features = Nd4j.create(new int[] { patientUnits.size(), inputRepresentation.getVectorSize(), maxLength}, 'f');
-		INDArray labels = Nd4j.create(new int[] { patientUnits.size(), totalOutcomes(), maxLength}, 'f');
-
-		INDArray featuresMask = Nd4j.zeros(patientUnits.size(), maxLength);
-		INDArray labelsMask = Nd4j.zeros(patientUnits.size(), maxLength);
-
-		int[] temp = new int[2];
-		for (int i = 0; i < patientUnits.size(); i++) {
-			List<String> tokens = patientUnits.get(i);
-			temp[0] = i;
-
-			// get word vectors for each token in narrative
-			for (int j = 0; j < tokens.size() && j < maxLength; j++) {
-				String token = tokens.get(j);
-				INDArray vector = inputRepresentation.getVector(token);
-				features.put(new INDArrayIndex[] { NDArrayIndex.point(i), NDArrayIndex.all(), NDArrayIndex.point(j) },
-						vector);
-
-				temp[1] = j;
-				featuresMask.putScalar(temp, 1.0);
-			}
-
-			int lastIdx = Math.min(tokens.size(), maxLength);
-
-			// set binary multi-labels
-			ArrayList<Boolean> binaryMultiHotVector = binaryMultiHotVectorMap.get(i);
-			int labelIndex = 0;
-			for (Boolean label : binaryMultiHotVector) {
-				labels.putScalar(new int[] { i, labelIndex, lastIdx - 1 }, label == true ? 1.0 : 0.0);
-				labelIndex++;
-			}
-			// out exists at the final step of the sequence
-			labelsMask.putScalar(new int[] { i, lastIdx - 1 }, 1.0);
-		}
-		return new DataSet(features, labels, featuresMask, labelsMask);
 	}
 
 	/**

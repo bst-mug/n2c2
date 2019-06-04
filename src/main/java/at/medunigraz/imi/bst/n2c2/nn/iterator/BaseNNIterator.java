@@ -219,7 +219,76 @@ public abstract class BaseNNIterator implements DataSetIterator {
         return truncateLength;
     }
 
-    public abstract DataSet getNext(int num);
+    /**
+     * Get next training batch.
+     *
+     * @param num
+     *            Minibatch size.
+     * @return DatSet
+     */
+    public DataSet getNext(int num) {
+
+        HashMap<Integer, ArrayList<Boolean>> binaryMultiHotVectorMap = new HashMap<Integer, ArrayList<Boolean>>();
+
+        // load patient batch
+        int maxLength = 0;
+        List<List<String>> patientUnits = new ArrayList<>(num);
+        for (int i = 0; i < num && cursor < totalExamples(); i++) {
+            List<String> units = getUnits(patients.get(cursor).getText());
+            patientUnits.add(units);
+
+            maxLength = Math.max(maxLength, units.size());
+
+            ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
+            fillBinaryMultiHotVector(binaryMultiHotVector);
+
+            binaryMultiHotVectorMap.put(i, binaryMultiHotVector);
+            cursor++;
+        }
+
+        // truncate if sequence is longer than maxSentences
+        if (maxLength > getTruncateLength())
+            maxLength = getTruncateLength();
+
+        INDArray features = Nd4j.create(new int[] { patientUnits.size(), inputRepresentation.getVectorSize(), maxLength }, 'f');
+        INDArray labels = Nd4j.create(new int[] { patientUnits.size(), totalOutcomes(), maxLength }, 'f');
+
+        INDArray featuresMask = Nd4j.zeros(patientUnits.size(), maxLength);
+        INDArray labelsMask = Nd4j.zeros(patientUnits.size(), maxLength);
+
+        int[] temp = new int[2];
+        for (int i = 0; i < patientUnits.size(); i++) {
+            List<String> units = patientUnits.get(i);
+            temp[0] = i;
+
+            // get word vectors for each token in narrative
+            for (int j = 0; j < units.size() && j < maxLength; j++) {
+                String sentence = units.get(j);
+
+                // get vector presentation of sentence
+                INDArray vector = inputRepresentation.getVector(sentence);
+                features.put(new INDArrayIndex[] { NDArrayIndex.point(i), NDArrayIndex.all(), NDArrayIndex.point(j) },
+                        vector);
+
+                temp[1] = j;
+                featuresMask.putScalar(temp, 1.0);
+            }
+
+            int lastIdx = Math.min(units.size(), maxLength);
+
+            // set binary multi-labels
+            ArrayList<Boolean> binaryMultiHotVector = binaryMultiHotVectorMap.get(i);
+            int labelIndex = 0;
+            for (Boolean label : binaryMultiHotVector) {
+                labels.putScalar(new int[] { i, labelIndex, lastIdx - 1 }, label == true ? 1.0 : 0.0);
+                labelIndex++;
+            }
+
+            // out exists at the final step of the sequence
+            labelsMask.putScalar(new int[] { i, lastIdx - 1 }, 1.0);
+        }
+        return new DataSet(features, labels, featuresMask, labelsMask);
+    }
 
     /**
      * Load features from narrative.
