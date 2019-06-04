@@ -81,7 +81,7 @@ public class SentenceIterator extends BaseNNIterator {
 		int maxSentences = 0;
 		for (Patient patient : patients) {
 			List<String> tmpLines = getUnits(patient.getText());
-			maxSentences = tmpLines.size() > maxSentences ? tmpLines.size() : maxSentences;
+			maxSentences = Math.max(maxSentences, tmpLines.size());
 		}
 		return maxSentences;
 	}
@@ -105,7 +105,7 @@ public class SentenceIterator extends BaseNNIterator {
 			List<String> sentences = patientLines.get(cursor);
 			patientBatch.put(i, sentences);
 
-			maxLength = sentences.size() > maxLength ? sentences.size() : maxLength;
+			maxLength = Math.max(maxLength, sentences.size());
 
 			ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
 			fillBinaryMultiHotVector(binaryMultiHotVector);
