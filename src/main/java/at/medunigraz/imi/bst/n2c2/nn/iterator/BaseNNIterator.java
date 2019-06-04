@@ -283,7 +283,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
             List<Boolean> binaryMultiHotVector = binaryMultiHotVectorMap.get(i);
             int labelIndex = 0;
             for (Boolean label : binaryMultiHotVector) {
-                labels.putScalar(new int[] { i, labelIndex, lastIdx - 1 }, label == true ? 1.0 : 0.0);
+                labels.putScalar(new int[] { i, labelIndex, lastIdx - 1 }, label ? 1.0 : 0.0);
                 labelIndex++;
             }
 
