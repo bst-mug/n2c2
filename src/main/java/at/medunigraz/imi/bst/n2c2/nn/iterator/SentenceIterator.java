@@ -80,7 +80,7 @@ public class SentenceIterator extends BaseNNIterator {
 		// TODO reuse patientLines?
 		int maxSentences = 0;
 		for (Patient patient : patients) {
-			List<String> tmpLines = DataUtilities.getSentences(patient.getText());
+			List<String> tmpLines = getUnits(patient.getText());
 			maxSentences = tmpLines.size() > maxSentences ? tmpLines.size() : maxSentences;
 		}
 		return maxSentences;

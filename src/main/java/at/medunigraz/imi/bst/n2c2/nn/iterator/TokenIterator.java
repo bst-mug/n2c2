@@ -94,12 +94,7 @@ public class TokenIterator extends BaseNNIterator {
 		List<List<String>> allTokens = new ArrayList<>(narratives.size());
 		int maxLength = 0;
 		for (String narrative : narratives) {
-			List<String> tokens = tokenizerFactory.create(narrative).getTokens();
-			List<String> tokensFiltered = new ArrayList<>();
-			for (String token : tokens) {
-				if (inputRepresentation.hasRepresentation(token))
-					tokensFiltered.add(token);
-			}
+			List<String> tokensFiltered = getUnits(narrative);
 			allTokens.add(tokensFiltered);
 			maxLength = Math.max(maxLength, tokensFiltered.size());
 		}
