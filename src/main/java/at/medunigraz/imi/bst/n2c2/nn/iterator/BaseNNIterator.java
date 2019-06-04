@@ -29,8 +29,17 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
     protected int batchSize;
 
-    public BaseNNIterator(InputRepresentation inputRepresentation) {
+    public BaseNNIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
         this.inputRepresentation = inputRepresentation;
+        this.patients = patients;
+        this.batchSize = batchSize;
+        this.truncateLength = getLongestSequenceSize(patients);
+    }
+
+    public BaseNNIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+        this.inputRepresentation = inputRepresentation;
+        this.batchSize = batchSize;
+        this.truncateLength = truncateLength;
     }
 
     /**
@@ -288,6 +297,15 @@ public abstract class BaseNNIterator implements DataSetIterator {
             labelsMask.putScalar(new int[] { i, lastIdx - 1 }, 1.0);
         }
         return new DataSet(features, labels, featuresMask, labelsMask);
+    }
+
+    private int getLongestSequenceSize(List<Patient> patients) {
+        int maxUnits = 0;
+        for (Patient patient : patients) {
+            List<String> units = getUnits(patient.getText());
+            maxUnits = Math.max(maxUnits, units.size());
+        }
+        return maxUnits;
     }
 
     /**

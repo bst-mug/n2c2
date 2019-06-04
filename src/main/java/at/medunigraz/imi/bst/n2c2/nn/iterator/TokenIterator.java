@@ -22,7 +22,10 @@ public class TokenIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
-	private final TokenizerFactory tokenizerFactory;
+	private static final TokenizerFactory TOKENIZER_FACTORY = new DefaultTokenizerFactory();
+	static {
+		TOKENIZER_FACTORY.setTokenPreProcessor(new CommonPreprocessor());
+	}
 
 	/**
 	 * Patient data iterator for the n2c2 task.
@@ -33,15 +36,7 @@ public class TokenIterator extends BaseNNIterator {
 	 *            Mini batch size use for processing.
 	 */
 	public TokenIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
-		super(inputRepresentation);
-
-		this.patients = patients;
-		this.batchSize = batchSize;
-
-		tokenizerFactory = new DefaultTokenizerFactory();
-		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
-
-		initializeTruncateLength();
+		super(patients, inputRepresentation, batchSize);
 	}
 
 	/**
@@ -51,63 +46,11 @@ public class TokenIterator extends BaseNNIterator {
 	 * @param batchSize
 	 */
 	public TokenIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
-		super(inputRepresentation);
-
-		this.truncateLength = truncateLength;
-		this.batchSize = batchSize;
-
-		tokenizerFactory = new DefaultTokenizerFactory();
-		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
-	}
-
-	/**
-	 * Get longest token sequence of all patients with respect to existing word
-	 * vector out of Google corpus.
-	 *
-	 */
-	private void initializeTruncateLength() {
-
-		// type coverage
-		Set<String> corpusTypes = new HashSet<String>();
-		Set<String> matchedTypes = new HashSet<String>();
-
-		// token coverage
-		int filteredSum = 0;
-		int tokenSum = 0;
-
-		List<List<String>> allTokens = new ArrayList<>(patients.size());
-		int maxLength = 0;
-
-		for (Patient patient : patients) {
-			String narrative = patient.getText();
-			String cleaned = narrative.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
-			List<String> tokens = tokenizerFactory.create(cleaned).getTokens();
-			tokenSum += tokens.size();
-
-			List<String> tokensFiltered = new ArrayList<>();
-			for (String token : tokens) {
-				corpusTypes.add(token);
-				if (inputRepresentation.hasRepresentation(token)) {
-					tokensFiltered.add(token);
-					matchedTypes.add(token);
-				} else {
-					LOG.info("Word2vec representation missing:\t" + token);
-				}
-			}
-			allTokens.add(tokensFiltered);
-			filteredSum += tokensFiltered.size();
-
-			maxLength = Math.max(maxLength, tokensFiltered.size());
-		}
-
-		LOG.info("Matched " + matchedTypes.size() + " types out of " + corpusTypes.size());
-		LOG.info("Matched " + filteredSum + " tokens out of " + tokenSum);
-
-		this.truncateLength = maxLength;
+		super(inputRepresentation, truncateLength, batchSize);
 	}
 
 	protected List<String> getUnits(String text) {
-		List<String> tokens = tokenizerFactory.create(text).getTokens();
+		List<String> tokens = TOKENIZER_FACTORY.create(text).getTokens();
 		List<String> tokensFiltered = new ArrayList<>();
 		for (String t : tokens) {
 			if (inputRepresentation.hasRepresentation(t))

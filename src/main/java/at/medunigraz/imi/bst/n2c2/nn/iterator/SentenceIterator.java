@@ -20,19 +20,14 @@ public class SentenceIterator extends BaseNNIterator {
 
 	/**
 	 * Iterator representing sentences as character 3-grams.
-	 * 
+	 *
 	 * @param patients
 	 *            List of patients.
 	 * @param batchSize
 	 *            Minibatch size.
 	 */
 	public SentenceIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
-		super(inputRepresentation);
-
-		this.patients = patients;
-		this.batchSize = batchSize;
-
-		this.truncateLength = calculateMaxSentences(patients);
+		super(patients, inputRepresentation, batchSize);
 	}
 
 	/**
@@ -42,10 +37,7 @@ public class SentenceIterator extends BaseNNIterator {
 	 * @param batchSize
 	 */
 	public SentenceIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
-		super(inputRepresentation);
-
-		this.truncateLength = truncateLength;
-		this.batchSize = batchSize;
+		super(inputRepresentation, truncateLength, batchSize);
 	}
 
 	/**
@@ -67,14 +59,6 @@ public class SentenceIterator extends BaseNNIterator {
 		return integerListMap;
 	}
 
-	private int calculateMaxSentences(List<Patient> patients) {
-		int maxSentences = 0;
-		for (Patient patient : patients) {
-			List<String> tmpLines = getUnits(patient.getText());
-			maxSentences = Math.max(maxSentences, tmpLines.size());
-		}
-		return maxSentences;
-	}
 
 	protected List<String> getUnits(String text) {
 		return DataUtilities.getSentences(text);
