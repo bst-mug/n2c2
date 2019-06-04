@@ -5,6 +5,7 @@ import at.medunigraz.imi.bst.n2c2.config.Config;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.nn.iterator.BaseNNIterator;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,6 @@ import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import java.io.*;
@@ -35,18 +35,13 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // size of mini-batch for training
     protected static final int BATCH_SIZE = 10;
 
-    // specifies time series length
-    protected int truncateLength = 64;
-
-    public int vectorSize;
-
     // training data
     protected List<Patient> patientExamples;
 
     // multi layer network
     protected MultiLayerNetwork net;
 
-    public DataSetIterator fullSetIterator;
+    public BaseNNIterator fullSetIterator;
 
     /**
      * Training for binary multi label classifcation.
@@ -135,7 +130,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
                 props.setProperty(getModelName() + ".bestModelEpoch", new Integer(epoch).toString());
 
                 // TODO truncateLength does not change each epoch, this could be persisted in saveParams()
-                props.setProperty(getModelName() + ".truncateLength", new Integer(truncateLength).toString());
+                props.setProperty(getModelName() + ".truncateLength", new Integer(fullSetIterator.getTruncateLength()).toString());
 
                 File f = new File(root, getModelName() + ".properties");
                 OutputStream out = new FileOutputStream(f);
@@ -149,6 +144,8 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        fullSetIterator.save(root);
     }
 
     protected abstract String getModelName();
@@ -162,7 +159,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     public Map<Criterion, Double> predict(Patient p) {
         String patientNarrative = p.getText();
 
-        INDArray features = loadFeaturesForNarrative(patientNarrative, this.truncateLength);
+        INDArray features = fullSetIterator.loadFeaturesForNarrative(patientNarrative, fullSetIterator.getTruncateLength());
         INDArray networkOutput = net.output(features);
 
         int timeSeriesLength = networkOutput.size(2);
@@ -203,7 +200,11 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     @Override
     public void train(List<Patient> examples) {
         if (isTrained(examples)) {
-            initializeNetworkFromFile(getModelPath(examples));
+            try {
+                initializeNetworkFromFile(getModelPath(examples));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         else {
             this.patientExamples = examples;
@@ -212,7 +213,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 //			initializeMonitoring();
 
             LOG.info("Minibatchsize  :\t" + BATCH_SIZE);
-            LOG.info("Truncate length:\t" + truncateLength);
+            LOG.info("Truncate length:\t" + fullSetIterator.getTruncateLength());
 
             trainFullSetBML();
         }
@@ -236,19 +237,14 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         return new File(getModelPath(patients), getModelName() + ".properties").exists();
     }
 
-    protected abstract INDArray loadFeaturesForNarrative(String reviewContents, int maxLength);
+    public void initializeNetworkFromFile(String pathToModel) throws IOException {
+        Properties prop = loadProperties(pathToModel);
+        final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
 
-    public void initializeNetworkFromFile(String pathToModel) {
-        try {
-            Properties prop = loadProperties(pathToModel);
-            final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
-            this.truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
+        File networkFile = new File(pathToModel, getModelName() + "_" + bestEpoch + ".zip");
+        this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
 
-            File networkFile = new File(pathToModel, getModelName() + "_" + bestEpoch + ".zip");
-            this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        fullSetIterator.load(new File(pathToModel));
     }
 
     /**
