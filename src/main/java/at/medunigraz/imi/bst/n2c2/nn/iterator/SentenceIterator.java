@@ -24,8 +24,6 @@ public class SentenceIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
-	private Map<Integer, List<String>> patientLines;
-
 	/**
 	 * Iterator representing sentences as character 3-grams.
 	 * 
@@ -40,7 +38,6 @@ public class SentenceIterator extends BaseNNIterator {
 		this.patients = patients;
 		this.batchSize = batchSize;
 
-		this.patientLines = createPatientLines(patients);
 		this.truncateLength = calculateMaxSentences(patients);
 	}
 
@@ -99,13 +96,12 @@ public class SentenceIterator extends BaseNNIterator {
 
 		// load patient batch
 		int maxLength = 0;
-		Map<Integer, List<String>> patientBatch = new HashMap<Integer, List<String>>(batchSize);
+		List<List<String>> patientUnits = new ArrayList<>(num);
 		for (int i = 0; i < num && cursor < totalExamples(); i++) {
-			// TODO regenerate sentences and do not depend on patientLines?
-			List<String> sentences = patientLines.get(cursor);
-			patientBatch.put(i, sentences);
+			List<String> units = getUnits(patients.get(cursor).getText());
+			patientUnits.add(units);
 
-			maxLength = Math.max(maxLength, sentences.size());
+			maxLength = Math.max(maxLength, units.size());
 
 			ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
 			fillBinaryMultiHotVector(binaryMultiHotVector);
@@ -118,15 +114,15 @@ public class SentenceIterator extends BaseNNIterator {
 		if (maxLength > getTruncateLength())
 			maxLength = getTruncateLength();
 
-		INDArray features = Nd4j.create(new int[] { patientBatch.size(), inputRepresentation.getVectorSize(), maxLength }, 'f');
-		INDArray labels = Nd4j.create(new int[] { patientBatch.size(), totalOutcomes(), maxLength }, 'f');
+		INDArray features = Nd4j.create(new int[] { patientUnits.size(), inputRepresentation.getVectorSize(), maxLength }, 'f');
+		INDArray labels = Nd4j.create(new int[] { patientUnits.size(), totalOutcomes(), maxLength }, 'f');
 
-		INDArray featuresMask = Nd4j.zeros(patientBatch.size(), maxLength);
-		INDArray labelsMask = Nd4j.zeros(patientBatch.size(), maxLength);
+		INDArray featuresMask = Nd4j.zeros(patientUnits.size(), maxLength);
+		INDArray labelsMask = Nd4j.zeros(patientUnits.size(), maxLength);
 
 		int[] temp = new int[2];
-		for (int i = 0; i < patientBatch.size(); i++) {
-			List<String> sentences = patientBatch.get(i);
+		for (int i = 0; i < patientUnits.size(); i++) {
+			List<String> sentences = patientUnits.get(i);
 			temp[0] = i;
 
 			// get word vectors for each token in narrative

@@ -78,10 +78,13 @@ public class TokenIterator extends BaseNNIterator {
 		HashMap<Integer, ArrayList<Boolean>> binaryMultiHotVectorMap = new HashMap<Integer, ArrayList<Boolean>>();
 
 		// load narrative from patient
-		List<String> narratives = new ArrayList<>(num);
+		int maxLength = 0;
+		List<List<String>> patientUnits = new ArrayList<>(num);
 		for (int i = 0; i < num && cursor < totalExamples(); i++) {
-			String narrative = patients.get(cursor).getText();
-			narratives.add(narrative);
+			List<String> units = getUnits(patients.get(cursor).getText());
+			patientUnits.add(units);
+
+			maxLength = Math.max(maxLength, units.size());
 
 			ArrayList<Boolean> binaryMultiHotVector = new ArrayList<Boolean>();
 			fillBinaryMultiHotVector(binaryMultiHotVector);
@@ -90,28 +93,19 @@ public class TokenIterator extends BaseNNIterator {
 			cursor++;
 		}
 
-		// filter unknown words and tokenize
-		List<List<String>> allTokens = new ArrayList<>(narratives.size());
-		int maxLength = 0;
-		for (String narrative : narratives) {
-			List<String> tokensFiltered = getUnits(narrative);
-			allTokens.add(tokensFiltered);
-			maxLength = Math.max(maxLength, tokensFiltered.size());
-		}
-
 		// truncate if sequence is longer than truncateLength
 		if (maxLength > getTruncateLength())
 			maxLength = getTruncateLength();
 
-		INDArray features = Nd4j.create(new int[] { narratives.size(), inputRepresentation.getVectorSize(), maxLength}, 'f');
-		INDArray labels = Nd4j.create(new int[] { narratives.size(), totalOutcomes(), maxLength}, 'f');
+		INDArray features = Nd4j.create(new int[] { patientUnits.size(), inputRepresentation.getVectorSize(), maxLength}, 'f');
+		INDArray labels = Nd4j.create(new int[] { patientUnits.size(), totalOutcomes(), maxLength}, 'f');
 
-		INDArray featuresMask = Nd4j.zeros(narratives.size(), maxLength);
-		INDArray labelsMask = Nd4j.zeros(narratives.size(), maxLength);
+		INDArray featuresMask = Nd4j.zeros(patientUnits.size(), maxLength);
+		INDArray labelsMask = Nd4j.zeros(patientUnits.size(), maxLength);
 
 		int[] temp = new int[2];
-		for (int i = 0; i < narratives.size(); i++) {
-			List<String> tokens = allTokens.get(i);
+		for (int i = 0; i < patientUnits.size(); i++) {
+			List<String> tokens = patientUnits.get(i);
 			temp[0] = i;
 
 			// get word vectors for each token in narrative
