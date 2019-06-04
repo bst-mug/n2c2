@@ -21,7 +21,7 @@ public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 	private static final Logger LOG = LogManager.getLogger();
 
 	@Override
-	public void initializeNetworkFromFile(String pathToModel) {
+	public void initializeNetworkFromFile(String pathToModel) throws IOException {
 		// settings for memory management:
 		// https://deeplearning4j.org/workspaces
 
@@ -29,14 +29,9 @@ public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 		// Nd4j.getMemoryManager().togglePeriodicGc(false);
 
 		// TODO move to iterator.
-		Properties prop = null;
-		try {
-			prop = loadProperties(pathToModel);
-			final int truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
-			fullSetIterator = new SentenceIterator(new CharacterTrigram(), truncateLength, BATCH_SIZE);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		Properties prop = loadProperties(pathToModel);
+		final int truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
+		fullSetIterator = new SentenceIterator(new CharacterTrigram(), truncateLength, BATCH_SIZE);
 
 		super.initializeNetworkFromFile(pathToModel);
 	}

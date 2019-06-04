@@ -46,15 +46,10 @@ public class LSTMEmbeddingsClassifier extends BaseNNClassifier {
 	}
 
 	@Override
-	public void initializeNetworkFromFile(String pathToModel) {
-		Properties prop = null;
-		try {
-			prop = loadProperties(pathToModel);
-			final int truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
-			fullSetIterator = new TokenIterator(new WordEmbedding(PRETRAINED_VECTORS), truncateLength, BATCH_SIZE);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	public void initializeNetworkFromFile(String pathToModel) throws IOException {
+		Properties prop = loadProperties(pathToModel);
+		final int truncateLength = Integer.parseInt(prop.getProperty(getModelName() + ".truncateLength"));
+		fullSetIterator = new TokenIterator(new WordEmbedding(PRETRAINED_VECTORS), truncateLength, BATCH_SIZE);
 
 		super.initializeNetworkFromFile(pathToModel);
 	}

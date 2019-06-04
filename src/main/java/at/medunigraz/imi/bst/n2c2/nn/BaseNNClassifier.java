@@ -200,7 +200,11 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     @Override
     public void train(List<Patient> examples) {
         if (isTrained(examples)) {
-            initializeNetworkFromFile(getModelPath(examples));
+            try {
+                initializeNetworkFromFile(getModelPath(examples));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         else {
             this.patientExamples = examples;
@@ -233,18 +237,12 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         return new File(getModelPath(patients), getModelName() + ".properties").exists();
     }
 
-    public void initializeNetworkFromFile(String pathToModel) {
-        try {
-            Properties prop = loadProperties(pathToModel);
-            final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
+    public void initializeNetworkFromFile(String pathToModel) throws IOException {
+        Properties prop = loadProperties(pathToModel);
+        final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
 
-            File networkFile = new File(pathToModel, getModelName() + "_" + bestEpoch + ".zip");
-            this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File networkFile = new File(pathToModel, getModelName() + "_" + bestEpoch + ".zip");
+        this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
 
         fullSetIterator.load(new File(pathToModel));
     }
