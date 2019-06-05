@@ -74,6 +74,16 @@ public class DataUtilitiesTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+	public void clean() {
+		// TODO newline is unexpected.
+		// TODO Extra whitespaces
+//		String expected = "This is a sentence.";
+		String expected = "This is a   sentence.\n";
+		String actual = DataUtilities.clean("This is a   ***%%%===--\tsentence..... ");
+		assertEquals(expected, actual);
+	}
+
 	@Test
 	public void tokenize() {
 		// Example from https://nlp.stanford.edu/software/tokenizer.shtml
