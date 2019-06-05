@@ -2,12 +2,8 @@ package at.medunigraz.imi.bst.n2c2.nn.iterator;
 
 import java.util.*;
 
+import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
 import at.medunigraz.imi.bst.n2c2.nn.input.InputRepresentation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
 import at.medunigraz.imi.bst.n2c2.model.Patient;
 
@@ -18,12 +14,8 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  *
  */
 public class TokenIterator extends BaseNNIterator {
+	
 	private static final long serialVersionUID = 1L;
-
-	private static final TokenizerFactory TOKENIZER_FACTORY = new DefaultTokenizerFactory();
-	static {
-		TOKENIZER_FACTORY.setTokenPreProcessor(new CommonPreprocessor());
-	}
 
 	/**
 	 * Patient data iterator for the n2c2 task.
@@ -48,7 +40,7 @@ public class TokenIterator extends BaseNNIterator {
 	}
 
 	protected List<String> getUnits(String text) {
-		List<String> tokens = TOKENIZER_FACTORY.create(text).getTokens();
+		List<String> tokens = DataUtilities.getTokens(text);
 		List<String> tokensFiltered = new ArrayList<>();
 		for (String t : tokens) {
 			if (inputRepresentation.hasRepresentation(t))
