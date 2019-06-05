@@ -39,7 +39,7 @@ public class Patient {
     }
 
     public String getCleanedText() {
-    	return DataUtilities.cleanText(text);
+    	return DataUtilities.removeWhitespaces(text);
 	}
 
     public Eligibility getEligibility(Criterion criterion) {

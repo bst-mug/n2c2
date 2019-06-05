@@ -23,7 +23,7 @@ import org.apache.lucene.util.AttributeFactory;
  */
 public abstract class DataUtilities {
 
-	private static final Pattern CLEANER_REGEX = Pattern.compile("\\p{javaWhitespace}+");
+	private static final Pattern WHITESPACES = Pattern.compile("\\p{javaWhitespace}+");
 
 	private static String[] tokenStreamToArray(TokenStream stream) throws IOException {
 		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
@@ -157,8 +157,8 @@ public abstract class DataUtilities {
 		return sentences;
 	}
 
-	public static String cleanText(String text) {
-		return CLEANER_REGEX.matcher(text).replaceAll(" ");
+	public static String removeWhitespaces(String text) {
+		return WHITESPACES.matcher(text).replaceAll(" ");
 	}
 
 	/**
