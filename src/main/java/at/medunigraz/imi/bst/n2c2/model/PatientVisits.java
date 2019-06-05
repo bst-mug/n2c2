@@ -35,7 +35,7 @@ public class PatientVisits {
 	}
 
 	public String getCleanedVisitText() {
-		return DataUtilities.cleanText(visit_text);
+		return DataUtilities.removeWhitespaces(visit_text);
 	}
 
 	public void setVisit_text(String visit_text) {

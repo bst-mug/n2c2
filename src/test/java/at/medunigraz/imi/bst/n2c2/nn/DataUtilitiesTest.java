@@ -18,6 +18,8 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class DataUtilitiesTest {
 
+    private static final File SAMPLE = new File(DataUtilitiesTest.class.getResource("/gold-standard/sample.xml").getPath());
+
 	@Test
 	public void processTextReduced() throws IOException {
 		String normalized = DataUtilities.processTextReduced("This is a, test    sentence: test_sentence.");
@@ -32,7 +34,6 @@ public class DataUtilitiesTest {
 
 	@Test
 	public void sample() throws IOException, SAXException {
-		final File SAMPLE = new File(getClass().getResource("/gold-standard/sample.xml").getPath());
 		Patient p = new PatientDAO().fromXML(SAMPLE);
 
 		StringBuilder normalizedText = new StringBuilder();
@@ -58,6 +59,32 @@ public class DataUtilitiesTest {
 	}
 
 	@Test
+    public void getSentences() throws IOException, SAXException {
+        final File expectedFile = new File(getClass().getResource("/preprocessing/sample-sentences.txt").getFile());
+
+        List<String> expected = FileUtils.readLines(expectedFile, "UTF-8");
+        List<String> actual = DataUtilities.getSentences(new PatientDAO().fromXML(SAMPLE).getText());
+
+        assertEquals(expected, actual);
+
+        // TODO First period mark is dropped if followed by two whitespaces
+//		expected = Arrays.asList("One sentence.", "Second sentence.");
+		expected = Arrays.asList("One sentence", "Second sentence.");
+        actual = DataUtilities.getSentences("One sentence.  Second sentence.");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+	public void clean() {
+		// TODO newline is unexpected.
+		// TODO Extra whitespaces
+//		String expected = "This is a sentence.";
+		String expected = "This is a   sentence.\n";
+		String actual = DataUtilities.clean("This is a   ***%%%===--\tsentence..... ");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void tokenize() {
 		// Example from https://nlp.stanford.edu/software/tokenizer.shtml
 		String[] actual = DataUtilities.tokenize("\"Oh, no,\" she's saying, \"our $400 blender can't handle something this hard!\"");
@@ -72,6 +99,16 @@ public class DataUtilitiesTest {
 
 		actual = DataUtilities.tokenize("hi, my name can't hello,");
 		assertEquals("hi my name can't hello", String.join(" ", actual));
+	}
+
+	@Test
+	public void getTokens() throws IOException, SAXException {
+		final File expectedFile = new File(getClass().getResource("/preprocessing/sample-tokens.txt").getFile());
+
+		List<String> expected = FileUtils.readLines(expectedFile, "UTF-8");
+		List<String> actual = DataUtilities.getTokens(new PatientDAO().fromXML(SAMPLE).getText());
+
+		assertEquals(expected, actual);
 	}
 
 	@Test

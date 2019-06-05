@@ -23,7 +23,7 @@ import org.apache.lucene.util.AttributeFactory;
  */
 public abstract class DataUtilities {
 
-	private static final Pattern CLEANER_REGEX = Pattern.compile("\\p{javaWhitespace}+");
+	private static final Pattern WHITESPACES = Pattern.compile("\\p{javaWhitespace}+");
 
 	private static String[] tokenStreamToArray(TokenStream stream) throws IOException {
 		CharTermAttribute charTermAttribute = stream.addAttribute(CharTermAttribute.class);
@@ -114,51 +114,68 @@ public abstract class DataUtilities {
 		return charNGramRepresentation.trim();
 	}
 
+    /**
+     * Cleans the text and detect sentences using a rule-based algorithm.
+     *
+     * @param narrative
+     * @return
+     */
 	public static List<String> getSentences(String narrative) {
+	    String cleanedNarrative = clean(narrative);
 
 		String abbreviations = "\\d|[mM][rR]|[dD][rR]|[dD][rR][sS]|[sM][sS]|[cC]";
-		String cleanPatternA = "[\t\\*_\\%=#]+";
-		String cleanPatternB = "&nbsp;|<BR>|\\s+|--";
-
-		String cleanedNarrative = "";
-		String tempString = "";
-
-		// cleansing beginning input lines
-		try {
-			List<String> lines = IOUtils.readLines(new StringReader(narrative));
-			for (String line : lines) {
-				if (line.length() > 0) {
-					tempString = line.replaceAll(cleanPatternA, " ");
-					tempString = tempString.replaceAll(cleanPatternB, " ");
-					tempString = tempString.replaceAll("\\.+", ".").trim();
-					if (tempString.length() > 0)
-						cleanedNarrative += tempString + "\n";
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		// new line split logic
+		// Positive lookahead ensure next character is alphanumeric, thus removing duplicate linebreaks.
 		String[] newLineSplits = cleanedNarrative.split("\n(?=[A-Z]|[0-9])");
 		ArrayList<String> sentences = new ArrayList<String>();
 
 		// period character split logic
 		for (String newLineSplit : newLineSplits) {
+			// Remove duplicate linebreaks eventually found in the split (see comment above).
 			newLineSplit = newLineSplit.replaceAll("[\r\n\\s]+", " ").trim();
 			if (newLineSplit.length() > 0) {
+				// Split into period markers (not preceeded by abbreviations) followed by any number of whitespaces.
 				sentences.addAll(Arrays.asList(newLineSplit.split("(?<!" + abbreviations + ")(\\.)(\\s+)")));
 			}
 		}
 
-		// post cleansing
-		// sentences.forEach(sentence -> System.out.println(sentence));
-
 		return sentences;
 	}
 
-	public static String cleanText(String text) {
-		return CLEANER_REGEX.matcher(text).replaceAll(" ");
+    /**
+     * Cleans a text by removing symbols, special characters, and deduplicated spaces and period marks.
+     *
+     * @param text
+     * @return
+     */
+	public static String clean(String text) {
+        String cleanPatternA = "[\t\\*_\\%=#]+";
+        String cleanPatternB = "&nbsp;|<BR>|\\s+|--";
+
+        String cleanedNarrative = "";
+        String tempString = "";
+
+        // cleansing beginning input lines
+        try {
+            List<String> lines = IOUtils.readLines(new StringReader(text));
+            for (String line : lines) {
+                if (line.length() > 0) {
+                    tempString = line.replaceAll(cleanPatternA, " ");
+                    tempString = tempString.replaceAll(cleanPatternB, " ");
+                    tempString = tempString.replaceAll("\\.+", ".").trim();
+                    if (tempString.length() > 0)
+                        cleanedNarrative += tempString + "\n";
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cleanedNarrative;
+    }
+
+	public static String removeWhitespaces(String text) {
+		return WHITESPACES.matcher(text).replaceAll(" ");
 	}
 
 	/**
