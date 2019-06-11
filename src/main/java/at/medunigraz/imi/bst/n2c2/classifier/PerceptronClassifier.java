@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 
 public class PerceptronClassifier extends CriterionBasedClassifier {
 
-    private static final File PRETRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("vectors.vec").getFile());
+    /**
+     * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
+     */
+    private static final File PRETRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
 
     public PerceptronClassifier(Criterion c) {
         super(c);
