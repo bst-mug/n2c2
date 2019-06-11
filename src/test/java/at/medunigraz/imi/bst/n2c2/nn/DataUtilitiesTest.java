@@ -112,6 +112,16 @@ public class DataUtilitiesTest {
 	}
 
 	@Test
+	public void getTokenizedSentences() throws IOException, SAXException {
+		final File expectedFile = new File(getClass().getResource("/preprocessing/sample-tokenized-sentences.txt").getFile());
+
+		List<String> expected = FileUtils.readLines(expectedFile, "UTF-8");
+		List<String> actual = DataUtilities.getTokenizedSentences(new PatientDAO().fromXML(SAMPLE).getText());
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void getVocabulary() {
 		Set<String> actual = DataUtilities.getVocabulary("This is a test sentence. Can't you think of a better sentence?");
 		Set<String> expected = new TreeSet<>(Arrays.asList("a", "better", "can't", "is", "of", "sentence", "test", "think", "this", "you"));

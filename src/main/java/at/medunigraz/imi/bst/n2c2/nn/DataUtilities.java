@@ -195,6 +195,7 @@ public abstract class DataUtilities {
 
 	/**
 	 * Cleans the text, does sentence detection, tokenization and lowercasing.
+	 * Returns a list of tokens.
 	 *
 	 * @param text
 	 * @return
@@ -208,6 +209,25 @@ public abstract class DataUtilities {
 			for (String token : tokens) {
 				ret.add(token.toLowerCase());
 			}
+		}
+
+		return ret;
+	}
+
+	/**
+	 * Cleans the text, does sentence detection, tokenization and lowercasing.
+	 * Returns a list of sentences, with each token separated by space.
+	 *
+	 * @param text
+	 * @return
+	 */
+	public static List<String> getTokenizedSentences(String text) {
+		List<String> ret = new ArrayList<>();
+
+		List<String> sentences = getSentences(text);
+		for (String sentence : sentences) {
+			String[] tokens = tokenize(sentence);
+			ret.add(String.join(" ", tokens).toLowerCase());
 		}
 
 		return ret;
