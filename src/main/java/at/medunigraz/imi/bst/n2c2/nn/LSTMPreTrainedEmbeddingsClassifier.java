@@ -7,8 +7,6 @@ import java.util.Properties;
 import at.medunigraz.imi.bst.n2c2.nn.architecture.LSTMArchitecture;
 import at.medunigraz.imi.bst.n2c2.nn.input.WordEmbedding;
 import at.medunigraz.imi.bst.n2c2.nn.iterator.TokenIterator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nd4j.linalg.factory.Nd4j;
 
 /**
@@ -17,10 +15,12 @@ import org.nd4j.linalg.factory.Nd4j;
  * @author Markus
  *
  */
-public class LSTMEmbeddingsClassifier extends BaseNNClassifier {
+public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
-	// location of precalculated vectors
-	private static final File PRETRAINED_VECTORS = new File(LSTMEmbeddingsClassifier.class.getClassLoader().getResource("vectors.vec").getFile());
+	/**
+	 * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
+	 */
+	private static final File PRETRAINED_VECTORS = new File(LSTMPreTrainedEmbeddingsClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
 
 	@Override
 	protected void initializeNetwork() {
@@ -39,7 +39,7 @@ public class LSTMEmbeddingsClassifier extends BaseNNClassifier {
 
 	@Override
 	protected String getModelName() {
-		return "LSTMW2V_MBL";
+		return getClass().getSimpleName();
 	}
 
 	@Override
