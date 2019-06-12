@@ -167,6 +167,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
         Map<Criterion, Double> ret = new HashMap<>();
 
+        LOG.debug("Patient: " + p.getID());
         for (Criterion c : Criterion.classifiableValues()) {
             double probabilityForCriterion = probabilitiesAtLastWord.getDouble(c.getValue());
             ret.put(c, probabilityForCriterion);
@@ -174,11 +175,9 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             Eligibility eligibility = probabilityForCriterion > 0.5 ? Eligibility.MET : Eligibility.NOT_MET;
             p.withCriterion(c, eligibility);
 
-            LOG.info("\n\n-------------------------------");
-            LOG.info("Patient: " + p.getID());
-            LOG.info("Probabilities at last time step for {}", c.name());
-            LOG.info("Probability\t" + c.name() + ": " + probabilityForCriterion);
-            LOG.info("Eligibility\t" + c.name() + ": " + eligibility.name());
+            LOG.trace("Probabilities at last time step for {}", c.name());
+            LOG.trace("Probability\t" + c.name() + ": " + probabilityForCriterion);
+            LOG.trace("Eligibility\t" + c.name() + ": " + eligibility.name());
         }
 
         return ret;
