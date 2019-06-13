@@ -3,7 +3,6 @@ package at.medunigraz.imi.bst.n2c2.nn;
 import at.medunigraz.imi.bst.n2c2.nn.architecture.LSTMArchitecture;
 import at.medunigraz.imi.bst.n2c2.nn.input.WordEmbedding;
 import at.medunigraz.imi.bst.n2c2.nn.iterator.TokenIterator;
-import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +16,11 @@ import java.util.Properties;
  */
 public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
+    /**
+     * n2c2 longest training document has 7597 tokens.
+     */
+    private static final int TRUNCATE_LENGTH = 7597;
+
 	/**
 	 * Location of self-trained fasttext vectors (using `train_embeddings.sh`) and extracted from the `.bin` file using `print_vectors.sh`.
 	 */
@@ -24,7 +28,7 @@ public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
 	@Override
 	protected void initializeNetwork() {
-		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(SELFTRAINED_VECTORS), BATCH_SIZE);
+		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(SELFTRAINED_VECTORS), TRUNCATE_LENGTH, BATCH_SIZE);
 		this.net = new LSTMArchitecture().getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
 	}
 

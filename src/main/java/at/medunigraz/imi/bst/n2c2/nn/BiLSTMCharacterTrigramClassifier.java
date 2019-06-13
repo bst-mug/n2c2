@@ -6,7 +6,6 @@ import java.util.Properties;
 import at.medunigraz.imi.bst.n2c2.nn.architecture.BiLSTMArchitecture;
 import at.medunigraz.imi.bst.n2c2.nn.input.CharacterTrigram;
 import at.medunigraz.imi.bst.n2c2.nn.iterator.SentenceIterator;
-import org.nd4j.linalg.factory.Nd4j;
 
 /**
  * BI-LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
@@ -16,9 +15,14 @@ import org.nd4j.linalg.factory.Nd4j;
  */
 public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 
+	/**
+	 * n2c2 longest training sentence has 840 different character trigrams.
+	 */
+	private static final int TRUNCATE_LENGTH = 840;
+
 	@Override
 	protected void initializeNetwork() {
-		fullSetIterator = new SentenceIterator(patientExamples, new CharacterTrigram(SentenceIterator.createPatientLines(patientExamples)), BATCH_SIZE);
+		fullSetIterator = new SentenceIterator(patientExamples, new CharacterTrigram(SentenceIterator.createPatientLines(patientExamples)), TRUNCATE_LENGTH, BATCH_SIZE);
 		this.net = new BiLSTMArchitecture().getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
 	}
 

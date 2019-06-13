@@ -17,6 +17,10 @@ public class TokenIterator extends BaseNNIterator {
 	
 	private static final long serialVersionUID = 1L;
 
+	public TokenIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
+		super(patients, inputRepresentation, batchSize);
+	}
+
 	/**
 	 * Patient data iterator for the n2c2 task.
 	 * 
@@ -25,8 +29,8 @@ public class TokenIterator extends BaseNNIterator {
 	 * @param batchSize
 	 *            Mini batch size use for processing.
 	 */
-	public TokenIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
-		super(patients, inputRepresentation, batchSize);
+	public TokenIterator(List<Patient> patients, InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+		super(patients, inputRepresentation, truncateLength, batchSize);
 	}
 
 	/**
