@@ -24,22 +24,8 @@ public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
 	@Override
 	protected void initializeNetwork() {
-		initializeNetworkBinaryMultiLabelDebug();
-	}
-
-	private void initializeNetworkBinaryMultiLabelDebug() {
-
-		Nd4j.getMemoryManager().setAutoGcWindow(10000); // https://deeplearning4j.org/workspaces
-
 		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(PRETRAINED_VECTORS), BATCH_SIZE);
-
-		// Set up network configuration
 		this.net = new LSTMArchitecture().getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
-	}
-
-	@Override
-	protected String getModelName() {
-		return getClass().getSimpleName();
 	}
 
 	@Override
@@ -49,5 +35,10 @@ public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 		fullSetIterator = new TokenIterator(new WordEmbedding(PRETRAINED_VECTORS), truncateLength, BATCH_SIZE);
 
 		super.initializeNetworkFromFile(pathToModel);
+	}
+
+	@Override
+	protected String getModelName() {
+		return getClass().getSimpleName();
 	}
 }

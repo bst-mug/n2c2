@@ -20,6 +20,7 @@ import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import java.io.*;
@@ -44,6 +45,14 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     protected MultiLayerNetwork net;
 
     public BaseNNIterator fullSetIterator;
+
+    public BaseNNClassifier() {
+        // settings for memory management:
+        // https://deeplearning4j.org/workspaces
+
+        Nd4j.getMemoryManager().setAutoGcWindow(10000);
+        // Nd4j.getMemoryManager().togglePeriodicGc(false);
+    }
 
     /**
      * Training for binary multi label classifcation.

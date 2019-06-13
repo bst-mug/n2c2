@@ -18,28 +18,14 @@ import java.util.Properties;
 public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
 	/**
-	 * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
+	 * Location of self-trained fasttext vectors (using `train_embeddings.sh`) and extracted from the `.bin` file using `print_vectors.sh`.
 	 */
 	private static final File SELFTRAINED_VECTORS = new File(LSTMSelfTrainedEmbeddingsClassifier.class.getClassLoader().getResource("self-trained-vectors.vec").getFile());
 
 	@Override
 	protected void initializeNetwork() {
-		initializeNetworkBinaryMultiLabelDebug();
-	}
-
-	private void initializeNetworkBinaryMultiLabelDebug() {
-
-		Nd4j.getMemoryManager().setAutoGcWindow(10000); // https://deeplearning4j.org/workspaces
-
 		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(SELFTRAINED_VECTORS), BATCH_SIZE);
-
-		// Set up network configuration
 		this.net = new LSTMArchitecture().getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
-	}
-
-	@Override
-	protected String getModelName() {
-		return getClass().getSimpleName();
 	}
 
 	@Override
@@ -49,5 +35,10 @@ public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
 		fullSetIterator = new TokenIterator(new WordEmbedding(SELFTRAINED_VECTORS), truncateLength, BATCH_SIZE);
 
 		super.initializeNetworkFromFile(pathToModel);
+	}
+
+	@Override
+	protected String getModelName() {
+		return getClass().getSimpleName();
 	}
 }
