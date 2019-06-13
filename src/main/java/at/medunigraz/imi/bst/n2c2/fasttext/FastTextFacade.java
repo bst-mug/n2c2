@@ -133,7 +133,7 @@ public final class FastTextFacade {
         command.add("-epoch");
         command.add(String.valueOf(EPOCHS));
         command.add("-lr");
-        command.add(String.format("%.1f", LEARNING_RATE));
+        command.add(String.format("%.2f", LEARNING_RATE));
         command.add("-dim");
         command.add(String.valueOf(DIMENSIONS));
         return command;
