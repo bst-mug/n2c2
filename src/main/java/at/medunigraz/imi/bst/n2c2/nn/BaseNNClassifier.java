@@ -35,6 +35,8 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // size of mini-batch for training
     protected static final int BATCH_SIZE = 10;
 
+    private static final int MAX_EPOCHS = 100;
+
     // training data
     protected List<Patient> patientExamples;
 
@@ -90,7 +92,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             LOG.info(System.getProperty("line.separator") + ebepoch.stats());
             LOG.info("Average accuracy: {}", eb.averageAccuracy());
 
-        } while (eb.averageAccuracy() < 0.95);
+        } while (eb.averageAccuracy() < 0.95 && epochCounter < MAX_EPOCHS);
     }
 
     /**
@@ -240,7 +242,10 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         Properties prop = loadProperties(pathToModel);
         final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
 
-        File networkFile = new File(pathToModel, getModelName() + "_" + bestEpoch + ".zip");
+        // Limit number of epochs
+        final int epoch = Math.min(bestEpoch, MAX_EPOCHS);
+
+        File networkFile = new File(pathToModel, getModelName() + "_" + epoch + ".zip");
         this.net = ModelSerializer.restoreMultiLayerNetwork(networkFile);
 
         fullSetIterator.load(new File(pathToModel));
