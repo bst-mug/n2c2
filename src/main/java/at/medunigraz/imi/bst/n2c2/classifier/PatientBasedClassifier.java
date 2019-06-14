@@ -22,4 +22,9 @@ public abstract class PatientBasedClassifier implements Classifier {
 
         return predict(p, c);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

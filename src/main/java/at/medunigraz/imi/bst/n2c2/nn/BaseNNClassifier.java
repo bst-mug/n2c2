@@ -5,6 +5,7 @@ import at.medunigraz.imi.bst.n2c2.config.Config;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
+import at.medunigraz.imi.bst.n2c2.nn.architecture.Architecture;
 import at.medunigraz.imi.bst.n2c2.nn.iterator.BaseNNIterator;
 import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 import org.apache.commons.io.FileUtils;
@@ -36,7 +37,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // size of mini-batch for training
     protected static final int BATCH_SIZE = 10;
 
-    private static final int MAX_EPOCHS = 100;
+    protected static final int MAX_EPOCHS = 100;
 
     // training data
     protected List<Patient> patientExamples;
@@ -46,7 +47,11 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     public BaseNNIterator fullSetIterator;
 
-    public BaseNNClassifier() {
+    protected final Architecture architecture;
+
+    public BaseNNClassifier(Architecture architecture) {
+        this.architecture = architecture;
+
         // settings for memory management:
         // https://deeplearning4j.org/workspaces
 
@@ -138,10 +143,10 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
             try {
                 Properties props = new Properties();
-                props.setProperty(getModelName() + ".bestModelEpoch", new Integer(epoch).toString());
+                props.setProperty("bestModelEpoch", new Integer(epoch).toString());
 
                 // TODO truncateLength does not change each epoch, this could be persisted in saveParams()
-                props.setProperty(getModelName() + ".truncateLength", new Integer(fullSetIterator.getTruncateLength()).toString());
+                props.setProperty("truncateLength", new Integer(fullSetIterator.getTruncateLength()).toString());
 
                 File f = new File(root, getModelName() + ".properties");
                 OutputStream out = new FileOutputStream(f);
@@ -249,7 +254,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     public void initializeNetworkFromFile(String pathToModel) throws IOException {
         Properties prop = loadProperties(pathToModel);
-        final int bestEpoch = Integer.parseInt(prop.getProperty(getModelName() + ".bestModelEpoch"));
+        final int bestEpoch = Integer.parseInt(prop.getProperty("bestModelEpoch"));
 
         // Limit number of epochs
         final int epoch = Math.min(bestEpoch, MAX_EPOCHS);

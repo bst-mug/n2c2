@@ -29,4 +29,10 @@ public class CriterionBasedClassifierFactory implements ClassifierFactory<Criter
     public CriterionBasedClassifier getClassifier(Criterion criterion) {
         return classifierByCriterion.get(criterion);
     }
+
+    @Override
+    public String toString() {
+        // Call toString on the firstElement
+        return classifierByCriterion.values().iterator().next().toString();
+    }
 }

@@ -29,4 +29,9 @@ public abstract class CriterionBasedClassifier implements Classifier {
     }
 
     public abstract Eligibility predict(Patient p);
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

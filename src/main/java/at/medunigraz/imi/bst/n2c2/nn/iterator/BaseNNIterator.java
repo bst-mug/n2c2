@@ -365,4 +365,12 @@ public abstract class BaseNNIterator implements DataSetIterator {
     public void load(File model) {
         inputRepresentation.load(model);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() +
+                "{truncateLength=" + truncateLength +
+                ",batchSize=" + batchSize +
+                "}";
+    }
 }

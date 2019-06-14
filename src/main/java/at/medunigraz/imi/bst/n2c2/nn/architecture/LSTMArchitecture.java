@@ -41,4 +41,13 @@ public class LSTMArchitecture implements Architecture {
         net.setListeners(new ScoreIterationListener(1));
         return net;
     }
+
+    @Override
+    public String toString() {
+        return "LSTMArchitecture{" +
+                "layerSize=" + LSTM_LAYER_SIZE +
+                ",regularization=" + L2_REGULARIZATION +
+                ",learningRate=" + LEARNING_RATE +
+                '}';
+    }
 }

@@ -21,4 +21,8 @@ public final class PatientBasedClassifierFactory implements ClassifierFactory<Pa
         return classifier;
     }
 
+    @Override
+    public String toString() {
+        return classifier.toString();
+    }
 }

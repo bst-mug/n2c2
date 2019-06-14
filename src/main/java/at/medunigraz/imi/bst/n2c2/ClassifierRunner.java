@@ -45,7 +45,7 @@ public class ClassifierRunner {
 		Evaluator basicEvaluator = new BasicEvaluator();		// accuracy and fp/fn metrics
 
 		for (ClassifierFactory factory : CLASSIFIERS) {
-			String name = factory.getClass().getSimpleName();
+			String name = factory.toString();
 			LOG.info("Running {}...", name);
 
 			Validator officialValidator = new TestValidator(trainPatients, testPatients, factory, officialEvaluator);
