@@ -20,7 +20,8 @@ public class FactoryProviderTest {
         assertTrue(FactoryProvider.getMajorityFactory().getClassifier(Criterion.ABDOMINAL) instanceof MajorityClassifier);
         assertTrue(FactoryProvider.getRBCFactory().getClassifier(Criterion.ABDOMINAL) instanceof RuleBasedClassifier);
         assertTrue(FactoryProvider.getSVMFactory().getClassifier(Criterion.ABDOMINAL) instanceof SVMClassifier);
-        assertTrue(FactoryProvider.getPerceptronFactory().getClassifier(Criterion.ABDOMINAL) instanceof PerceptronClassifier);
+        assertTrue(FactoryProvider.getPreTrainedPerceptronFactory().getClassifier(Criterion.ABDOMINAL) instanceof PerceptronClassifier);
+        assertTrue(FactoryProvider.getSelfTrainedPerceptronFactory().getClassifier(Criterion.ABDOMINAL) instanceof PerceptronClassifier);
         assertTrue(FactoryProvider.getBiLSTMCharacterTrigramFactory().getClassifier(Criterion.ABDOMINAL) instanceof BiLSTMCharacterTrigramClassifier);
         assertTrue(FactoryProvider.getLSTMPreTrainedFactory().getClassifier(Criterion.ABDOMINAL) instanceof LSTMPreTrainedEmbeddingsClassifier);
         assertTrue(FactoryProvider.getLSTMSelfTrainedFactory().getClassifier(Criterion.ABDOMINAL) instanceof LSTMSelfTrainedEmbeddingsClassifier);

@@ -1,6 +1,7 @@
 package at.medunigraz.imi.bst.n2c2;
 
-import at.medunigraz.imi.bst.n2c2.classifier.factory.*;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.FactoryProvider;
 import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
@@ -26,7 +27,8 @@ public class ClassifierRunner {
 			FactoryProvider.getMajorityFactory(),
 			FactoryProvider.getRBCFactory(),
 			FactoryProvider.getSVMFactory(),
-			FactoryProvider.getPerceptronFactory(),
+			FactoryProvider.getSelfTrainedPerceptronFactory(),
+			FactoryProvider.getPreTrainedPerceptronFactory(),
 			FactoryProvider.getLSTMSelfTrainedFactory(),
 			FactoryProvider.getLSTMPreTrainedFactory()
 	};

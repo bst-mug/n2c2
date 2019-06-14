@@ -1,6 +1,8 @@
 package at.medunigraz.imi.bst.n2c2.classifier.factory;
 
-import at.medunigraz.imi.bst.n2c2.classifier.*;
+import at.medunigraz.imi.bst.n2c2.classifier.FakeClassifier;
+import at.medunigraz.imi.bst.n2c2.classifier.MajorityClassifier;
+import at.medunigraz.imi.bst.n2c2.classifier.PatientBasedClassifier;
 import at.medunigraz.imi.bst.n2c2.nn.BiLSTMCharacterTrigramClassifier;
 import at.medunigraz.imi.bst.n2c2.nn.LSTMPreTrainedEmbeddingsClassifier;
 import at.medunigraz.imi.bst.n2c2.nn.LSTMSelfTrainedEmbeddingsClassifier;
@@ -20,8 +22,12 @@ public abstract class FactoryProvider {
         return new SVMClassifierFactory();
     }
 
-    public static CriterionBasedClassifierFactory getPerceptronFactory() {
-        return new CriterionBasedClassifierFactory(PerceptronClassifier.class);
+    public static CriterionBasedClassifierFactory getSelfTrainedPerceptronFactory() {
+        return new PerceptronClassifierFactory();
+    }
+
+    public static CriterionBasedClassifierFactory getPreTrainedPerceptronFactory() {
+        return new PerceptronClassifierFactory(true);
     }
 
     public static PatientBasedClassifierFactory getBiLSTMCharacterTrigramFactory() {
