@@ -1,7 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.runner;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
-import at.medunigraz.imi.bst.n2c2.classifier.factory.NNClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.FactoryProvider;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -52,7 +52,7 @@ public final class SalienceAnalyzer {
 
         List<Patient> trainPatients = DatasetUtil.loadFromFolder(trainFolder);
 
-        ClassifierFactory factory = new NNClassifierFactory();
+        ClassifierFactory factory = FactoryProvider.getLSTMPreTrainedFactory();
 
         // BaseNNClassifier extends PatientBasedClassifier, so it's a single classifier for any criterion.
         BaseNNClassifier nnClassifier = (BaseNNClassifier) factory.getClassifier(Criterion.ABDOMINAL);

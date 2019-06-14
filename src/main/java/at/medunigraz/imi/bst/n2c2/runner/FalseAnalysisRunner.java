@@ -17,11 +17,12 @@ public class FalseAnalysisRunner {
         List<Patient> testPatients = DatasetUtil.loadFromFolder(new File("data/test"));
 
         Map<String, List<Patient>> data = new LinkedHashMap<>();
-        data.put("MAJ", new MajorityClassifierFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("NN", new NNClassifierFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("SVM", new SVMClassifierFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("RBC", new RuleBasedClassifierFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("GT", new FakeClassifierFactory().trainAndPredict(trainPatients, testPatients));
+        // TODO expand with Perceptron and self-trained LSTM
+        data.put("MAJ", FactoryProvider.getMajorityFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("NN", FactoryProvider.getLSTMPreTrainedFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("SVM", FactoryProvider.getSVMFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("RBC", FactoryProvider.getRBCFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("GT", FactoryProvider.getFakeClassifierFactory().trainAndPredict(trainPatients, testPatients));
 
         dataToCsv(data, new File("false-analysis.csv"));
     }

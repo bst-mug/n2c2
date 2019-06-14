@@ -23,9 +23,12 @@ public class ClassifierRunner {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final ClassifierFactory[] CLASSIFIERS = new ClassifierFactory[] {
-			new MajorityClassifierFactory(), new RuleBasedClassifierFactory(),	// lower and upper bound
-			new SVMClassifierFactory(), new PerceptronClassifierFactory(),	// linear methods
-			new NNClassifierFactory()	// non-linear methods
+			FactoryProvider.getMajorityFactory(),
+			FactoryProvider.getRBCFactory(),
+			FactoryProvider.getSVMFactory(),
+			FactoryProvider.getPerceptronFactory(),
+			FactoryProvider.getLSTMSelfTrainedFactory(),
+			FactoryProvider.getLSTMPreTrainedFactory()
 	};
 
 	public static void main(String[] args) throws IOException {

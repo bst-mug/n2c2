@@ -1,8 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.runner;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
-import at.medunigraz.imi.bst.n2c2.classifier.factory.NNClassifierFactory;
-import at.medunigraz.imi.bst.n2c2.classifier.factory.SVMClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.FactoryProvider;
 import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.model.Patient;
@@ -33,8 +32,8 @@ public class TrainingCurvesRunner {
         List<Patient> trainPatients = DatasetUtil.loadFromFolder(trainFolder);
         List<Patient> testPatients = DatasetUtil.loadFromFolder(testFolder);
 
-        //ClassifierFactory factory = new SVMClassifierFactory();
-        ClassifierFactory factory = new NNClassifierFactory();
+        //ClassifierFactory factory = FactoryProvider.getSVMFactory();
+        ClassifierFactory factory = FactoryProvider.getLSTMPreTrainedFactory();
 
         //Evaluator evaluator = new OfficialEvaluator();
         Evaluator evaluator = new BasicEvaluator();

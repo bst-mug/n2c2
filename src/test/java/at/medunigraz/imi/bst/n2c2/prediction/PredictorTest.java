@@ -1,7 +1,7 @@
 package at.medunigraz.imi.bst.n2c2.prediction;
 
 import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
-import at.medunigraz.imi.bst.n2c2.classifier.factory.RuleBasedClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.FactoryProvider;
 import at.medunigraz.imi.bst.n2c2.dao.PatientDAO;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 import at.medunigraz.imi.bst.n2c2.model.Eligibility;
@@ -30,7 +30,7 @@ public class PredictorTest {
         final File predictionFolder = tempFolder.newFolder();
         final File trainingFolder = new File("data/train");
 
-        final ClassifierFactory factory = new RuleBasedClassifierFactory();
+        final ClassifierFactory factory = FactoryProvider.getRBCFactory();
 
         new Predictor(factory).loadTrainPredictSave(trainingFolder, testFolder, predictionFolder);
 
