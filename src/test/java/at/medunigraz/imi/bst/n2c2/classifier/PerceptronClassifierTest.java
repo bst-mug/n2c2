@@ -21,7 +21,7 @@ public class PerceptronClassifierTest {
 
     @Test
     public void trainPredictSingle() {
-        PerceptronClassifier mc = new PerceptronClassifier(Criterion.ABDOMINAL);
+        PerceptronClassifier mc = new PerceptronClassifier(Criterion.ABDOMINAL, true);
         mc.train(train);
 
         assertEquals(Eligibility.MET, mc.predict(new Patient().withText("abdominal surgery")));

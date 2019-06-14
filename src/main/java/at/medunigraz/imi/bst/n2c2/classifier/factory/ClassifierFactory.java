@@ -7,15 +7,15 @@ import at.medunigraz.imi.bst.n2c2.util.DatasetUtil;
 
 import java.util.List;
 
-public interface ClassifierFactory {
+public interface ClassifierFactory<C extends Classifier> {
 
-    Classifier getClassifier(Criterion criterion);
+    C getClassifier(Criterion criterion);
 
     default List<Patient> trainAndPredict(List<Patient> train, List<Patient> toPredict) {
         List<Patient> prediction = DatasetUtil.stripTags(toPredict);
 
         for (Criterion criterion : Criterion.classifiableValues()) {
-            Classifier classifier = this.getClassifier(criterion);
+            C classifier = this.getClassifier(criterion);
             classifier.train(train);
             prediction = classifier.predict(prediction);
         }

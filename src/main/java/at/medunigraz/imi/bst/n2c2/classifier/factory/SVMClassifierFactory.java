@@ -1,16 +1,10 @@
 package at.medunigraz.imi.bst.n2c2.classifier.factory;
 
-import at.medunigraz.imi.bst.n2c2.classifier.Classifier;
 import at.medunigraz.imi.bst.n2c2.classifier.svm.SVMClassifier;
 import at.medunigraz.imi.bst.n2c2.config.Config;
 import at.medunigraz.imi.bst.n2c2.model.Criterion;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class SVMClassifierFactory implements ClassifierFactory {
-
-    private static final Map<Criterion, Classifier> classifierByCriterion = new HashMap<>();
+public class SVMClassifierFactory extends CriterionBasedClassifierFactory {
 
     public SVMClassifierFactory() {
         classifierByCriterion.put(Criterion.MAKES_DECISIONS, new SVMClassifier(Criterion.MAKES_DECISIONS, Config.SVM_COST_MAKES_DECISIONS));
@@ -48,8 +42,4 @@ public class SVMClassifierFactory implements ClassifierFactory {
         classifierByCriterion.put(Criterion.DIETSUPP_2MOS, new SVMClassifier(Criterion.DIETSUPP_2MOS, cost).withMonths(6));
     }
 
-    @Override
-    public Classifier getClassifier(Criterion criterion) {
-        return classifierByCriterion.get(criterion);
-    }
 }

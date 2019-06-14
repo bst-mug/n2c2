@@ -1,6 +1,7 @@
 package at.medunigraz.imi.bst.n2c2;
 
-import at.medunigraz.imi.bst.n2c2.classifier.factory.*;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.ClassifierFactory;
+import at.medunigraz.imi.bst.n2c2.classifier.factory.FactoryProvider;
 import at.medunigraz.imi.bst.n2c2.evaluator.BasicEvaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.Evaluator;
 import at.medunigraz.imi.bst.n2c2.evaluator.OfficialEvaluator;
@@ -23,9 +24,13 @@ public class ClassifierRunner {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final ClassifierFactory[] CLASSIFIERS = new ClassifierFactory[] {
-			new MajorityClassifierFactory(), new RuleBasedClassifierFactory(),	// lower and upper bound
-			new SVMClassifierFactory(), new PerceptronClassifierFactory(),	// linear methods
-			new NNClassifierFactory()	// non-linear methods
+			FactoryProvider.getMajorityFactory(),
+			FactoryProvider.getRBCFactory(),
+			FactoryProvider.getSVMFactory(),
+			FactoryProvider.getSelfTrainedPerceptronFactory(),
+			FactoryProvider.getPreTrainedPerceptronFactory(),
+			FactoryProvider.getLSTMSelfTrainedFactory(),
+			FactoryProvider.getLSTMPreTrainedFactory()
 	};
 
 	public static void main(String[] args) throws IOException {

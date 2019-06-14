@@ -19,8 +19,11 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
      */
     private static final File PRETRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
 
-    public PerceptronClassifier(Criterion c) {
+    private final boolean preTrained;
+
+    public PerceptronClassifier(Criterion c, boolean preTrained) {
         super(c);
+        this.preTrained = preTrained;
     }
 
     private String preprocess(String text) {
@@ -51,7 +54,10 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
             trainData.put(preprocess(p.getText()), p.getEligibility(criterion).name());
         }
 
-//        FastTextFacade.train(trainData);
-        FastTextFacade.train(trainData, PRETRAINED_VECTORS);
+        if (preTrained) {
+            FastTextFacade.train(trainData, PRETRAINED_VECTORS);
+        } else {
+            FastTextFacade.train(trainData);
+        }
     }
 }
