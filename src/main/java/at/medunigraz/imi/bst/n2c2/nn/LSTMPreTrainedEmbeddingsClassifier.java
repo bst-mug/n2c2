@@ -18,28 +18,19 @@ import org.nd4j.linalg.factory.Nd4j;
 public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
 	/**
+	 * n2c2 longest training document has 7597 tokens.
+	 */
+	private static final int MAX_LENGTH = 7597;
+
+	/**
 	 * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
 	 */
 	private static final File PRETRAINED_VECTORS = new File(LSTMPreTrainedEmbeddingsClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
 
 	@Override
 	protected void initializeNetwork() {
-		initializeNetworkBinaryMultiLabelDebug();
-	}
-
-	private void initializeNetworkBinaryMultiLabelDebug() {
-
-		Nd4j.getMemoryManager().setAutoGcWindow(10000); // https://deeplearning4j.org/workspaces
-
-		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(PRETRAINED_VECTORS), BATCH_SIZE);
-
-		// Set up network configuration
+		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(PRETRAINED_VECTORS), MAX_LENGTH, BATCH_SIZE);
 		this.net = new LSTMArchitecture().getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
-	}
-
-	@Override
-	protected String getModelName() {
-		return getClass().getSimpleName();
 	}
 
 	@Override
@@ -49,5 +40,10 @@ public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 		fullSetIterator = new TokenIterator(new WordEmbedding(PRETRAINED_VECTORS), truncateLength, BATCH_SIZE);
 
 		super.initializeNetworkFromFile(pathToModel);
+	}
+
+	@Override
+	protected String getModelName() {
+		return getClass().getSimpleName();
 	}
 }

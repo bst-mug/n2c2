@@ -26,6 +26,13 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
     protected int batchSize;
 
+    /**
+     * Constructor used for first training, initializes `truncateLength` to the longest sequence in training data.
+     *
+     * @param patients
+     * @param inputRepresentation
+     * @param batchSize
+     */
     public BaseNNIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
         this.inputRepresentation = inputRepresentation;
         this.patients = patients;
@@ -33,6 +40,29 @@ public abstract class BaseNNIterator implements DataSetIterator {
         this.truncateLength = getLongestSequenceSize(patients);
     }
 
+    /**
+     * Constructor used for first training, uses a fixed `truncateLength` that can be shorter than the longest sequence in
+     * training data.
+     *
+     * @param patients
+     * @param inputRepresentation
+     * @param truncateLength
+     * @param batchSize
+     */
+    public BaseNNIterator(List<Patient> patients, InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+        this.inputRepresentation = inputRepresentation;
+        this.patients = patients;
+        this.batchSize = batchSize;
+        this.truncateLength = truncateLength;
+    }
+
+    /**
+     * Constructor used for loading models from disk, uses a fixed `truncateLength`.
+     *
+     * @param inputRepresentation
+     * @param truncateLength
+     * @param batchSize
+     */
     public BaseNNIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
         this.inputRepresentation = inputRepresentation;
         this.batchSize = batchSize;

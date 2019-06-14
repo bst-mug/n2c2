@@ -18,6 +18,10 @@ public class SentenceIterator extends BaseNNIterator {
 
 	private static final long serialVersionUID = 1L;
 
+	public SentenceIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
+		super(patients, inputRepresentation, batchSize);
+	}
+
 	/**
 	 * Iterator representing sentences as character 3-grams.
 	 *
@@ -26,8 +30,8 @@ public class SentenceIterator extends BaseNNIterator {
 	 * @param batchSize
 	 *            Minibatch size.
 	 */
-	public SentenceIterator(List<Patient> patients, InputRepresentation inputRepresentation, int batchSize) {
-		super(patients, inputRepresentation, batchSize);
+	public SentenceIterator(List<Patient> patients, InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
+		super(patients, inputRepresentation, truncateLength, batchSize);
 	}
 
 	/**

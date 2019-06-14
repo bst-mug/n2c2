@@ -14,17 +14,22 @@ import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 public class LSTMArchitecture implements Architecture {
+
+    private static final int LSTM_LAYER_SIZE = 256;
+    private static final double L2_REGULARIZATION = 1e-5;
+    private static final double LEARNING_RATE = 2e-2;
+
     @Override
     public MultiLayerNetwork getNetwork(int nIn) {
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)
-                .updater(Adam.builder().learningRate(2e-2).build()).regularization(true).l2(1e-5).weightInit(WeightInit.XAVIER)
+                .updater(Adam.builder().learningRate(LEARNING_RATE).build()).regularization(true).l2(L2_REGULARIZATION).weightInit(WeightInit.XAVIER)
                 .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
                 .gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
                 .inferenceWorkspaceMode(WorkspaceMode.SEPARATE) // https://deeplearning4j.org/workspaces
-                .list().layer(0, new GravesLSTM.Builder().nIn(nIn).nOut(256).activation(Activation.TANH).build())
+                .list().layer(0, new GravesLSTM.Builder().nIn(nIn).nOut(LSTM_LAYER_SIZE).activation(Activation.TANH).build())
                 .layer(1,
                         new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-                                .lossFunction(LossFunctions.LossFunction.XENT).nIn(256).nOut(13).build())
+                                .lossFunction(LossFunctions.LossFunction.XENT).nIn(LSTM_LAYER_SIZE).nOut(13).build())
                 .pretrain(false).backprop(true).build();
 
         // for truncated backpropagation over time
