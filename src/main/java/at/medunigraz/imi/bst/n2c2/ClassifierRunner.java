@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class ClassifierRunner {
@@ -40,6 +41,7 @@ public class ClassifierRunner {
 
 		List<Patient> trainPatients = DatasetUtil.loadFromFolder(trainFolder);
 		List<Patient> testPatients = DatasetUtil.loadFromFolder(testFolder);
+		Collections.sort(testPatients);
 
 		Evaluator officialEvaluator = new OfficialEvaluator();	// n2c2 official metrics
 		Evaluator basicEvaluator = new BasicEvaluator();		// accuracy and fp/fn metrics
