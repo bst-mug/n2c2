@@ -2,6 +2,7 @@ package at.medunigraz.imi.bst.n2c2.model;
 
 
 import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,7 +10,7 @@ import java.time.*;
 import java.util.*;
 
 
-public class Patient {
+public class Patient implements Comparable<Patient> {
 
     private String id;
     private String text;
@@ -191,7 +192,23 @@ public class Patient {
 	  ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
 	  LocalDate locDate = zdt.toLocalDate();
 	  return locDate; 
-  } // End of convertDateToLocalDate() 
-  
-    
-} // End of class Patient
+  } // End of convertDateToLocalDate()
+
+	@Override
+	public int compareTo(@NotNull Patient o) {
+		return id.compareTo(o.id);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Patient patient = (Patient) o;
+		return id.equals(patient.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+}
