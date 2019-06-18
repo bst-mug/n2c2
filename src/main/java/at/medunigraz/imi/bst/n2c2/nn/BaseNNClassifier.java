@@ -37,7 +37,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // size of mini-batch for training
     protected static final int BATCH_SIZE = 10;
 
-    protected static final int MAX_EPOCHS = 100;
+    protected static final int MAX_EPOCHS = 50;
 
     // training data
     protected List<Patient> patientExamples;

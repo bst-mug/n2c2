@@ -20,7 +20,7 @@ public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
     /**
      * n2c2 longest training document has 7597 tokens.
      */
-    private static final int TRUNCATE_LENGTH = 7597;
+    private static final int TRUNCATE_LENGTH = 2048;
 
     private static final Architecture ARCHITECTURE = new LSTMArchitecture();
 
