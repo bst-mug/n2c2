@@ -15,7 +15,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 public class LSTMArchitecture implements Architecture {
 
-    private static final int LSTM_LAYER_SIZE = 256;
+    private static final int LSTM_LAYER_SIZE = 64;
     private static final double L2_REGULARIZATION = 1e-5;
     private static final double LEARNING_RATE = 2e-2;
 
