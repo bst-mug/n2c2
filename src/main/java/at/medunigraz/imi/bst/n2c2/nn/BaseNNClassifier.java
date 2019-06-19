@@ -37,7 +37,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
     // size of mini-batch for training
     protected static final int BATCH_SIZE = 10;
 
-    protected static final int MAX_EPOCHS = 50;
+    protected static final int MAX_EPOCHS = 25;
 
     // training data
     protected List<Patient> patientExamples;
@@ -74,7 +74,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         }
         LOG.info("Total number of network parameters: " + totalNumParams);
 
-        int epochCounter = 0;
+        int epochCounter = 1;
 
         EvaluationBinary eb = new EvaluationBinary();
         do {
@@ -87,7 +87,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             // save model and parameters for reloading
             this.saveModel(epochCounter);
 
-            LOG.info("Epoch " + epochCounter++ + " complete.");
+            LOG.info("Epoch " + epochCounter + " complete.");
             LOG.info("Starting FULL SET evaluation:");
 
             while (fullSetIterator.hasNext()) {
@@ -106,7 +106,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             LOG.info(System.getProperty("line.separator") + ebepoch.stats());
             LOG.info("Average accuracy: {}", eb.averageAccuracy());
 
-        } while (eb.averageAccuracy() < 0.95 && epochCounter < MAX_EPOCHS);
+        } while (eb.averageAccuracy() < 0.99 && epochCounter++ < MAX_EPOCHS);
     }
 
     /**
