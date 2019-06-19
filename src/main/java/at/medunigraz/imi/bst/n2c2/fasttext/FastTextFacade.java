@@ -20,8 +20,8 @@ public final class FastTextFacade {
 
     private static final int SUCCESS_CODE = 0;
 
-    private static final int EPOCHS = 50;   // default = 5
-    private static final double LEARNING_RATE = 1.0;   // default = 0.1
+    private static final int EPOCHS = 100;   // default = 5
+    private static final double LEARNING_RATE = 0.5;   // default = 0.1
     private static final int DIMENSIONS = 200;  // default = 100
 
     // TODO receive via parameter to allow cross-validation (hash of input data)
