@@ -18,12 +18,13 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
      * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
      */
     private static final File PRETRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
+    private static final File SELFTRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("self-trained-vectors.vec").getFile());
 
-    private final boolean preTrained;
+    private final File vectors;
 
     public PerceptronClassifier(Criterion c, boolean preTrained) {
         super(c);
-        this.preTrained = preTrained;
+        this.vectors = preTrained ? PRETRAINED_VECTORS : SELFTRAINED_VECTORS;
     }
 
     private String preprocess(String text) {
@@ -54,10 +55,6 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
             trainData.put(preprocess(p.getText()), p.getEligibility(criterion).name());
         }
 
-        if (preTrained) {
-            FastTextFacade.train(trainData, PRETRAINED_VECTORS);
-        } else {
-            FastTextFacade.train(trainData);
-        }
+        FastTextFacade.train(trainData, vectors);
     }
 }
