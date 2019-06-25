@@ -5,10 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -133,7 +130,7 @@ public final class FastTextFacade {
         command.add("-epoch");
         command.add(String.valueOf(EPOCHS));
         command.add("-lr");
-        command.add(String.format("%.2f", LEARNING_RATE));
+        command.add(String.format(Locale.ROOT, "%.2f", LEARNING_RATE));
         command.add("-dim");
         command.add(String.valueOf(DIMENSIONS));
         return command;
