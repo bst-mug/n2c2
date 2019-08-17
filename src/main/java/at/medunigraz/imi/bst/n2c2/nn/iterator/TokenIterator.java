@@ -11,7 +11,6 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
  * Date iterator refactored from dl4j examples.
  *
  * @author Markus
- *
  */
 public class TokenIterator extends BaseNNIterator {
 
@@ -24,17 +23,14 @@ public class TokenIterator extends BaseNNIterator {
     /**
      * Patient data iterator for the n2c2 task.
      *
-     * @param patients
-     *            Patient data.
-     * @param batchSize
-     *            Mini batch size use for processing.
+     * @param patients  Patient data.
+     * @param batchSize Mini batch size use for processing.
      */
     public TokenIterator(List<Patient> patients, InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
         super(patients, inputRepresentation, truncateLength, batchSize);
     }
 
     /**
-     *
      * @param inputRepresentation
      * @param truncateLength
      * @param batchSize

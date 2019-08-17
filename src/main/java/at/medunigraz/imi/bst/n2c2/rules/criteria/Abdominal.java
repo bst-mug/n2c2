@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class Abdominal extends BaseClassifiable {
 
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
+
     static {
         POSITIVE_MARKERS.add(Pattern.compile("bowel surgery", Pattern.CASE_INSENSITIVE));
         //POSITIVE_MARKERS.add(Pattern.compile("polypectomy", Pattern.CASE_INSENSITIVE)); // Disabled by @kasac

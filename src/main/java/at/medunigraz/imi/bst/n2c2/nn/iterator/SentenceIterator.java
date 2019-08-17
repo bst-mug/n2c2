@@ -25,17 +25,14 @@ public class SentenceIterator extends BaseNNIterator {
     /**
      * Iterator representing sentences as character 3-grams.
      *
-     * @param patients
-     *            List of patients.
-     * @param batchSize
-     *            Minibatch size.
+     * @param patients  List of patients.
+     * @param batchSize Minibatch size.
      */
     public SentenceIterator(List<Patient> patients, InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
         super(patients, inputRepresentation, truncateLength, batchSize);
     }
 
     /**
-     *
      * @param inputRepresentation
      * @param truncateLength
      * @param batchSize

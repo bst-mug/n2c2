@@ -28,7 +28,7 @@ public final class FastTextFacade {
     private static final File MODEL_FILE = new File(ROOT_FOLDER, "model");
     private static final File TEST_FILE = new File(ROOT_FOLDER, "test.txt");
     private static final File OUTPUT_FILE = new File(ROOT_FOLDER, "output.txt");
-    
+
     private static final List<String> COMMAND = Arrays.asList("target/lib/fasttext");
 
     /**
@@ -38,7 +38,6 @@ public final class FastTextFacade {
     }
 
     /**
-     *
      * @param trainData Map of input text -> label
      */
     public static boolean train(Map<String, String> trainData) {
@@ -62,11 +61,11 @@ public final class FastTextFacade {
         if (exitCode != SUCCESS_CODE) {
             throw new RuntimeException("Process exited with code " + exitCode);
         }
-        
+
         return true;
     }
 
-    private static void writeTrain(Map<String, String> trainData, File file) throws IOException  {
+    private static void writeTrain(Map<String, String> trainData, File file) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
         for (Map.Entry<String, String> entry : trainData.entrySet()) {
@@ -114,8 +113,8 @@ public final class FastTextFacade {
         BufferedReader reader = new BufferedReader(new FileReader(file));
 
         return reader.lines()
-                .map(line -> line.substring(LABEL.length()))
-                .collect(Collectors.toList());
+            .map(line -> line.substring(LABEL.length()))
+            .collect(Collectors.toList());
     }
 
     private static List<String> getTrainCommand(File inputFile, File modelFile) {
@@ -173,10 +172,9 @@ public final class FastTextFacade {
     }
 
     /**
-     *
-     * @todo Refactor using http://commons.apache.org/proper/commons-exec/
      * @param pb
      * @return
+     * @todo Refactor using http://commons.apache.org/proper/commons-exec/
      */
     private static int run(ProcessBuilder pb) {
         Process proc = null;

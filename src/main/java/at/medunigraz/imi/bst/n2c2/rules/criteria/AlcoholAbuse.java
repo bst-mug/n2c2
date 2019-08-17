@@ -45,8 +45,6 @@ public class AlcoholAbuse extends BaseClassifiable {
     }
 
 
-
-
     @Override
     public Eligibility isMet(Patient p) {
 //        return Eligibility.NOT_MET;

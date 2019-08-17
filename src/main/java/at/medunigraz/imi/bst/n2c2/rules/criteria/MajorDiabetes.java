@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class MajorDiabetes extends BaseClassifiable {
 
     private static final List<Pattern> COMPLICATION_MARKERS = new ArrayList<>();
+
     static {
         // From the guidelines
         COMPLICATION_MARKERS.add(Pattern.compile("amputation", Pattern.CASE_INSENSITIVE));

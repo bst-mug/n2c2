@@ -24,14 +24,14 @@ public class ClassifierRunner {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private static final ClassifierFactory[] CLASSIFIERS = new ClassifierFactory[] {
-            FactoryProvider.getMajorityFactory(),
-            FactoryProvider.getRBCFactory(),
-            FactoryProvider.getSVMFactory(),
-            FactoryProvider.getSelfTrainedPerceptronFactory(),
-            FactoryProvider.getPreTrainedPerceptronFactory(),
-            FactoryProvider.getLSTMSelfTrainedFactory(),
-            FactoryProvider.getLSTMPreTrainedFactory()
+    private static final ClassifierFactory[] CLASSIFIERS = new ClassifierFactory[]{
+        FactoryProvider.getMajorityFactory(),
+        FactoryProvider.getRBCFactory(),
+        FactoryProvider.getSVMFactory(),
+        FactoryProvider.getSelfTrainedPerceptronFactory(),
+        FactoryProvider.getPreTrainedPerceptronFactory(),
+        FactoryProvider.getLSTMSelfTrainedFactory(),
+        FactoryProvider.getLSTMPreTrainedFactory()
     };
 
     public static void main(String[] args) throws IOException {
@@ -43,8 +43,8 @@ public class ClassifierRunner {
         List<Patient> testPatients = DatasetUtil.loadFromFolder(testFolder);
         Collections.sort(testPatients);
 
-        Evaluator officialEvaluator = new OfficialEvaluator();	// n2c2 official metrics
-        Evaluator basicEvaluator = new BasicEvaluator();		// accuracy and fp/fn metrics
+        Evaluator officialEvaluator = new OfficialEvaluator();    // n2c2 official metrics
+        Evaluator basicEvaluator = new BasicEvaluator();        // accuracy and fp/fn metrics
 
         for (ClassifierFactory factory : CLASSIFIERS) {
             String name = factory.toString();

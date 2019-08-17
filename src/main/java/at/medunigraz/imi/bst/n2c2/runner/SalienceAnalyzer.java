@@ -31,6 +31,7 @@ public final class SalienceAnalyzer {
      * Most of the time it is a positive marker and also the minority, but not always.
      */
     private static final Map<Criterion, Eligibility> RBC_MARKER = new HashMap<>();
+
     static {
         RBC_MARKER.put(Criterion.ABDOMINAL, Eligibility.MET);
         RBC_MARKER.put(Criterion.ADVANCED_CAD, Eligibility.MET);            // Minority = NOT_MET
@@ -117,15 +118,15 @@ public final class SalienceAnalyzer {
             switch (RBC_MARKER.get(criterion)) {
                 case MET:
                     sorted = criterionResults.entrySet().stream()
-                            .filter(e -> e.getValue() > THRESHOLD)
-                            .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
+                        .filter(e -> e.getValue() > THRESHOLD)
+                        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
                     break;
                 case NOT_MET:
                     sorted = criterionResults.entrySet().stream()
-                            .filter(e -> e.getValue() < 1 - THRESHOLD)
-                            .sorted(Map.Entry.comparingByValue())
-                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
+                        .filter(e -> e.getValue() < 1 - THRESHOLD)
+                        .sorted(Map.Entry.comparingByValue())
+                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
                     break;
                 default:
                     throw new RuntimeException("Marker not set for " + criterionEntry.getKey());

@@ -19,7 +19,6 @@ import org.apache.lucene.util.AttributeFactory;
  * Refactored from dl4j examples.
  *
  * @author Markus
- *
  */
 public abstract class DataUtilities {
 
@@ -50,8 +49,6 @@ public abstract class DataUtilities {
     }
 
     /**
-     *
-     *
      * @param reader
      * @return
      */
@@ -68,8 +65,6 @@ public abstract class DataUtilities {
     }
 
     /**
-     *
-     *
      * @param textToProcess
      * @return
      */
@@ -82,7 +77,8 @@ public abstract class DataUtilities {
             throw new RuntimeException(e);
         }
 
-        String normalized = String.join(" ", tokens);;
+        String normalized = String.join(" ", tokens);
+        ;
 
         // post normalization
         normalized = normalized.replaceAll("[\\.\\,\\_\\:]+", " ");

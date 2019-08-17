@@ -35,41 +35,41 @@ public class BiLSTMArchitecture implements Architecture {
         // seed for reproducibility
         final int seed = 12345;
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
-                .updater(AdaGrad.builder().learningRate(CORE_LEARNING_RATE).build()).regularization(true).l2(L2_REGULARIZATION)
-                .weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-                .gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SINGLE)
-                .inferenceWorkspaceMode(WorkspaceMode.SINGLE).list()
+            .updater(AdaGrad.builder().learningRate(CORE_LEARNING_RATE).build()).regularization(true).l2(L2_REGULARIZATION)
+            .weightInit(WeightInit.XAVIER).gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+            .gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SINGLE)
+            .inferenceWorkspaceMode(WorkspaceMode.SINGLE).list()
 
-                .layer(0, new DenseLayer.Builder().activation(Activation.RELU).nIn(nIn).nOut(FF_LAYER_SIZE)
-                        .weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(DENSE_LEARNING_RATE).build())
-                        .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-                        .gradientNormalizationThreshold(10).build())
+            .layer(0, new DenseLayer.Builder().activation(Activation.RELU).nIn(nIn).nOut(FF_LAYER_SIZE)
+                .weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(DENSE_LEARNING_RATE).build())
+                .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+                .gradientNormalizationThreshold(10).build())
 
-                .layer(1, new DenseLayer.Builder().activation(Activation.RELU).nIn(FF_LAYER_SIZE).nOut(FF_LAYER_SIZE)
-                        .weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(DENSE_LEARNING_RATE).build())
-                        .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-                        .gradientNormalizationThreshold(10).build())
+            .layer(1, new DenseLayer.Builder().activation(Activation.RELU).nIn(FF_LAYER_SIZE).nOut(FF_LAYER_SIZE)
+                .weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(DENSE_LEARNING_RATE).build())
+                .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+                .gradientNormalizationThreshold(10).build())
 
-                .layer(2, new DenseLayer.Builder().activation(Activation.RELU).nIn(FF_LAYER_SIZE).nOut(FF_LAYER_SIZE)
-                        .weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(DENSE_LEARNING_RATE).build())
-                        .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
-                        .gradientNormalizationThreshold(10).build())
+            .layer(2, new DenseLayer.Builder().activation(Activation.RELU).nIn(FF_LAYER_SIZE).nOut(FF_LAYER_SIZE)
+                .weightInit(WeightInit.RELU).updater(AdaGrad.builder().learningRate(DENSE_LEARNING_RATE).build())
+                .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
+                .gradientNormalizationThreshold(10).build())
 
-                .layer(3,
-                        new GravesBidirectionalLSTM.Builder().nIn(FF_LAYER_SIZE).nOut(LSTM_LAYER_SIZE)
-                                .updater(AdaGrad.builder().learningRate(GRAVES_LEARNING_RATE).build())
-                                .activation(Activation.SOFTSIGN).build())
+            .layer(3,
+                new GravesBidirectionalLSTM.Builder().nIn(FF_LAYER_SIZE).nOut(LSTM_LAYER_SIZE)
+                    .updater(AdaGrad.builder().learningRate(GRAVES_LEARNING_RATE).build())
+                    .activation(Activation.SOFTSIGN).build())
 
-                .layer(4,
-                        new GravesLSTM.Builder().nIn(LSTM_LAYER_SIZE).nOut(LSTM_LAYER_SIZE)
-                                .updater(AdaGrad.builder().learningRate(GRAVES_LEARNING_RATE).build())
-                                .activation(Activation.SOFTSIGN).build())
+            .layer(4,
+                new GravesLSTM.Builder().nIn(LSTM_LAYER_SIZE).nOut(LSTM_LAYER_SIZE)
+                    .updater(AdaGrad.builder().learningRate(GRAVES_LEARNING_RATE).build())
+                    .activation(Activation.SOFTSIGN).build())
 
-                .layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
-                        .lossFunction(LossFunctions.LossFunction.XENT).nIn(LSTM_LAYER_SIZE).nOut(Criterion.classifiableValues().length).build())
+            .layer(5, new RnnOutputLayer.Builder().activation(Activation.SIGMOID)
+                .lossFunction(LossFunctions.LossFunction.XENT).nIn(LSTM_LAYER_SIZE).nOut(Criterion.classifiableValues().length).build())
 
-                .inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
-                .inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
+            .inputPreProcessor(0, new RnnToFeedForwardPreProcessor())
+            .inputPreProcessor(3, new FeedForwardToRnnPreProcessor()).pretrain(false).backprop(true).build();
 
         // .backpropType(BackpropType.TruncatedBPTT).tBPTTForwardLength(tbpttLength).tBPTTBackwardLength(tbpttLength)
 
@@ -82,9 +82,9 @@ public class BiLSTMArchitecture implements Architecture {
     @Override
     public String toString() {
         return "BiLSTMArchitecture{" +
-                "layerSize=" + LSTM_LAYER_SIZE +
-                ",regularization=" + L2_REGULARIZATION +
-                ",learningRate=" + CORE_LEARNING_RATE +
-                '}';
+            "layerSize=" + LSTM_LAYER_SIZE +
+            ",regularization=" + L2_REGULARIZATION +
+            ",learningRate=" + CORE_LEARNING_RATE +
+            '}';
     }
 }

@@ -111,7 +111,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     /**
      * Initialize monitoring.
-     *
      */
     protected void initializeMonitoring() {
         // setting monitor
@@ -220,8 +219,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             this.patientExamples = examples;
 
             initializeNetwork();

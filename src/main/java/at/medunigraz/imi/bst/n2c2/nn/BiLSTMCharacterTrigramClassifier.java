@@ -12,7 +12,6 @@ import at.medunigraz.imi.bst.n2c2.nn.iterator.SentenceIterator;
  * BI-LSTM classifier for n2c2 task 2018 refactored from dl4j examples.
  *
  * @author Markus
- *
  */
 public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 
@@ -50,9 +49,9 @@ public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
     @Override
     public String toString() {
         return getClass().getSimpleName() +
-                "{truncateLength=" + TRUNCATE_LENGTH +
-                ",batchSize=" + BATCH_SIZE +
-                ",architecture=" + architecture.toString() +
-                "}";
+            "{truncateLength=" + TRUNCATE_LENGTH +
+            ",batchSize=" + BATCH_SIZE +
+            ",architecture=" + architecture.toString() +
+            "}";
     }
 }

@@ -53,24 +53,25 @@ public class Patient implements Comparable<Patient> {
 
     /**
      * getAllVisits() returns all the visits of one patient as
-     * an ArrayList, which includes the parsed date of the visit, 
-     * the number of the visits (depending on their order in the 
-     * original patient file, and the text of the visit itself. 
+     * an ArrayList, which includes the parsed date of the visit,
+     * the number of the visits (depending on their order in the
+     * original patient file, and the text of the visit itself.
+     *
      * @return ArrayList of the PatientVisits
      */
-    public ArrayList<PatientVisits> getAllVisits(){
+    public ArrayList<PatientVisits> getAllVisits() {
         String docFulltext = getText();
         ArrayList<PatientVisits> a_pv = new ArrayList<>();
         String[] visits = docFulltext.split("Record date:");
 
-        for(int i = 0; i<visits.length; i++){
+        for (int i = 0; i < visits.length; i++) {
             PatientVisits pv = new PatientVisits();
 
             pv.setVisit_number(i);
             String line = visits[i].trim();
 
             String s_date = getFirstToken(line);
-            if(s_date != null){
+            if (s_date != null) {
                 pv.setVisit_date(convertFormatDate(s_date));
                 pv.setVisit_text(trimVisitText(line));
                 a_pv.add(pv);
@@ -81,11 +82,11 @@ public class Patient implements Comparable<Patient> {
         return a_pv;
     } // End of getAllVisits() 
 
-    private String getFirstToken(String line){
+    private String getFirstToken(String line) {
         int lineLength = line.length();
         String dLine = null;
-        if(lineLength > 2){
-            dLine = line.substring(0,12).trim();
+        if (lineLength > 2) {
+            dLine = line.substring(0, 12).trim();
         }
         return dLine;
     } // End of getFirstToken() 
@@ -94,7 +95,7 @@ public class Patient implements Comparable<Patient> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
-            if(str_date != null){
+            if (str_date != null) {
                 date = sdf.parse(str_date);
             }
         } catch (ParseException | NullPointerException ne) {
@@ -104,12 +105,12 @@ public class Patient implements Comparable<Patient> {
         return date;
     } // End of convertFormatDate() 
 
-    private String trimVisitText(String visit_text){
+    private String trimVisitText(String visit_text) {
 
         String end_id = "*******************************************"
-                + "**************************************************"
-                + "*******";
-        if(visit_text.contains(end_id)){
+            + "**************************************************"
+            + "*******";
+        if (visit_text.contains(end_id)) {
             visit_text = visit_text.replace(end_id, "");
         }
 
@@ -118,36 +119,37 @@ public class Patient implements Comparable<Patient> {
 
     /**
      * getFirstVisit() returns the first PatientVisits object, according
-     * to the patient text file, which was parsed. This includes the parsed 
-     * date of the visit, the number of the visits (depending on their order 
-     * in the original patient file, and the text of the visit itself. 
+     * to the patient text file, which was parsed. This includes the parsed
+     * date of the visit, the number of the visits (depending on their order
+     * in the original patient file, and the text of the visit itself.
+     *
      * @return PatientVisits
      */
-    public PatientVisits getFirstVisit(){
+    public PatientVisits getFirstVisit() {
         PatientVisits pv = new PatientVisits();
-        if(getAllVisits().size()>0){
+        if (getAllVisits().size() > 0) {
             pv = getAllVisits().get(0);
         }
         return pv;
     } // End of getFirstVisit() 
 
-    public PatientVisits getLastVisit(){
+    public PatientVisits getLastVisit() {
         PatientVisits pv = new PatientVisits();
         int pv_size = getAllVisits().size();
-        if(pv_size>0){
-            pv = getAllVisits().get(pv_size-1);
+        if (pv_size > 0) {
+            pv = getAllVisits().get(pv_size - 1);
         }
         return pv;
     } // End of getLastVisit()
 
-    public ArrayList<PatientVisits> getMultipleVisits(int months){
+    public ArrayList<PatientVisits> getMultipleVisits(int months) {
         ArrayList<PatientVisits> a_pv_afterDate = new ArrayList<>();
         ArrayList<PatientVisits> a_pv = getAllVisits();
         Date date_ofLastVisit = getLastVisit().getVisit_date();
         Date date_inthepast = getPastTimestamp(date_ofLastVisit, months);
 
-        for(int i = 0; i<a_pv.size(); i++){
-            if(a_pv.get(i).getVisit_date().after(date_inthepast)){
+        for (int i = 0; i < a_pv.size(); i++) {
+            if (a_pv.get(i).getVisit_date().after(date_inthepast)) {
                 a_pv_afterDate.add(a_pv.get(i));
             }
         }
@@ -171,7 +173,7 @@ public class Patient implements Comparable<Patient> {
     }
 
 
-    public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2){
+    public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2) {
         Period p = null;
         LocalDate d_visit1 = convertDateToLocalDate(visit1.getVisit_date());
         LocalDate d_visit2 = convertDateToLocalDate(visit2.getVisit_date());
@@ -179,7 +181,7 @@ public class Patient implements Comparable<Patient> {
         return p;
     } // End of getTimeIntervalBetweenVisits()
 
-    private Date getPastTimestamp(Date current_date, int months){
+    private Date getPastTimestamp(Date current_date, int months) {
         Calendar c = Calendar.getInstance();
         c.setTime(current_date);
         c.add(Calendar.MONTH, -months);
@@ -187,7 +189,7 @@ public class Patient implements Comparable<Patient> {
         return past_timestamp;
     } // End of getPastTimestamp()
 
-    private LocalDate convertDateToLocalDate(Date d){
+    private LocalDate convertDateToLocalDate(Date d) {
         Instant instant = d.toInstant();
         ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
         LocalDate locDate = zdt.toLocalDate();

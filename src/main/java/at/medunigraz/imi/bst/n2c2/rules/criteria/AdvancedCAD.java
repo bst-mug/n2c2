@@ -87,7 +87,6 @@ public class AdvancedCAD extends BaseClassifiable {
     }
 
 
-
     @Override
     public Eligibility isMet(Patient p) {
         int countAdvanced = 0;
