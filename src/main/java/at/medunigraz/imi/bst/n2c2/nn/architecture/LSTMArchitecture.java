@@ -22,7 +22,8 @@ public class LSTMArchitecture implements Architecture {
     @Override
     public MultiLayerNetwork getNetwork(int nIn) {
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(0)
-                .updater(Adam.builder().learningRate(LEARNING_RATE).build()).regularization(true).l2(L2_REGULARIZATION).weightInit(WeightInit.XAVIER)
+                .updater(Adam.builder().learningRate(LEARNING_RATE).build()).regularization(true).l2(L2_REGULARIZATION)
+                .dropOut(0.5).weightInit(WeightInit.XAVIER)
                 .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue)
                 .gradientNormalizationThreshold(1.0).trainingWorkspaceMode(WorkspaceMode.SEPARATE)
                 .inferenceWorkspaceMode(WorkspaceMode.SEPARATE) // https://deeplearning4j.org/workspaces
