@@ -225,7 +225,7 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             this.patientExamples = examples;
 
             initializeNetwork();
-//			initializeMonitoring();
+//            initializeMonitoring();
 
             LOG.info("Minibatchsize  :\t" + BATCH_SIZE);
             LOG.info("Truncate length:\t" + fullSetIterator.getTruncateLength());

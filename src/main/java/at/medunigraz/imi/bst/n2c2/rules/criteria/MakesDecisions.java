@@ -9,7 +9,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public class MakesDecisions extends BaseClassifiable {
 
-	private static final List<Pattern> NEGATIVE_MARKERS = new ArrayList<>();
+    private static final List<Pattern> NEGATIVE_MARKERS = new ArrayList<>();
 
     static {
 //        NEGATIVE_MARKERS.add(Pattern.compile("altered mental", Pattern.CASE_INSENSITIVE)); // 308.xml: CHIEF COMPLAINT: Altered mental status 
@@ -17,12 +17,12 @@ public class MakesDecisions extends BaseClassifiable {
 //        NEGATIVE_MARKERS.add(Pattern.compile("(Alzheimer|Alzheimers) (meds|medication)", Pattern.CASE_INSENSITIVE)); // 357.xml: Dementia - Cont Alzheimers meds#
 //        NEGATIVE_MARKERS.add(Pattern.compile("Alzheimer", Pattern.CASE_INSENSITIVE)); // 357.xml: Dementia - Cont Alzheimers meds#
         //NEGATIVE_MARKERS.add(Pattern.compile("(Alzheimer|Alzheimers)", Pattern.CASE_INSENSITIVE));
-        
+
     }
-	
-	
+
+
     @Override
     public Eligibility isMet(Patient p) {
-    	return findAnyPattern(p.getCleanedText(), NEGATIVE_MARKERS) ? Eligibility.NOT_MET : Eligibility.MET;
+        return findAnyPattern(p.getCleanedText(), NEGATIVE_MARKERS) ? Eligibility.NOT_MET : Eligibility.MET;
     }
 }

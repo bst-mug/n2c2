@@ -5,7 +5,7 @@ import at.medunigraz.imi.bst.n2c2.model.Patient;
 
 public interface Classifiable {
 
-	public Eligibility isMet(Patient p);
-	
-	
+    public Eligibility isMet(Patient p);
+
+
 }

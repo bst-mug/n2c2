@@ -20,7 +20,7 @@ public class HbA1c extends BaseClassifiable {
     // We match only on [0-9] because 10.x would be out anyway...
     static final Pattern REGEX = Pattern.compile("A1C.{0,25}?([0-9]{1,2}\\.[0-9]{1,2})", Pattern.CASE_INSENSITIVE);
 
-	@Override
+    @Override
     public Eligibility isMet(Patient p) {
         List<Double> values = findAllValues(p.getCleanedText(), REGEX);
 
@@ -30,7 +30,7 @@ public class HbA1c extends BaseClassifiable {
             }
         }
 
-		return Eligibility.NOT_MET;
+        return Eligibility.NOT_MET;
     }
-	
+
 }
