@@ -81,7 +81,7 @@ public final class FastTextFacade {
     }
 
     /**
-     * Prefer predict(List<String> texts) as it might have a performance benefit.
+     * Prefer {@link #predict(List)} as it might have a performance benefit.
      *
      * @param text
      * @return
@@ -172,9 +172,9 @@ public final class FastTextFacade {
     }
 
     /**
+     * @todo Refactor using http://commons.apache.org/proper/commons-exec/
      * @param pb
      * @return
-     * @todo Refactor using http://commons.apache.org/proper/commons-exec/
      */
     private static int run(ProcessBuilder pb) {
         Process proc = null;

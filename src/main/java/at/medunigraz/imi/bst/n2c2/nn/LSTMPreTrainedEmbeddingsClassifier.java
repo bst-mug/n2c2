@@ -27,7 +27,8 @@ public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
     /**
      * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
      */
-    private static final File PRETRAINED_VECTORS = new File(LSTMPreTrainedEmbeddingsClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
+    private static final File PRETRAINED_VECTORS = new File(
+        LSTMPreTrainedEmbeddingsClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
 
     public LSTMPreTrainedEmbeddingsClassifier() {
         super(ARCHITECTURE);
@@ -55,10 +56,10 @@ public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() +
-                "{truncateLength" + TRUNCATE_LENGTH +
-                ",batchSize=" + BATCH_SIZE +
-                ",architecture=" + architecture.toString() +
-                "}";
+        return getClass().getSimpleName()
+                + "{truncateLength" + TRUNCATE_LENGTH
+                + ",batchSize=" + BATCH_SIZE
+                + ",architecture=" + architecture.toString()
+                + "}";
     }
 }

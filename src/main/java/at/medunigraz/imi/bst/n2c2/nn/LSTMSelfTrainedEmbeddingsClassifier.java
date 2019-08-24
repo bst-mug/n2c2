@@ -27,7 +27,8 @@ public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
     /**
      * Location of self-trained fasttext vectors (using `train_embeddings.sh`) and extracted from the `.bin` file using `print_vectors.sh`.
      */
-    private static final File SELFTRAINED_VECTORS = new File(LSTMSelfTrainedEmbeddingsClassifier.class.getClassLoader().getResource("self-trained-vectors.vec").getFile());
+    private static final File SELFTRAINED_VECTORS = new File(
+        LSTMSelfTrainedEmbeddingsClassifier.class.getClassLoader().getResource("self-trained-vectors.vec").getFile());
 
     public LSTMSelfTrainedEmbeddingsClassifier() {
         super(ARCHITECTURE);
@@ -55,10 +56,10 @@ public class LSTMSelfTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() +
-                "{truncateLength" + TRUNCATE_LENGTH +
-                ",batchSize=" + BATCH_SIZE +
-                ",architecture=" + architecture.toString() +
-                "}";
+        return getClass().getSimpleName()
+                + "{truncateLength" + TRUNCATE_LENGTH
+                + ",batchSize=" + BATCH_SIZE
+                + ",architecture=" + architecture.toString()
+                + "}";
     }
 }

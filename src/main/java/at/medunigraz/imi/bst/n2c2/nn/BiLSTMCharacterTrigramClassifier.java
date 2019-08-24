@@ -28,7 +28,9 @@ public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 
     @Override
     protected void initializeNetwork() {
-        fullSetIterator = new SentenceIterator(patientExamples, new CharacterTrigram(SentenceIterator.createPatientLines(patientExamples)), TRUNCATE_LENGTH, BATCH_SIZE);
+        fullSetIterator = new SentenceIterator(patientExamples,
+            new CharacterTrigram(SentenceIterator.createPatientLines(patientExamples)),
+            TRUNCATE_LENGTH, BATCH_SIZE);
         this.net = architecture.getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
     }
 
@@ -48,10 +50,10 @@ public class BiLSTMCharacterTrigramClassifier extends BaseNNClassifier {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() +
-            "{truncateLength=" + TRUNCATE_LENGTH +
-            ",batchSize=" + BATCH_SIZE +
-            ",architecture=" + architecture.toString() +
-            "}";
+        return getClass().getSimpleName()
+            + "{truncateLength=" + TRUNCATE_LENGTH
+            + ",batchSize=" + BATCH_SIZE
+            + ",architecture=" + architecture.toString()
+            + "}";
     }
 }

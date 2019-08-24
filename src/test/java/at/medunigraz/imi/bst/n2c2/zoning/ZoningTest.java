@@ -36,19 +36,19 @@ public class ZoningTest {
 //		assertNull(pv0.getVisit_date());
 		
 		PatientVisits pv0 = a_pv.get(0);
-		assertThat(pv0.getVisit_text(), containsString("FISHKILL"));
+		assertThat(pv0.getVisitText(), containsString("FISHKILL"));
 		
 		PatientVisits pv1 = a_pv.get(1);
-		assertThat(pv1.getVisit_text(), containsString("HPI"));
+		assertThat(pv1.getVisitText(), containsString("HPI"));
 		
 		PatientVisits pv2 = a_pv.get(2);
-		assertThat(pv2.getVisit_text(), containsString("PHYSICAL EXAMINATION"));
+		assertThat(pv2.getVisitText(), containsString("PHYSICAL EXAMINATION"));
 		
 		PatientVisits tpv_first = pat.getFirstVisit(); 
-		assertThat(tpv_first.getVisit_text(), containsString("FISHKILL"));
+		assertThat(tpv_first.getVisitText(), containsString("FISHKILL"));
 		
 		PatientVisits tpv_last = pat.getLastVisit(); 
-		assertThat(tpv_last.getVisit_text(), containsString("PHYSICAL EXAMINATION"));		
+		assertThat(tpv_last.getVisitText(), containsString("PHYSICAL EXAMINATION"));
 		
 		Period p = pat.getTimeIntervalBetweenVisits(tpv_first, tpv_last); 
 		// first visit: 2067-05-22 ... last visit: 2069-11-02

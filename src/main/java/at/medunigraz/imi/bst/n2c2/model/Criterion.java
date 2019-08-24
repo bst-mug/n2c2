@@ -46,7 +46,7 @@ public enum Criterion {
     }
 
     /**
-     * The same as values(), but without OVERALL_MICRO and OVERALL_MACRO
+     * The same as values(), but without OVERALL_MICRO and OVERALL_MACRO.
      *
      * @return
      */

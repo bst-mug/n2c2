@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Creatinine extends BaseClassifiable {
-
-    //final public String[] a_CriterionID_creatinine = {"Creatinine", "crea", "cre", "Cr", "CRE", "CREA"};
-
     // 101.xml: 1.1 => NOT_MET
     // 225.xml: 1.2 => NOT_MET
     // 272.xml: 1.4 => NOT_MET
@@ -29,7 +26,9 @@ public class Creatinine extends BaseClassifiable {
     // 105.xml: Cr 1.4
     // 100.xml: Creatinine             1.0
     // 313.xml (MET): elevated creatinine
-    private static final Pattern VALUE_REGEX = Pattern.compile("[^/](?:cr|creatinine|cre)[^a-z].{0,15}?([0-9]\\.[0-9](?:[0-9])?)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern VALUE_REGEX = Pattern.compile(
+        "[^/](?:cr|creatinine|cre)[^a-z].{0,15}?([0-9]\\.[0-9](?:[0-9])?)",
+        Pattern.CASE_INSENSITIVE);
 
     static {
         // 299.xml: rising serum creatinine

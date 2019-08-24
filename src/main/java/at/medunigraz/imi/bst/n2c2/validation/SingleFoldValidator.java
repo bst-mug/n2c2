@@ -31,6 +31,8 @@ public class SingleFoldValidator extends AbstractValidator {
     }
 
     public Metrics validate() {
-        return validate(SingleFoldValidatedDataset.DEFAULT_TRAINING_SET_PERCENTAGE, SingleFoldValidatedDataset.DEFAULT_VALIDATION_SET_PERCENTAGE, SingleFoldValidatedDataset.DEFAULT_TEST_SET_PERCENTAGE);
+        return validate(SingleFoldValidatedDataset.DEFAULT_TRAINING_SET_PERCENTAGE,
+            SingleFoldValidatedDataset.DEFAULT_VALIDATION_SET_PERCENTAGE,
+            SingleFoldValidatedDataset.DEFAULT_TEST_SET_PERCENTAGE);
     }
 }

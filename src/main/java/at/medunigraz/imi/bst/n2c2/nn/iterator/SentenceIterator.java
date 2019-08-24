@@ -32,17 +32,12 @@ public class SentenceIterator extends BaseNNIterator {
         super(patients, inputRepresentation, truncateLength, batchSize);
     }
 
-    /**
-     * @param inputRepresentation
-     * @param truncateLength
-     * @param batchSize
-     */
     public SentenceIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
         super(inputRepresentation, truncateLength, batchSize);
     }
 
     /**
-     * getting lines from all patients
+     * Get lines from all patients.
      *
      * @param patients
      * @return

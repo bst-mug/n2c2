@@ -1,6 +1,5 @@
 package at.medunigraz.imi.bst.n2c2.model;
 
-
 import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,9 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
 
-
 public class Patient implements Comparable<Patient> {
-
     private String id;
     private String text;
     private Map<Criterion, Eligibility> criteria = new HashMap<>();
@@ -61,61 +58,60 @@ public class Patient implements Comparable<Patient> {
      */
     public ArrayList<PatientVisits> getAllVisits() {
         String docFulltext = getText();
-        ArrayList<PatientVisits> a_pv = new ArrayList<>();
+        ArrayList<PatientVisits> patientVisits = new ArrayList<>();
         String[] visits = docFulltext.split("Record date:");
 
         for (int i = 0; i < visits.length; i++) {
             PatientVisits pv = new PatientVisits();
 
-            pv.setVisit_number(i);
+            pv.setVisitNumber(i);
             String line = visits[i].trim();
 
-            String s_date = getFirstToken(line);
-            if (s_date != null) {
-                pv.setVisit_date(convertFormatDate(s_date));
-                pv.setVisit_text(trimVisitText(line));
-                a_pv.add(pv);
+            String date = getFirstToken(line);
+            if (date != null) {
+                pv.setVisitDate(convertFormatDate(date));
+                pv.setVisitText(trimVisitText(line));
+                patientVisits.add(pv);
             }
+        }
 
-        } // End of for loop
-
-        return a_pv;
-    } // End of getAllVisits() 
+        return patientVisits;
+    }
 
     private String getFirstToken(String line) {
         int lineLength = line.length();
-        String dLine = null;
+        String firstToken = null;
         if (lineLength > 2) {
-            dLine = line.substring(0, 12).trim();
+            firstToken = line.substring(0, 12).trim();
         }
-        return dLine;
-    } // End of getFirstToken() 
+        return firstToken;
+    }
 
-    private Date convertFormatDate(String str_date) {
+    private Date convertFormatDate(String dateStr) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
-            if (str_date != null) {
-                date = sdf.parse(str_date);
+            if (dateStr != null) {
+                date = sdf.parse(dateStr);
             }
         } catch (ParseException | NullPointerException ne) {
             date = null;
             ne.printStackTrace();
         }
         return date;
-    } // End of convertFormatDate() 
+    }
 
-    private String trimVisitText(String visit_text) {
-
-        String end_id = "*******************************************"
+    private String trimVisitText(String visitText) {
+        final String end = "*******************************************"
             + "**************************************************"
             + "*******";
-        if (visit_text.contains(end_id)) {
-            visit_text = visit_text.replace(end_id, "");
+        String trimmedVisitText = visitText;
+        if (visitText.contains(end)) {
+            trimmedVisitText = visitText.replace(end, "");
         }
 
-        return visit_text;
-    } // End of trimVisitText() 
+        return trimmedVisitText;
+    }
 
     /**
      * getFirstVisit() returns the first PatientVisits object, according
@@ -131,31 +127,31 @@ public class Patient implements Comparable<Patient> {
             pv = getAllVisits().get(0);
         }
         return pv;
-    } // End of getFirstVisit() 
+    }
 
     public PatientVisits getLastVisit() {
-        PatientVisits pv = new PatientVisits();
-        int pv_size = getAllVisits().size();
-        if (pv_size > 0) {
-            pv = getAllVisits().get(pv_size - 1);
+        PatientVisits visit = new PatientVisits();
+        int size = getAllVisits().size();
+        if (size > 0) {
+            visit = getAllVisits().get(size - 1);
         }
-        return pv;
-    } // End of getLastVisit()
+        return visit;
+    }
 
     public ArrayList<PatientVisits> getMultipleVisits(int months) {
-        ArrayList<PatientVisits> a_pv_afterDate = new ArrayList<>();
-        ArrayList<PatientVisits> a_pv = getAllVisits();
-        Date date_ofLastVisit = getLastVisit().getVisit_date();
-        Date date_inthepast = getPastTimestamp(date_ofLastVisit, months);
+        ArrayList<PatientVisits> afterDate = new ArrayList<>();
+        ArrayList<PatientVisits> visits = getAllVisits();
+        Date lastVisitDate = getLastVisit().getVisitDate();
+        Date pastDate = getPastTimestamp(lastVisitDate, months);
 
-        for (int i = 0; i < a_pv.size(); i++) {
-            if (a_pv.get(i).getVisit_date().after(date_inthepast)) {
-                a_pv_afterDate.add(a_pv.get(i));
+        for (int i = 0; i < visits.size(); i++) {
+            if (visits.get(i).getVisitDate().after(pastDate)) {
+                afterDate.add(visits.get(i));
             }
         }
 
-        return a_pv_afterDate;
-    } // End of getMultipleVisits()
+        return afterDate;
+    }
 
     /**
      * Get the text corresponding to the visits in the last months.
@@ -166,35 +162,34 @@ public class Patient implements Comparable<Patient> {
     public String getMultipleVisitsText(int months) {
         StringBuilder sb = new StringBuilder();
         for (PatientVisits visits : getMultipleVisits(months)) {
-            sb.append(visits.getVisit_text());
+            sb.append(visits.getVisitText());
             sb.append(" ");
         }
         return sb.toString();
     }
 
-
     public Period getTimeIntervalBetweenVisits(PatientVisits visit1, PatientVisits visit2) {
         Period p = null;
-        LocalDate d_visit1 = convertDateToLocalDate(visit1.getVisit_date());
-        LocalDate d_visit2 = convertDateToLocalDate(visit2.getVisit_date());
-        p = Period.between(d_visit1, d_visit2);
+        LocalDate firstVisit = convertDateToLocalDate(visit1.getVisitDate());
+        LocalDate secondVisit = convertDateToLocalDate(visit2.getVisitDate());
+        p = Period.between(firstVisit, secondVisit);
         return p;
-    } // End of getTimeIntervalBetweenVisits()
+    }
 
-    private Date getPastTimestamp(Date current_date, int months) {
+    private Date getPastTimestamp(Date currentDate, int months) {
         Calendar c = Calendar.getInstance();
-        c.setTime(current_date);
+        c.setTime(currentDate);
         c.add(Calendar.MONTH, -months);
-        Date past_timestamp = c.getTime();
-        return past_timestamp;
-    } // End of getPastTimestamp()
+        Date pastTimestamp = c.getTime();
+        return pastTimestamp;
+    }
 
     private LocalDate convertDateToLocalDate(Date d) {
         Instant instant = d.toInstant();
         ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
-        LocalDate locDate = zdt.toLocalDate();
-        return locDate;
-    } // End of convertDateToLocalDate()
+        LocalDate localDate = zdt.toLocalDate();
+        return localDate;
+    }
 
     @Override
     public int compareTo(@NotNull Patient o) {
@@ -203,8 +198,12 @@ public class Patient implements Comparable<Patient> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Patient patient = (Patient) o;
         return id.equals(patient.id);
     }

@@ -11,7 +11,8 @@ public abstract class PatientBasedClassifier implements Classifier {
 
     @Override
     public List<Patient> predict(List<Patient> patientList) {
-        patientList.forEach(p -> Arrays.stream(Criterion.classifiableValues()).forEach(c -> p.withCriterion(c, this.predictIfNecessary(p, c))));
+        patientList.forEach(p -> Arrays.stream(Criterion.classifiableValues()).forEach(
+            c -> p.withCriterion(c, this.predictIfNecessary(p, c))));
         return patientList;
     }
 

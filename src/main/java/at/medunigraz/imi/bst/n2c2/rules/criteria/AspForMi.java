@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class AspForMi extends BaseClassifiable {
-
     private static final List<Pattern> ASPIRIN_MARKERS = new ArrayList<>();
 
     static {

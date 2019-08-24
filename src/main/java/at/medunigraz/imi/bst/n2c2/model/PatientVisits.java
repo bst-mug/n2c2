@@ -5,42 +5,35 @@ import at.medunigraz.imi.bst.n2c2.nn.DataUtilities;
 import java.util.Date;
 
 public class PatientVisits {
+    private Integer visitNumber = null;
+    private Date visitDate = null;
+    private String visitText = null;
 
-
-    private Integer visit_number = null;
-
-    private Date visit_date = null;
-
-    private String visit_text = null;
-
-
-    public Integer getVisit_number() {
-        return visit_number;
+    public Integer getVisitNumber() {
+        return visitNumber;
     }
 
-    public void setVisit_number(Integer visit_number) {
-        this.visit_number = visit_number;
+    public void setVisitNumber(Integer visitNumber) {
+        this.visitNumber = visitNumber;
     }
 
-    public Date getVisit_date() {
-        return visit_date;
+    public Date getVisitDate() {
+        return visitDate;
     }
 
-    public void setVisit_date(Date visit_date) {
-        this.visit_date = visit_date;
+    public void setVisitDate(Date visitDate) {
+        this.visitDate = visitDate;
     }
 
-    public String getVisit_text() {
-        return visit_text;
+    public String getVisitText() {
+        return visitText;
+    }
+
+    public void setVisitText(String visitText) {
+        this.visitText = visitText;
     }
 
     public String getCleanedVisitText() {
-        return DataUtilities.removeWhitespaces(visit_text);
+        return DataUtilities.removeWhitespaces(visitText);
     }
-
-    public void setVisit_text(String visit_text) {
-        this.visit_text = visit_text;
-    }
-
-
 }

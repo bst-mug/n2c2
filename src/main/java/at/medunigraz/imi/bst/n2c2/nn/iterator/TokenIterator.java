@@ -30,11 +30,6 @@ public class TokenIterator extends BaseNNIterator {
         super(patients, inputRepresentation, truncateLength, batchSize);
     }
 
-    /**
-     * @param inputRepresentation
-     * @param truncateLength
-     * @param batchSize
-     */
     public TokenIterator(InputRepresentation inputRepresentation, int truncateLength, int batchSize) {
         super(inputRepresentation, truncateLength, batchSize);
     }
@@ -43,8 +38,9 @@ public class TokenIterator extends BaseNNIterator {
         List<String> tokens = DataUtilities.getTokens(text);
         List<String> tokensFiltered = new ArrayList<>();
         for (String t : tokens) {
-            if (inputRepresentation.hasRepresentation(t))
+            if (inputRepresentation.hasRepresentation(t)) {
                 tokensFiltered.add(t);
+            }
         }
         return tokensFiltered;
     }

@@ -149,8 +149,9 @@ public final class DatasetUtil {
      */
     public static Patient findById(String id, List<Patient> patients) {
         for (Patient p : patients) {
-            if (p.getID().equals(id))
+            if (p.getID().equals(id)) {
                 return p;
+            }
         }
         return null;
     }

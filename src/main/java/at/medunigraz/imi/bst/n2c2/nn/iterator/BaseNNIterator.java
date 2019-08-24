@@ -41,8 +41,8 @@ public abstract class BaseNNIterator implements DataSetIterator {
     }
 
     /**
-     * Constructor used for first training, uses a fixed `truncateLength` that can be shorter than the longest sequence in
-     * training data.
+     * Constructor used for first training, uses a fixed `truncateLength` that can be shorter than the longest sequence
+     * in training data.
      *
      * @param patients
      * @param inputRepresentation
@@ -246,8 +246,9 @@ public abstract class BaseNNIterator implements DataSetIterator {
      */
     @Override
     public DataSet next(int num) {
-        if (cursor >= patients.size())
+        if (cursor >= patients.size()) {
             throw new NoSuchElementException();
+        }
 
         return getNext(num);
     }
@@ -279,8 +280,9 @@ public abstract class BaseNNIterator implements DataSetIterator {
         }
 
         // truncate if sequence is longer than maxSentences
-        if (maxLength > getTruncateLength())
+        if (maxLength > getTruncateLength()) {
             maxLength = getTruncateLength();
+        }
 
         INDArray features = Nd4j.create(new int[]{patientUnits.size(), inputRepresentation.getVectorSize(), maxLength}, 'f');
         INDArray labels = Nd4j.create(new int[]{patientUnits.size(), totalOutcomes(), maxLength}, 'f');
@@ -365,9 +367,9 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() +
-            "{truncateLength=" + truncateLength +
-            ",batchSize=" + batchSize +
-            "}";
+        return getClass().getSimpleName()
+            + "{truncateLength=" + truncateLength
+            + ",batchSize=" + batchSize
+            + "}";
     }
 }

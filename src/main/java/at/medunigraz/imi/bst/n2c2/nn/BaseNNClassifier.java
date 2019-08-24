@@ -178,7 +178,9 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         INDArray networkOutput = net.output(features);
 
         int timeSeriesLength = networkOutput.size(2);
-        INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
+        INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0),
+            NDArrayIndex.all(),
+            NDArrayIndex.point(timeSeriesLength - 1));
 
         Map<Criterion, Double> ret = new HashMap<>();
 

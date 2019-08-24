@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Abdominal extends BaseClassifiable {
-
     private static final List<Pattern> POSITIVE_MARKERS = new ArrayList<>();
 
     static {

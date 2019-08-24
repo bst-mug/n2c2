@@ -45,10 +45,10 @@ public class LSTMArchitecture implements Architecture {
 
     @Override
     public String toString() {
-        return "LSTMArchitecture{" +
-                "layerSize=" + LSTM_LAYER_SIZE +
-                ",regularization=" + L2_REGULARIZATION +
-                ",learningRate=" + LEARNING_RATE +
-                '}';
+        return "LSTMArchitecture{"
+                + "layerSize=" + LSTM_LAYER_SIZE
+                + ",regularization=" + L2_REGULARIZATION
+                + ",learningRate=" + LEARNING_RATE
+                + '}';
     }
 }

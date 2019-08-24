@@ -81,10 +81,10 @@ public class BiLSTMArchitecture implements Architecture {
 
     @Override
     public String toString() {
-        return "BiLSTMArchitecture{" +
-            "layerSize=" + LSTM_LAYER_SIZE +
-            ",regularization=" + L2_REGULARIZATION +
-            ",learningRate=" + CORE_LEARNING_RATE +
-            '}';
+        return "BiLSTMArchitecture{"
+            + "layerSize=" + LSTM_LAYER_SIZE
+            + ",regularization=" + L2_REGULARIZATION
+            + ",learningRate=" + CORE_LEARNING_RATE
+            + '}';
     }
 }

@@ -48,10 +48,6 @@ public abstract class DataUtilities {
         return standardTokenizer;
     }
 
-    /**
-     * @param reader
-     * @return
-     */
     public static TokenStream getQuickViewStreamReduced(Reader reader) {
         TokenStream result = getTokenStream(reader);
 
@@ -64,10 +60,6 @@ public abstract class DataUtilities {
         return result;
     }
 
-    /**
-     * @param textToProcess
-     * @return
-     */
     public static String processTextReduced(String textToProcess) {
         TokenStream stream = getQuickViewStreamReduced(new StringReader(textToProcess));
         String[] tokens = new String[0];
@@ -78,7 +70,6 @@ public abstract class DataUtilities {
         }
 
         String normalized = String.join(" ", tokens);
-        ;
 
         // post normalization
         normalized = normalized.replaceAll("[\\.\\,\\_\\:]+", " ");
@@ -160,8 +151,9 @@ public abstract class DataUtilities {
                     tempString = line.replaceAll(cleanPatternA, " ");
                     tempString = tempString.replaceAll(cleanPatternB, " ");
                     tempString = tempString.replaceAll("\\.+", ".").trim();
-                    if (tempString.length() > 0)
+                    if (tempString.length() > 0) {
                         cleanedNarrative += tempString + "\n";
+                    }
                 }
             }
         } catch (IOException e) {

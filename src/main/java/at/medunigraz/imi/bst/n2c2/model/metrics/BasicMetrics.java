@@ -2,9 +2,14 @@ package at.medunigraz.imi.bst.n2c2.model.metrics;
 
 public class BasicMetrics {
 
-    private double tp, fp, tn, fn;
+    private double tp;
+    private double fp;
+    private double tn;
+    private double fn;
 
-    private double p, r, a;
+    private double precision;
+    private double recall;
+    private double accuracy;
 
     public BasicMetrics(int tp, int fp, int tn, int fn) {
         this.tp = tp;
@@ -13,13 +18,13 @@ public class BasicMetrics {
         this.fn = fn;
     }
 
-    public BasicMetrics(double p, double r) {
-        this.p = p;
-        this.r = r;
+    public BasicMetrics(double precision, double recall) {
+        this.precision = precision;
+        this.recall = recall;
     }
 
-    public BasicMetrics(double a) {
-        this.a = a;
+    public BasicMetrics(double accuracy) {
+        this.accuracy = accuracy;
     }
 
     public double getF1() {
@@ -33,30 +38,30 @@ public class BasicMetrics {
     }
 
     public double getPrecision() {
-        if (p == 0) {
+        if (precision == 0) {
             if (tp == 0) {
-                return p;
+                return precision;
             }
-            p = tp / (tp + fp);
+            precision = tp / (tp + fp);
         }
-        return p;
+        return precision;
     }
 
     public double getRecall() {
-        if (r == 0) {
+        if (recall == 0) {
             if (tp == 0) {
-                return p;
+                return precision;
             }
-            r = tp / (tp + fn);
+            recall = tp / (tp + fn);
         }
-        return r;
+        return recall;
     }
 
     public double getAccuracy() {
-        if (a == 0) {
-            a = calculateAccuracy();
+        if (accuracy == 0) {
+            accuracy = calculateAccuracy();
         }
-        return a;
+        return accuracy;
     }
 
     public double calculateAccuracy() {
@@ -99,9 +104,9 @@ public class BasicMetrics {
         this.tn += addend.tn;
         this.fn += addend.fn;
 
-        this.p += addend.p;
-        this.r += addend.r;
-        this.a += addend.a;
+        this.precision += addend.precision;
+        this.recall += addend.recall;
+        this.accuracy += addend.accuracy;
     }
 
     public void divideBy(double divisor) {
@@ -110,8 +115,8 @@ public class BasicMetrics {
         this.tn /= divisor;
         this.fn /= divisor;
 
-        this.p /= divisor;
-        this.r /= divisor;
-        this.a /= divisor;
+        this.precision /= divisor;
+        this.recall /= divisor;
+        this.accuracy /= divisor;
     }
 }
