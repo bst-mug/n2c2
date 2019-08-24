@@ -41,8 +41,8 @@ public abstract class BaseNNIterator implements DataSetIterator {
     }
 
     /**
-     * Constructor used for first training, uses a fixed `truncateLength` that can be shorter than the longest sequence in
-     * training data.
+     * Constructor used for first training, uses a fixed `truncateLength` that can be shorter than the longest sequence
+     * in training data.
      *
      * @param patients
      * @param inputRepresentation
@@ -195,7 +195,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
     @Override
     public List<String> getLabels() {
         return Arrays.asList("ABDOMINAL", "ADVANCED-CAD", "ALCOHOL-ABUSE", "ASP-FOR-MI", "CREATININE", "DIETSUPP-2MOS",
-                "DRUG-ABUSE", "ENGLISH", "HBA1C", "KETO-1YR", "MAJOR-DIABETES", "MAKES-DECISIONS", "MI-6MOS");
+            "DRUG-ABUSE", "ENGLISH", "HBA1C", "KETO-1YR", "MAJOR-DIABETES", "MAKES-DECISIONS", "MI-6MOS");
     }
 
     /*
@@ -246,8 +246,9 @@ public abstract class BaseNNIterator implements DataSetIterator {
      */
     @Override
     public DataSet next(int num) {
-        if (cursor >= patients.size())
+        if (cursor >= patients.size()) {
             throw new NoSuchElementException();
+        }
 
         return getNext(num);
     }
@@ -259,8 +260,7 @@ public abstract class BaseNNIterator implements DataSetIterator {
     /**
      * Get next training batch.
      *
-     * @param num
-     *            Minibatch size.
+     * @param num Minibatch size.
      * @return DatSet
      */
     public DataSet getNext(int num) {
@@ -280,11 +280,12 @@ public abstract class BaseNNIterator implements DataSetIterator {
         }
 
         // truncate if sequence is longer than maxSentences
-        if (maxLength > getTruncateLength())
+        if (maxLength > getTruncateLength()) {
             maxLength = getTruncateLength();
+        }
 
-        INDArray features = Nd4j.create(new int[] { patientUnits.size(), inputRepresentation.getVectorSize(), maxLength }, 'f');
-        INDArray labels = Nd4j.create(new int[] { patientUnits.size(), totalOutcomes(), maxLength }, 'f');
+        INDArray features = Nd4j.create(new int[]{patientUnits.size(), inputRepresentation.getVectorSize(), maxLength}, 'f');
+        INDArray labels = Nd4j.create(new int[]{patientUnits.size(), totalOutcomes(), maxLength}, 'f');
 
         INDArray featuresMask = Nd4j.zeros(patientUnits.size(), maxLength);
         INDArray labelsMask = Nd4j.zeros(patientUnits.size(), maxLength);
@@ -300,8 +301,8 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
                 // get vector presentation of sentence
                 INDArray vector = inputRepresentation.getVector(sentence);
-                features.put(new INDArrayIndex[] { NDArrayIndex.point(i), NDArrayIndex.all(), NDArrayIndex.point(j) },
-                        vector);
+                features.put(new INDArrayIndex[]{NDArrayIndex.point(i), NDArrayIndex.all(), NDArrayIndex.point(j)},
+                    vector);
 
                 temp[1] = j;
                 featuresMask.putScalar(temp, 1.0);
@@ -313,12 +314,12 @@ public abstract class BaseNNIterator implements DataSetIterator {
             List<Boolean> binaryMultiHotVector = binaryMultiHotVectorMap.get(i);
             int labelIndex = 0;
             for (Boolean label : binaryMultiHotVector) {
-                labels.putScalar(new int[] { i, labelIndex, lastIdx - 1 }, label ? 1.0 : 0.0);
+                labels.putScalar(new int[]{i, labelIndex, lastIdx - 1}, label ? 1.0 : 0.0);
                 labelIndex++;
             }
 
             // out exists at the final step of the sequence
-            labelsMask.putScalar(new int[] { i, lastIdx - 1 }, 1.0);
+            labelsMask.putScalar(new int[]{i, lastIdx - 1}, 1.0);
         }
         return new DataSet(features, labels, featuresMask, labelsMask);
     }
@@ -335,10 +336,8 @@ public abstract class BaseNNIterator implements DataSetIterator {
     /**
      * Load features from narrative.
      *
-     * @param reviewContents
-     *            Narrative content.
-     * @param maxLength
-     *            Maximum length of token series length.
+     * @param reviewContents Narrative content.
+     * @param maxLength      Maximum length of token series length.
      * @return Time series feature presentation of narrative.
      */
     public INDArray loadFeaturesForNarrative(String reviewContents, int maxLength) {
@@ -350,8 +349,8 @@ public abstract class BaseNNIterator implements DataSetIterator {
         for (int j = 0; j < units.size() && j < outputLength; j++) {
             String unit = units.get(j);
             INDArray vector = inputRepresentation.getVector(unit);
-            features.put(new INDArrayIndex[] { NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j) },
-                    vector);
+            features.put(new INDArrayIndex[]{NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j)},
+                vector);
         }
         return features;
     }
@@ -368,9 +367,9 @@ public abstract class BaseNNIterator implements DataSetIterator {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() +
-                "{truncateLength=" + truncateLength +
-                ",batchSize=" + batchSize +
-                "}";
+        return getClass().getSimpleName()
+            + "{truncateLength=" + truncateLength
+            + ",batchSize=" + batchSize
+            + "}";
     }
 }

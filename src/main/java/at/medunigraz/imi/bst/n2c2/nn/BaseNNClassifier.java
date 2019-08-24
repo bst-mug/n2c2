@@ -111,7 +111,6 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
 
     /**
      * Initialize monitoring.
-     *
      */
     protected void initializeMonitoring() {
         // setting monitor
@@ -179,7 +178,9 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
         INDArray networkOutput = net.output(features);
 
         int timeSeriesLength = networkOutput.size(2);
-        INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
+        INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0),
+            NDArrayIndex.all(),
+            NDArrayIndex.point(timeSeriesLength - 1));
 
         Map<Criterion, Double> ret = new HashMap<>();
 
@@ -220,12 +221,11 @@ public abstract class BaseNNClassifier extends PatientBasedClassifier {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             this.patientExamples = examples;
 
             initializeNetwork();
-//			initializeMonitoring();
+//            initializeMonitoring();
 
             LOG.info("Minibatchsize  :\t" + BATCH_SIZE);
             LOG.info("Truncate length:\t" + fullSetIterator.getTruncateLength());

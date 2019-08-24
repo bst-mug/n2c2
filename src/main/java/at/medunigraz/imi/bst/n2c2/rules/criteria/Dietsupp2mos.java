@@ -31,12 +31,15 @@ public class Dietsupp2mos extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("multivitamin", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("vit(?:amin)? [abce-z]", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("folic", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("ascorbic", Pattern.CASE_INSENSITIVE));   // 113.xml: Ascorbic Acid (vit C)
+        // 113.xml: Ascorbic Acid (vit C)
+        POSITIVE_MARKERS.add(Pattern.compile("ascorbic", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("niferex", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("vitamins", Pattern.CASE_INSENSITIVE));    // 382.xml:  continue current regimen of vitamins and enzymes
+        // 382.xml:  continue current regimen of vitamins and enzymes
+        POSITIVE_MARKERS.add(Pattern.compile("vitamins", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("nephro-vit", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("renax", Pattern.CASE_INSENSITIVE));
-        POSITIVE_MARKERS.add(Pattern.compile("fish oil", Pattern.CASE_INSENSITIVE));   // 121.xml: Fish OIL CAPSULE (OMEGA-3-FATTY ACIDS)
+        // 121.xml: Fish OIL CAPSULE (OMEGA-3-FATTY ACIDS)
+        POSITIVE_MARKERS.add(Pattern.compile("fish oil", Pattern.CASE_INSENSITIVE));
         POSITIVE_MARKERS.add(Pattern.compile("omega-3", Pattern.CASE_INSENSITIVE));
 
         // 272.xml (NOT_MET): Magnesium                1.4
@@ -46,7 +49,8 @@ public class Dietsupp2mos extends BaseClassifiable {
         POSITIVE_MARKERS.add(Pattern.compile("calcitriol", Pattern.CASE_INSENSITIVE));
 
         // TODO check for fp
-        POSITIVE_MARKERS.add(Pattern.compile("kcl", Pattern.CASE_INSENSITIVE));     // 279.xml: Kcl SUSTAINED RELEASE
+        // 279.xml: Kcl SUSTAINED RELEASE
+        POSITIVE_MARKERS.add(Pattern.compile("kcl", Pattern.CASE_INSENSITIVE));
 
         POSITIVE_MARKERS.add(Pattern.compile("gluconate", Pattern.CASE_INSENSITIVE));
 

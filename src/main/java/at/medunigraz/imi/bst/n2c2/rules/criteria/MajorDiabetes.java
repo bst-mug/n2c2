@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class MajorDiabetes extends BaseClassifiable {
 
     private static final List<Pattern> COMPLICATION_MARKERS = new ArrayList<>();
+
     static {
         // From the guidelines
         COMPLICATION_MARKERS.add(Pattern.compile("amputation", Pattern.CASE_INSENSITIVE));
@@ -49,11 +50,13 @@ public class MajorDiabetes extends BaseClassifiable {
         // 174.xml: Skin: Chronic ischemic ulcer
         COMPLICATION_MARKERS.add(Pattern.compile("chronic.{0,20}ulcer", Pattern.CASE_INSENSITIVE));
 
-        // 378.xml: Skin:	Telangiectasias
+        // 378.xml: Skin: Telangiectasias
         COMPLICATION_MARKERS.add(Pattern.compile("ectasia", Pattern.CASE_INSENSITIVE));
 
         COMPLICATION_MARKERS.add(Pattern.compile("kidney disease", Pattern.CASE_INSENSITIVE));
-        COMPLICATION_MARKERS.add(Pattern.compile("skin.{0,40}breakdown", Pattern.CASE_INSENSITIVE));    // 362.xml: Skin exam: Notable for slight erythema and breakdown
+
+        // 362.xml: Skin exam: Notable for slight erythema and breakdown
+        COMPLICATION_MARKERS.add(Pattern.compile("skin.{0,40}breakdown", Pattern.CASE_INSENSITIVE));
         COMPLICATION_MARKERS.add(Pattern.compile("blunt trauma", Pattern.CASE_INSENSITIVE));
     }
 

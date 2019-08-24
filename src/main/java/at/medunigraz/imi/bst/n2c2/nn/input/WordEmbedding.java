@@ -7,7 +7,7 @@ import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 /**
- * Facade for dl4j's WordVectors
+ * Facade for dl4j's WordVectors.
  */
 public class WordEmbedding implements InputRepresentation {
 

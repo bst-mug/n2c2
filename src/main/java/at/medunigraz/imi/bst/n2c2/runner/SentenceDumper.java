@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * Helper class to dump the sentences used in the n2c2 collection.
- *
  * This is used to manually train word embeddings using e.g. fasttext.
  */
 public class SentenceDumper {

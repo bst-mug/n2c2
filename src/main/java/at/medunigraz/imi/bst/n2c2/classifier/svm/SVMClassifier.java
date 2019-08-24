@@ -30,7 +30,7 @@ public class SVMClassifier extends CriterionBasedClassifier {
     private static final Logger LOG = LogManager.getLogger();
 
     /**
-     * ID, Text and Eligibility
+     * ID, Text and Eligibility.
      */
     private static final int NUM_ATTRIBUTES = 3;
     private static final int ID_INDEX = 0;

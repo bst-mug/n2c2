@@ -12,8 +12,9 @@ import java.util.Map;
 
 public class RuleBasedClassifier extends CriterionBasedClassifier {
 
-	private static final Map<Criterion, Classifiable> name = new HashMap<>();
-	static {
+    private static final Map<Criterion, Classifiable> name = new HashMap<>();
+
+    static {
         name.put(Criterion.ABDOMINAL, new Abdominal());
         name.put(Criterion.ADVANCED_CAD, new AdvancedCAD());
         name.put(Criterion.ALCOHOL_ABUSE, new AlcoholAbuse());
@@ -27,19 +28,19 @@ public class RuleBasedClassifier extends CriterionBasedClassifier {
         name.put(Criterion.MAJOR_DIABETES, new MajorDiabetes());
         name.put(Criterion.MAKES_DECISIONS, new MakesDecisions());
         name.put(Criterion.MI_6MOS, new MI6Mos());
-	}
+    }
 
-	public RuleBasedClassifier(Criterion c) {
-		super(c);
-	}
+    public RuleBasedClassifier(Criterion c) {
+        super(c);
+    }
 
-	@Deprecated
-	public void train(List<Patient> examples) {
+    @Deprecated
+    public void train(List<Patient> examples) {
 
-	}
+    }
 
-	@Override
-	public Eligibility predict(Patient p) {
-		return name.get(criterion).isMet(p);
-	}
+    @Override
+    public Eligibility predict(Patient p) {
+        return name.get(criterion).isMet(p);
+    }
 }

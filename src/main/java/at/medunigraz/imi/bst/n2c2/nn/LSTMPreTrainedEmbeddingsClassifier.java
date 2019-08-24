@@ -17,48 +17,49 @@ import at.medunigraz.imi.bst.n2c2.nn.iterator.TokenIterator;
  */
 public class LSTMPreTrainedEmbeddingsClassifier extends BaseNNClassifier {
 
-	/**
-	 * n2c2 longest training document has 7597 tokens.
-	 */
-	private static final int TRUNCATE_LENGTH = 2048;
+    /**
+     * n2c2 longest training document has 7597 tokens.
+     */
+    private static final int TRUNCATE_LENGTH = 2048;
 
-	private static final Architecture ARCHITECTURE = new LSTMArchitecture();
+    private static final Architecture ARCHITECTURE = new LSTMArchitecture();
 
-	/**
-	 * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
-	 */
-	private static final File PRETRAINED_VECTORS = new File(LSTMPreTrainedEmbeddingsClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
+    /**
+     * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
+     */
+    private static final File PRETRAINED_VECTORS = new File(
+        LSTMPreTrainedEmbeddingsClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
 
-	public LSTMPreTrainedEmbeddingsClassifier() {
-		super(ARCHITECTURE);
-	}
+    public LSTMPreTrainedEmbeddingsClassifier() {
+        super(ARCHITECTURE);
+    }
 
-	@Override
-	protected void initializeNetwork() {
-		fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(PRETRAINED_VECTORS), TRUNCATE_LENGTH, BATCH_SIZE);
-		this.net = architecture.getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
-	}
+    @Override
+    protected void initializeNetwork() {
+        fullSetIterator = new TokenIterator(patientExamples, new WordEmbedding(PRETRAINED_VECTORS), TRUNCATE_LENGTH, BATCH_SIZE);
+        this.net = architecture.getNetwork(fullSetIterator.getInputRepresentation().getVectorSize());
+    }
 
-	@Override
-	public void initializeNetworkFromFile(String pathToModel) throws IOException {
-		Properties prop = loadProperties(pathToModel);
-		final int truncateLength = Integer.parseInt(prop.getProperty("truncateLength"));
-		fullSetIterator = new TokenIterator(new WordEmbedding(PRETRAINED_VECTORS), truncateLength, BATCH_SIZE);
+    @Override
+    public void initializeNetworkFromFile(String pathToModel) throws IOException {
+        Properties prop = loadProperties(pathToModel);
+        final int truncateLength = Integer.parseInt(prop.getProperty("truncateLength"));
+        fullSetIterator = new TokenIterator(new WordEmbedding(PRETRAINED_VECTORS), truncateLength, BATCH_SIZE);
 
-		super.initializeNetworkFromFile(pathToModel);
-	}
+        super.initializeNetworkFromFile(pathToModel);
+    }
 
-	@Override
-	protected String getModelName() {
-		return toString();
-	}
+    @Override
+    protected String getModelName() {
+        return toString();
+    }
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() +
-				"{truncateLength" + TRUNCATE_LENGTH +
-				",batchSize=" + BATCH_SIZE +
-				",architecture=" + architecture.toString() +
-				"}";
-	}
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()
+                + "{truncateLength" + TRUNCATE_LENGTH
+                + ",batchSize=" + BATCH_SIZE
+                + ",architecture=" + architecture.toString()
+                + "}";
+    }
 }

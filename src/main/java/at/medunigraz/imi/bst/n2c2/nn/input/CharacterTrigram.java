@@ -9,9 +9,9 @@ import java.util.*;
 
 public class CharacterTrigram implements InputRepresentation {
 
-    private ArrayList<String> characterNGram_3 = new ArrayList<String>();
+    private ArrayList<String> characterTrigrams = new ArrayList<>();
 
-    private Map<String, Integer> char3GramToIdxMap = new HashMap<String, Integer>();
+    private Map<String, Integer> characterTrigramInvertedIndex = new HashMap<>();
 
     public CharacterTrigram() {
         // TODO same as load
@@ -36,7 +36,7 @@ public class CharacterTrigram implements InputRepresentation {
             // writing our character n-grams
             FileOutputStream fos = new FileOutputStream(new File(root, "characterNGram_3"));
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(characterNGram_3);
+            oos.writeObject(characterTrigrams);
             oos.flush();
             oos.close();
             fos.close();
@@ -44,7 +44,7 @@ public class CharacterTrigram implements InputRepresentation {
             // writing our character n-grams
             fos = new FileOutputStream(new File(root, "char3GramToIdxMap"));
             oos = new ObjectOutputStream(fos);
-            oos.writeObject(char3GramToIdxMap);
+            oos.writeObject(characterTrigramInvertedIndex);
             oos.flush();
             oos.close();
             fos.close();
@@ -60,15 +60,15 @@ public class CharacterTrigram implements InputRepresentation {
             // read char 3-grams and index
             FileInputStream fis = new FileInputStream(new File(model, "characterNGram_3"));
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<String> characterNGram_3 = (ArrayList<String>) ois.readObject();
+            ArrayList<String> characterTrigrams = (ArrayList<String>) ois.readObject();
 
-            this.characterNGram_3 = characterNGram_3;
+            this.characterTrigrams = characterTrigrams;
 
             // read char 3-grams index
             fis = new FileInputStream(new File(model, "char3GramToIdxMap"));
             ois = new ObjectInputStream(fis);
-            Map<String, Integer> char3GramToIdxMap_0 = (HashMap<String, Integer>) ois.readObject();
-            this.char3GramToIdxMap = char3GramToIdxMap_0;
+            Map<String, Integer> characterTrigramInvertedIndex = (HashMap<String, Integer>) ois.readObject();
+            this.characterTrigramInvertedIndex = characterTrigramInvertedIndex;
 
             Nd4j.getRandom().setSeed(12345);
 
@@ -88,12 +88,12 @@ public class CharacterTrigram implements InputRepresentation {
 
     @Override
     public boolean hasRepresentation(String unit) {
-        return char3GramToIdxMap.containsKey(unit);
+        return characterTrigramInvertedIndex.containsKey(unit);
     }
 
     @Override
     public int getVectorSize() {
-        return characterNGram_3.size();
+        return characterTrigrams.size();
     }
 
     /**
@@ -101,8 +101,9 @@ public class CharacterTrigram implements InputRepresentation {
      */
     private void createIndizes() {
         // store indexes
-        for (int i = 0; i < characterNGram_3.size(); i++)
-            char3GramToIdxMap.put(characterNGram_3.get(i), i);
+        for (int i = 0; i < characterTrigrams.size(); i++) {
+            characterTrigramInvertedIndex.put(characterTrigrams.get(i), i);
+        }
     }
 
     /**
@@ -121,14 +122,14 @@ public class CharacterTrigram implements InputRepresentation {
                 String[] char3Splits = char3Grams.split("\\s+");
 
                 for (String split : char3Splits) {
-                    if (!characterNGram_3.contains(split)) {
-                        characterNGram_3.add(split);
+                    if (!characterTrigrams.contains(split)) {
+                        characterTrigrams.add(split);
                     }
                 }
             }
 
             // adding out of dictionary entries
-            characterNGram_3.add("OOD");
+            characterTrigrams.add("OOD");
         }
     }
 
@@ -150,12 +151,12 @@ public class CharacterTrigram implements InputRepresentation {
             String[] char3Splits = char3Grams.split("\\s+");
 
             for (String split : char3Splits) {
-                if (char3GramToIdxMap.get(split) == null) {
-                    int nGramIndex = char3GramToIdxMap.get("OOD");
-                    featureVector.putScalar(new int[] { nGramIndex }, 1.0);
+                if (characterTrigramInvertedIndex.get(split) == null) {
+                    int index = characterTrigramInvertedIndex.get("OOD");
+                    featureVector.putScalar(new int[] { index }, 1.0);
                 } else {
-                    int nGramIndex = char3GramToIdxMap.get(split);
-                    featureVector.putScalar(new int[] { nGramIndex }, 1.0);
+                    int index = characterTrigramInvertedIndex.get(split);
+                    featureVector.putScalar(new int[] { index }, 1.0);
                 }
             }
         } catch (IOException e) {

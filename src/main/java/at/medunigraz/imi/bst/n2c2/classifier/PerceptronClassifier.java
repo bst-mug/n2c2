@@ -17,8 +17,10 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
     /**
      * Location of precalculated vectors, extracted from the huge BioWordVec `.bin` file using `print_vectors.sh`.
      */
-    private static final File PRETRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
-    private static final File SELFTRAINED_VECTORS = new File(PerceptronClassifier.class.getClassLoader().getResource("self-trained-vectors.vec").getFile());
+    private static final File PRETRAINED_VECTORS = new File(
+        PerceptronClassifier.class.getClassLoader().getResource("BioWordVec-vectors.vec").getFile());
+    private static final File SELFTRAINED_VECTORS = new File(
+        PerceptronClassifier.class.getClassLoader().getResource("self-trained-vectors.vec").getFile());
 
     private final File vectors;
 

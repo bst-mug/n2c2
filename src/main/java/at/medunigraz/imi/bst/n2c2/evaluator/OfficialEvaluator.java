@@ -36,7 +36,8 @@ public class OfficialEvaluator implements Evaluator {
         COMMAND.add(IAA_SCRIPT);
     }
 
-    private File goldStandard, results;
+    private File goldStandard;
+    private File results;
 
     private MetricSet metrics = new MetricSet();
 

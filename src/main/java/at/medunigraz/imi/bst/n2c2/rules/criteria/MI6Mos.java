@@ -16,12 +16,16 @@ public class MI6Mos extends BaseClassifiable {
         // systemic
         // 145.xml (NOT_MET): NSTEMI in March, 2136
         // 250.xml (NOT_MET): STEMI in 2078
-        POSITIVE_MARKERS.add(Pattern.compile("(?<!(rule out |prior.{1,15}|(history|hx|fh).{1,80}))stemi[^c](?!.{0,15}[0-9])", Pattern.CASE_INSENSITIVE));
+        POSITIVE_MARKERS.add(Pattern.compile(
+            "(?<!(rule out |prior.{1,15}|(history|hx|fh).{1,80}))stemi[^c](?!.{0,15}[0-9])",
+            Pattern.CASE_INSENSITIVE));
 
         // 109.xml (NOT_MET): Family history: Notable for her father with myocardial infarction
         // 228.xml (NOT_MET): prior anterolateral myocardial infarction.
         // 154.xml (NOT_MET): rule out myocardial infarction.
-        //POSITIVE_MARKERS.add(Pattern.compile("(?<!(rule out |prior.{1,15}|(history|hx|fh).{1,80}))myocardial infarction", Pattern.CASE_INSENSITIVE)); // 87 times
+//        POSITIVE_MARKERS.add(Pattern.compile(
+//            "(?<!(rule out |prior.{1,15}|(history|hx|fh).{1,80}))myocardial infarction",
+//            Pattern.CASE_INSENSITIVE)); // 87 times
 
         //POSITIVE_MARKERS.add(Pattern.compile("(?<!(EZET|PREL))IMI"));
     }

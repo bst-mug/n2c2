@@ -31,7 +31,10 @@ public class BasicEvaluator implements Evaluator {
         Map<String, Patient> resultsMap = results.stream().collect(Collectors.toMap(Patient::getID, p -> p));
 
         for (Criterion criterion : Criterion.classifiableValues()) {
-            int tp = 0, fp = 0, tn = 0, fn = 0;
+            int tp = 0;
+            int fp = 0;
+            int tn = 0;
+            int fn = 0;
 
             // TODO parallel stream
             for (Patient g : gold) {
@@ -52,7 +55,8 @@ public class BasicEvaluator implements Evaluator {
                         fn++;
                         break;
                     case UNKNOWN:
-                        LOG.warn("Unknown match between gold patient {} and actual patient {} when comparing criterion {}.", g.getID(), actual.getID(), criterion);
+                        LOG.warn("Unknown match between gold patient {} and actual patient {} when comparing criterion {}.",
+                            g.getID(), actual.getID(), criterion);
                         break;
                 }
             }

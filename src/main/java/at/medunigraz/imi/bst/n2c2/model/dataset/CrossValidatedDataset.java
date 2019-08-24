@@ -35,15 +35,35 @@ public class CrossValidatedDataset extends AbstractDataset {
         this.currentFold = currentFold;
     }
 
+    @Override
+    public List<Patient> getTrainingSet() {
+        return getTrainingSet(currentFold);
+    }
+
     public List<Patient> getTrainingSet(int fold) {
         int[] indices = getTrainFoldIndices(fold);
         return DatasetUtil.slice(patients, indices);
+    }
+
+    @Override
+    public List<Patient> getTestSet() {
+        return getTestSet(currentFold);
     }
 
     public List<Patient> getTestSet(int fold) {
         int[] indices = getTestFoldIndices(fold);
         List<Patient> strippedPatients = DatasetUtil.stripTags(patients);
         return DatasetUtil.slice(strippedPatients, indices);
+    }
+
+    /**
+     * Returns the test set WITH annotations.
+     *
+     * @return
+     */
+    @Override
+    public List<Patient> getGoldSet() {
+        return getGoldSet(currentFold);
     }
 
     public List<Patient> getGoldSet(int fold) {
@@ -66,27 +86,7 @@ public class CrossValidatedDataset extends AbstractDataset {
     }
 
     @Override
-    public List<Patient> getTrainingSet() {
-        return getTrainingSet(currentFold);
-    }
-
-    @Override
     public List<Patient> getValidationSet() {
         throw new UnsupportedOperationException("Validation set is not implemented for cross-validation.");
-    }
-
-    @Override
-    public List<Patient> getTestSet() {
-        return getTestSet(currentFold);
-    }
-
-    /**
-     * Returns the test set WITH annotations.
-     *
-     * @return
-     */
-    @Override
-    public List<Patient> getGoldSet() {
-        return getGoldSet(currentFold);
     }
 }

@@ -11,7 +11,6 @@ import java.util.TreeSet;
 
 /**
  * Helper class to dump the unique set of tokenized words used in the n2c2 collection.
- *
  * This is used e.g. to manually query BioSentVec vectors using fasttext original tool.
  */
 public class VocabularyDumper {
