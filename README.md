@@ -27,4 +27,5 @@ Also of interest:
 ## Code Dependencies
 - JDK8+
 - python3 (to run official evaluation scripts)
-- make + gcc/clang (to compile fastText)
+- make (to compile fastText)
+- gcc/clang (to compile fastText)
