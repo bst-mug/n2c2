@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/bst-mug/n2c2/badge.svg?branch=master)](https://coveralls.io/github/bst-mug/n2c2?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A repository containing support code and resources developed at the [Institute for Medical Informatics, Statistics and Documentation at the Medical University of Graz (Austria)](https://www.medunigraz.at/imi/en/) for participation at the [2018 n2c2 Shared-Task Track 2](https://n2c2.dbmi.hms.harvard.edu/) organized by the Department of Biomedical Informatics at the Harvard Medical School.
+A repository containing support code and resources developed at the [Institute for Medical Informatics, Statistics and Documentation at the Medical University of Graz (Austria)](https://www.medunigraz.at/imi/en/) for participation at the [2018 n2c2 Shared-Task Track 1](https://n2c2.dbmi.hms.harvard.edu/) organized by the Department of Biomedical Informatics at the Harvard Medical School.
 
 ## Citing
 
