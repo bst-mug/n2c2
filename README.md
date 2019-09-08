@@ -9,13 +9,13 @@ A repository containing support code and resources developed at the [Institute f
 
 ## Citing
 
-If you use data or code in your work, please cite our JAMIA paper:
+If you use data or code in your work, please cite our (upcoming) JAMIA paper:
 
 ```
 @article{oleynik2019evaluating,
   title={Evaluating shallow and deep learning strategies for the 2018 n2c2 shared-task on clinical text classification},
   author={Michel Oleynik and Amila Kugic and Zdenko Kasáč and Markus Kreuzthaler},
-  journal={Journal of the American Medical Informatics Association (to appear)},
+  journal={Journal of the American Medical Informatics Association},
   publisher={Oxford University Press},
   year={2019}
 }
