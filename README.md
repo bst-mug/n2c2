@@ -9,7 +9,7 @@ A repository containing support code and resources developed at the [Institute f
 
 ## Citing
 
-If you use data or code in your work, please cite our (upcoming) JAMIA paper:
+If you use data or code in your work, please cite our [JAMIA paper](https://academic.oup.com/jamia/advance-article/doi/10.1093/jamia/ocz149/5568257):
 
 ```
 @article{oleynik2019evaluating,
