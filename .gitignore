@@ -39,3 +39,4 @@ local.properties
 
 # Models
 models/*
+.Rproj.user
