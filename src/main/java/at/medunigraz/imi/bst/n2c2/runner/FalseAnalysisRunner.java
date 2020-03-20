@@ -17,12 +17,14 @@ public class FalseAnalysisRunner {
         List<Patient> testPatients = DatasetUtil.loadFromFolder(new File("data/test"));
 
         Map<String, List<Patient>> data = new LinkedHashMap<>();
-        // TODO expand with Perceptron and self-trained LSTM
-        data.put("MAJ", FactoryProvider.getMajorityFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("NN", FactoryProvider.getLSTMPreTrainedFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("SVM", FactoryProvider.getSVMFactory().trainAndPredict(trainPatients, testPatients));
-        data.put("RBC", FactoryProvider.getRBCFactory().trainAndPredict(trainPatients, testPatients));
         data.put("GT", FactoryProvider.getFakeClassifierFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("BASELINE", FactoryProvider.getMajorityFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("RBC", FactoryProvider.getRBCFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("SVM", FactoryProvider.getSVMFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("SELF-LR", FactoryProvider.getSelfTrainedPerceptronFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("PRE-LR", FactoryProvider.getPreTrainedPerceptronFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("SELF-LSTM", FactoryProvider.getLSTMSelfTrainedFactory().trainAndPredict(trainPatients, testPatients));
+        data.put("PRE-LSTM", FactoryProvider.getLSTMPreTrainedFactory().trainAndPredict(trainPatients, testPatients));
 
         dataToCsv(data, new File("false-analysis.csv"));
     }
@@ -30,43 +32,33 @@ public class FalseAnalysisRunner {
     private static void dataToCsv(Map<String, List<Patient>> data, File file) throws IOException {
         CSVWriter writer = new CSVWriter(new FileWriter(file));
 
+        List<Patient> groundTruth = data.remove("GT");
         writeHeader(data.keySet(), writer);
 
-        List<Patient> patients = data.values().iterator().next();   // Get any patient list
+        for (Criterion c : Criterion.classifiableValues()) {
+            for (Patient p : groundTruth) {
+                List<String> cells = new ArrayList<>();
+                cells.add(c + "-" + p.getID());
+                Patient truthPatient = DatasetUtil.findById(p.getID(), groundTruth);
 
-        for (Patient p : patients) {
-            List<String> cells = new ArrayList<>();
-            cells.add(p.getID());
-
-            for (Criterion c : Criterion.classifiableValues()) {
+                // Loop over strategies
                 for (List<Patient> value : data.values()) {
                     Patient predictedPatient = DatasetUtil.findById(p.getID(), value);
-                    cells.add(predictedPatient.getEligibility(c).toString());
+                    String assessment = predictedPatient.getEligibility(c) == truthPatient.getEligibility(c) ? "T" : "F";
+                    cells.add(assessment);
                 }
+                writer.writeNext(cells.toArray(new String[0]));
             }
-
-            writer.writeNext(cells.toArray(new String[0]));
         }
-
         writer.close();
     }
 
     private static void writeHeader(Set<String> strategies, CSVWriter writer) {
-        List<String> firstLine = new ArrayList<>();
-        List<String> secondLine = new ArrayList<>();
+        List<String> header = new ArrayList<>();
 
         // First column is empty
-        firstLine.add("");
-        secondLine.add("");
-
-        for (Criterion c : Criterion.classifiableValues()) {
-            for (String s : strategies) {
-                firstLine.add(c.toString());
-                secondLine.add(s);
-            }
-        }
-
-        writer.writeNext(firstLine.toArray(new String[0]));
-        writer.writeNext(secondLine.toArray(new String[0]));
+        header.add("instance");
+        header.addAll(strategies);
+        writer.writeNext(header.toArray(new String[0]));
     }
 }
