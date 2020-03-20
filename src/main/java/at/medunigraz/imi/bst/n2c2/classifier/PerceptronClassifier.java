@@ -24,8 +24,11 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
 
     private final File vectors;
 
+    private boolean preTrained = false;
+
     public PerceptronClassifier(Criterion c, boolean preTrained) {
         super(c);
+        this.preTrained = preTrained;
         this.vectors = preTrained ? PRETRAINED_VECTORS : SELFTRAINED_VECTORS;
     }
 
@@ -58,5 +61,11 @@ public class PerceptronClassifier extends CriterionBasedClassifier {
         }
 
         FastTextFacade.train(trainData, vectors);
+    }
+
+    @Override
+    public String toString() {
+        String prefix = preTrained ? "Pre" : "Self";
+        return prefix + super.toString();
     }
 }
