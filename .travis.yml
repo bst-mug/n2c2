@@ -3,7 +3,7 @@ matrix:
   include:
     - jdk: openjdk8
     - jdk: openjdk11
-    - jdk: openjdk12
+    - jdk: openjdk14
 addons:
   apt:
     packages:
