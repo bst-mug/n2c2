@@ -45,7 +45,6 @@
 			with both Scala 2.10 and 2.11 support -->
 		<scala.binary.version>2.11</scala.binary.version>
 
-		<guava.version>19.0</guava.version>
 		<logback.version>1.1.7</logback.version>
 		<jfreechart.version>1.0.13</jfreechart.version>
 		<jcommon.version>1.0.23</jcommon.version>
@@ -294,13 +293,6 @@
 			<groupId>org.deeplearning4j</groupId>
 			<artifactId>deeplearning4j-ui_${scala.binary.version}</artifactId>
 			<version>${dl4j.version}</version>
-		</dependency>
-
-		<!-- Force guava versions for using UI/HistogramIterationListener -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
